@@ -2,6 +2,7 @@ package net.samagames.core.api.resourcepacks;
 
 import net.minecraft.server.v1_8_R2.PacketPlayInResourcePackStatus;
 import net.minecraft.server.v1_8_R2.PacketPlayOutResourcePackSend;
+import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.resourcepacks.IResourceCallback;
 import net.samagames.api.resourcepacks.IResourcePacksManager;
 import net.samagames.core.APIPlugin;
@@ -26,6 +27,7 @@ import java.util.UUID;
  */
 public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener {
 
+    private final SamaGamesAPI api;
 	private final String resetUrl;
 	protected HashSet<UUID> currentlyDownloading = new HashSet<>();
 	protected HashMap<UUID, KillerTask> killers = new HashMap<>();
@@ -34,12 +36,13 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
 	private String forceHash;
 	private IResourceCallback callback;
 
-	public ResourcePacksManagerImpl() {
+	public ResourcePacksManagerImpl(SamaGamesAPI api) {
 		Bukkit.getPluginManager().registerEvents(this, APIPlugin.getInstance());
 
 		handler = new ProtocolHandler(APIPlugin.getInstance(), this);
+        this.api = api;
 
-		Jedis jedis = APIPlugin.getApi().getResource();
+		Jedis jedis = api.getResource();
 		this.resetUrl = jedis.get("resourcepacks:reseturl");
 		APIPlugin.getInstance().getLogger().info("Resource packs reset URL defined to " + resetUrl);
 		jedis.close();
@@ -53,7 +56,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
 	@Override
 	public void forcePack(String name, IResourceCallback callback) {
 		Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
-			Jedis jedis = APIPlugin.getApi().getResource();
+			Jedis jedis = api.getResource();
 			forceUrl = jedis.hget("resourcepack:" + name, "url");
 			forceHash = jedis.hget("resourcepack:" + name, "hash");
 			jedis.close();
@@ -80,7 +83,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
 		if (state == PacketPlayInResourcePackStatus.EnumResourcePackStatus.SUCCESSFULLY_LOADED) {
 			currentlyDownloading.remove(player.getUniqueId());
 			Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
-				Jedis jedis = APIPlugin.getApi().getResource();
+				Jedis jedis = api.getResource();
 				jedis.sadd("playersWithPack", player.getUniqueId().toString());
 				jedis.close();
 			});
@@ -105,7 +108,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
 			}, 100);
 		} else {
 			Bukkit.getScheduler().runTaskLater(APIPlugin.getInstance(), () -> {
-				Jedis jedis = APIPlugin.getApi().getResource();
+				Jedis jedis = api.getResource();
 				Long l = jedis.srem("playersWithPack", player.getUniqueId().toString());
 				jedis.close();
 
