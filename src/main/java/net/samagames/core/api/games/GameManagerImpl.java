@@ -1,7 +1,10 @@
 package net.samagames.core.api.games;
 
 import net.samagames.api.SamaGamesAPI;
-import net.samagames.api.games.*;
+import net.samagames.api.games.Game;
+import net.samagames.api.games.IGameManager;
+import net.samagames.api.games.IGameProperties;
+import net.samagames.api.games.Status;
 import net.samagames.api.games.themachine.ICoherenceMachine;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
@@ -24,7 +27,7 @@ public class GameManagerImpl implements IGameManager
     private HashMap<UUID, Integer> playerDisconnectTime;
     private HashMap<UUID, BukkitTask> playerReconnectedTimers;
     private IGameProperties gameProperties;
-    private IGame game;
+    private Game game;
 
     private int maxReconnectTime;
 
@@ -42,7 +45,7 @@ public class GameManagerImpl implements IGameManager
     }
 
     @Override
-    public void registerGame(IGame game)
+    public void registerGame(Game game)
     {
         if(this.game != null)
             throw new IllegalStateException("A game is already registered!");
@@ -167,7 +170,7 @@ public class GameManagerImpl implements IGameManager
     }
 
     @Override
-    public IGame getGame()
+    public Game getGame()
     {
         return this.game;
     }

@@ -1,6 +1,6 @@
 package net.samagames.core.api.games;
 
-import net.samagames.api.games.IGame;
+import net.samagames.api.games.Game;
 import net.samagames.api.games.IGameManager;
 import net.samagames.api.games.Status;
 import net.samagames.api.network.IJoinHandler;
@@ -44,7 +44,7 @@ public class GameLoginHandlerI implements IJoinHandler
     {
         if (this.api.getGame() != null)
         {
-            IGame game = this.api.getGame();
+            Game game = this.api.getGame();
 
             Pair<Boolean, String> gameResponse = game.canJoinGame(player, false);
 
@@ -79,7 +79,7 @@ public class GameLoginHandlerI implements IJoinHandler
     {
         if (this.api.getGame() != null)
         {
-            IGame game = this.api.getGame();
+            Game game = this.api.getGame();
 
             Pair<Boolean, String> gameResponse = game.canPartyJoinGame(partyMembers);
 

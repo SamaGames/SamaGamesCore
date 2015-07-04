@@ -1,6 +1,6 @@
 package net.samagames.core.api.games.themachine;
 
-import net.samagames.api.games.IGame;
+import net.samagames.api.games.Game;
 import net.samagames.api.games.IGameProperties;
 import net.samagames.api.games.themachine.ICoherenceMachine;
 import net.samagames.api.games.themachine.messages.IMessageManager;
@@ -14,12 +14,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class CoherenceMachineImpl implements ICoherenceMachine
 {
-    private final IGame game;
+    private final Game game;
     private final IGameProperties gameProperties;
     private final IMessageManager messageManager;
     private final ITemplateManager templateManager;
 
-    public CoherenceMachineImpl(IGame game, IGameProperties gameProperties)
+    public CoherenceMachineImpl(Game game, IGameProperties gameProperties)
     {
         this.game = game;
         this.gameProperties = gameProperties;
@@ -47,7 +47,7 @@ public class CoherenceMachineImpl implements ICoherenceMachine
     }
 
     @Override
-    public IGame getGame()
+    public Game getGame()
     {
         return this.game;
     }
