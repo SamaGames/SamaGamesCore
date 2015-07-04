@@ -5,6 +5,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.ApiImplementation;
 import net.samagames.permissionsapi.permissions.PermissionUser;
+import net.samagames.tools.Promo;
 import redis.clients.jedis.Jedis;
 
 import java.util.Date;
