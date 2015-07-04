@@ -1,7 +1,7 @@
 package net.samagames.core.tabcolors;
 
 import net.samagames.api.SamaGamesAPI;
-import net.samagames.api.permissions.PermissionsManager;
+import net.samagames.api.permissions.IPermissionsManager;
 import net.samagames.core.APIPlugin;
 import net.samagames.permissionsapi.permissions.PermissionGroup;
 import net.samagames.permissionsapi.permissions.PermissionUser;
@@ -22,7 +22,7 @@ public class TeamManager {
      * The escape sequence for minecraft special chat codes
      */
     public static final char ESCAPE = '\u00A7';
-    public final PermissionsManager manager;
+    public final IPermissionsManager manager;
 	private final APIPlugin plugin;
     public List<PermissionGroup> groups = new ArrayList<>();
     public TeamHandler teamHandler;
@@ -33,9 +33,6 @@ public class TeamManager {
         manager = SamaGamesAPI.get().getPermissionsManager();
 
         teamHandler = new TeamHandler();
-
-        if (!pl.isDatabaseEnabled())
-            return;
 
         groups.addAll(manager.getApi().getManager().getGroupsCache().values().stream().collect(Collectors.toList()));
 

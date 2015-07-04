@@ -2,7 +2,7 @@ package net.samagames.core.api.games;
 
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.games.IGamePlayer;
-import net.samagames.api.player.PlayerData;
+import net.samagames.api.player.AbstractPlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -59,7 +59,7 @@ public class GamePlayer implements IGamePlayer
         return Bukkit.getPlayer(this.uuid);
     }
 
-    public PlayerData getPlayerData()
+    public AbstractPlayerData getPlayerData()
     {
         return SamaGamesAPI.get().getPlayerManager().getPlayerData(this.uuid);
     }

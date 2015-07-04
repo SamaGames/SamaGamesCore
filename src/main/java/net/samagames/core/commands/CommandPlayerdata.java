@@ -1,7 +1,7 @@
 package net.samagames.core.commands;
 
 import net.samagames.api.SamaGamesAPI;
-import net.samagames.api.player.PlayerData;
+import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.core.APIPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -44,7 +44,7 @@ public class CommandPlayerdata extends AbstractCommand {
 
 			new Thread(() -> {
 				UUID playerId = SamaGamesAPI.get().getUUIDTranslator().getUUID(playerName, true);
-				PlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId);
+				AbstractPlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId);
 				data.set(key, value);
 				sender.sendMessage(ChatColor.YELLOW + "Données modifiées.");
 			}, "CommandPlayerDataSet").start();
@@ -60,7 +60,7 @@ public class CommandPlayerdata extends AbstractCommand {
 
 			new Thread(() -> {
 				UUID playerId = SamaGamesAPI.get().getUUIDTranslator().getUUID(playerName, true);
-				PlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId);
+                AbstractPlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId);
 				data.remove(key);
 				sender.sendMessage(ChatColor.YELLOW + "Données supprimées.");
 			}, "CommandPlayerDataSet").start();
@@ -70,7 +70,7 @@ public class CommandPlayerdata extends AbstractCommand {
 		final String playerName = arguments[0];
 			new Thread(() -> {
 				UUID playerId = SamaGamesAPI.get().getUUIDTranslator().getUUID(playerName, true);
-				PlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId);
+                AbstractPlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId);
 				sender.sendMessage(ChatColor.YELLOW + "Data pour " + ChatColor.GREEN + playerName + ChatColor.YELLOW + " / " + ChatColor.AQUA + playerId);
 				for (Map.Entry<String, String> entry : data.getValues().entrySet()) {
 					sender.sendMessage(ChatColor.YELLOW + " - " + entry.getKey() + " : " + entry.getValue());

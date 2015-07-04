@@ -1,7 +1,7 @@
 package net.samagames.core.commands;
 
 import net.samagames.api.SamaGamesAPI;
-import net.samagames.api.player.PlayerData;
+import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.core.APIPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -28,7 +28,7 @@ public class CommandStars extends AbstractCommand {
 			if (sender instanceof Player) {
 				new Thread(() -> {
 					Player player = (Player) sender;
-					PlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(player.getUniqueId());
+                    AbstractPlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(player.getUniqueId());
 					if (data != null) {
 						player.sendMessage(ChatColor.GOLD + "Vous avez actuellement " + ChatColor.GREEN + data.getStars() + " Étoiles");
 					} else {
@@ -53,7 +53,7 @@ public class CommandStars extends AbstractCommand {
 			final String playerName = arguments[1];
 			new Thread(() -> {
 				UUID playerId = SamaGamesAPI.get().getUUIDTranslator().getUUID(playerName, true);
-				PlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId);
+                AbstractPlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId);
 
 				if (data != null) {
 					sender.sendMessage(ChatColor.GOLD + "Le joueur a " + ChatColor.GREEN + data.getStars() + " Étoiles");
@@ -74,7 +74,7 @@ public class CommandStars extends AbstractCommand {
 			final String amount = arguments[2];
 			new Thread(() -> {
 				UUID playerId = SamaGamesAPI.get().getUUIDTranslator().getUUID(playerName, true);
-				PlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId);
+                AbstractPlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId);
 
 				try {
 					long amt = Long.valueOf(amount);
@@ -97,7 +97,7 @@ public class CommandStars extends AbstractCommand {
 
 			new Thread(() -> {
 				UUID playerId = SamaGamesAPI.get().getUUIDTranslator().getUUID(playerName, true);
-				PlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId);
+                AbstractPlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId);
 
 				try {
 					long amt = Long.valueOf(amount);

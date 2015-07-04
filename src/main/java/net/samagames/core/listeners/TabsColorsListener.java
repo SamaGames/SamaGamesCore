@@ -42,16 +42,12 @@ public class TabsColorsListener extends APIListener {
 		final Player p = event.getPlayer();
 		manager.playerJoin(p); // Passer ça en sync si crash //
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			if (plugin.isDatabaseEnabled()) {
-				PermissionUser user = SamaGamesAPI.get().getPermissionsManager().getApi().getUser(p.getUniqueId());
-				final String display = SamaGamesAPI.get().getPermissionsManager().getDisplay(user);
-				String prefix = SamaGamesAPI.get().getPermissionsManager().getPrefix(user);
+            PermissionUser user = SamaGamesAPI.get().getPermissionsManager().getApi().getUser(p.getUniqueId());
+            final String display = SamaGamesAPI.get().getPermissionsManager().getDisplay(user);
+            String prefix = SamaGamesAPI.get().getPermissionsManager().getPrefix(user);
 
-				final String displayn = replaceColors(display + "" + prefix) + p.getName();
-				p.setDisplayName(displayn);
-			} else {
-				event.getPlayer().sendMessage(ChatColor.GOLD + "Base de données désactivée. Fonctionnalités limitées.");
-			}
+            final String displayn = replaceColors(display + "" + prefix) + p.getName();
+            p.setDisplayName(displayn);
 		});
 
 		event.setJoinMessage("");
