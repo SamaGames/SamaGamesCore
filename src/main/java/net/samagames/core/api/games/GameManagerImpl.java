@@ -49,7 +49,7 @@ public class GameManagerImpl implements IGameManager
 
         this.game = game;
 
-        APIPlugin.getApi().getJoinManager().registerHandler(new GameLoginHandler(this), 100);
+        APIPlugin.getApi().getIJoinManager().registerHandler(new GameLoginHandlerI(this), 100);
 
         APIPlugin.getInstance().getExecutor().scheduleAtFixedRate(() ->
         {

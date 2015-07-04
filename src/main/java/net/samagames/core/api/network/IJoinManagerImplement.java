@@ -2,8 +2,8 @@ package net.samagames.core.api.network;
 
 import net.md_5.bungee.api.ChatColor;
 import net.samagames.api.SamaGamesAPI;
-import net.samagames.api.network.JoinHandler;
-import net.samagames.api.network.JoinManager;
+import net.samagames.api.network.IJoinHandler;
+import net.samagames.api.network.IJoinManager;
 import net.samagames.api.network.JoinResponse;
 import net.samagames.core.APIPlugin;
 import org.bukkit.Bukkit;
@@ -36,14 +36,14 @@ import java.util.UUID;
  *    -> Connection accepted : the system request the proxy to moove him
  */
 
-public class JoinManagerImplement implements JoinManager, Listener {
+public class IJoinManagerImplement implements IJoinManager, Listener {
 
-    protected TreeMap<Integer, JoinHandler> handlerTreeMap = new TreeMap<>();
+    protected TreeMap<Integer, IJoinHandler> handlerTreeMap = new TreeMap<>();
     protected HashSet<UUID> moderatorsExpected = new HashSet<>();
     protected HashSet<UUID> playersExpected = new HashSet<>();
     protected boolean isPartyLimited;
 
-    public JoinManagerImplement() {
+    public IJoinManagerImplement() {
         isPartyLimited = !SamaGamesAPI.get().getServerName().startsWith("Hub");
     }
 
@@ -56,7 +56,7 @@ public class JoinManagerImplement implements JoinManager, Listener {
     }
 
     @Override
-    public void registerHandler(JoinHandler handler, int priority) {
+    public void registerHandler(IJoinHandler handler, int priority) {
         this.handlerTreeMap.put(priority, handler);
     }
 
@@ -73,7 +73,7 @@ public class JoinManagerImplement implements JoinManager, Listener {
 
     public JoinResponse requestSoloJoin(UUID player) {
         JoinResponse response = new JoinResponse();
-        for (JoinHandler handler : handlerTreeMap.values())
+        for (IJoinHandler handler : handlerTreeMap.values())
             response = handler.requestJoin(player, response);
 
         if (response.isAllowed()) {
@@ -88,7 +88,7 @@ public class JoinManagerImplement implements JoinManager, Listener {
         Set<UUID> members = SamaGamesAPI.get().getPartiesManager().getPlayersInParty(partyID).keySet();
 
         JoinResponse response = new JoinResponse();
-        for (JoinHandler handler : handlerTreeMap.values())
+        for (IJoinHandler handler : handlerTreeMap.values())
             response = handler.requestPartyJoin(leader, members, response);
 
         if (response.isAllowed()) {
@@ -96,7 +96,7 @@ public class JoinManagerImplement implements JoinManager, Listener {
             for (UUID player : members) {
                 playersExpected.add(player);
                 Bukkit.getScheduler().runTaskLater(APIPlugin.getInstance(), () -> playersExpected.remove(player), 20 * 15L);
-                SamaGamesAPI.get().getProxyDataManager().getProxiedPlayer(player).connect(SamaGamesAPI.get().getServerName());
+                SamaGamesAPI.get().getIProxyDataManager().getProxiedPlayer(player).connect(SamaGamesAPI.get().getServerName());
             }
 
             new Thread(() -> {
@@ -153,7 +153,7 @@ public class JoinManagerImplement implements JoinManager, Listener {
 
         playersExpected.remove(player);
 
-        for (JoinHandler handler : handlerTreeMap.values())
+        for (IJoinHandler handler : handlerTreeMap.values())
             handler.onLogin(player);
     }
 
@@ -161,13 +161,13 @@ public class JoinManagerImplement implements JoinManager, Listener {
     public void onJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         if (moderatorsExpected.contains(player.getUniqueId())) {
-            for (JoinHandler handler : handlerTreeMap.values())
+            for (IJoinHandler handler : handlerTreeMap.values())
                 handler.onModerationJoin(player);
 
             return;
         }
 
-        for (JoinHandler handler : handlerTreeMap.values())
+        for (IJoinHandler handler : handlerTreeMap.values())
             handler.finishJoin(player);
 
 		// Enregistrement du joueur
@@ -183,7 +183,7 @@ public class JoinManagerImplement implements JoinManager, Listener {
         if (moderatorsExpected.contains(event.getPlayer().getUniqueId()))
             moderatorsExpected.remove(event.getPlayer().getUniqueId());
 
-        for (JoinHandler handler : handlerTreeMap.values())
+        for (IJoinHandler handler : handlerTreeMap.values())
             handler.onLogout(event.getPlayer());
 
 		APIPlugin.getInstance().getExecutor().execute(() -> {

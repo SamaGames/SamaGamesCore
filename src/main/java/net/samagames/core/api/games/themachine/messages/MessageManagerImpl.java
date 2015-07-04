@@ -1,12 +1,12 @@
 package net.samagames.core.api.games.themachine.messages;
 
 import net.samagames.api.games.themachine.ICoherenceMachine;
+import net.samagames.api.games.themachine.messages.IMessageManager;
 import net.samagames.api.games.themachine.messages.Message;
-import net.samagames.api.games.themachine.messages.MessageManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public class MessageManagerImpl implements MessageManager
+public class MessageManagerImpl implements IMessageManager
 {
     private final ICoherenceMachine machine;
 

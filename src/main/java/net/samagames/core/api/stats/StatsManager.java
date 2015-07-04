@@ -1,8 +1,8 @@
 package net.samagames.core.api.stats;
 
+import net.samagames.api.stats.AbstractStatsManager;
+import net.samagames.api.stats.IPlayerStat;
 import net.samagames.api.stats.Leaderboard;
-import net.samagames.api.stats.PlayerStat;
-import net.samagames.api.stats.StatsManager;
 import net.samagames.core.APIPlugin;
 import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
@@ -17,9 +17,9 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class StatsManagerDB extends StatsManager {
+public class StatsManager extends AbstractStatsManager {
 
-	public StatsManagerDB(String game) {
+	public StatsManager(String game) {
 		super(game);
 	}
 
@@ -53,14 +53,14 @@ public class StatsManagerDB extends StatsManager {
 	@Override
 	public Leaderboard getLeaderboard(String stat)
 	{
-		ArrayList<PlayerStat> leaderboard = new ArrayList<>();
+		ArrayList<IPlayerStat> leaderboard = new ArrayList<>();
 		Jedis jedis = APIPlugin.getApi().getResource();
 		Set<String> ids = jedis.zrevrange("gamestats:" + game + ":" + stat, 0, 2);
 		jedis.close();
 
 		for (String id : ids)
 		{
-			PlayerStat playerStat = new PlayerStat(UUID.fromString(id), this.game, stat);
+            IPlayerStat playerStat = new PlayerStat(UUID.fromString(id), this.game, stat);
 			playerStat.fill();
 
 			leaderboard.add(playerStat);

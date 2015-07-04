@@ -39,7 +39,6 @@ public class APIPlugin extends JavaPlugin implements Listener {
 	protected String serverName;
 	protected FileConfiguration configuration;
 	protected CopyOnWriteArraySet<String> ipWhitelist = new CopyOnWriteArraySet<>();
-	protected boolean databaseEnabled;
 	protected boolean allowJoin;
 	protected String denyJoinReason = ChatColor.RED + "Serveur non initialisé.";
 	protected boolean serverRegistered;
@@ -83,7 +82,6 @@ public class APIPlugin extends JavaPlugin implements Listener {
 		log("Loading main configuration...");
 		this.saveDefaultConfig();
 		configuration = this.getConfig();
-		databaseEnabled = configuration.getBoolean("database", true);
         gameServer = configuration.getBoolean("game-server", true);
 
 		// Chargement de l'IPWhitelist le plus tot possible
@@ -98,43 +96,37 @@ public class APIPlugin extends JavaPlugin implements Listener {
 
 		joinPermission = getConfig().getString("join-permission");
 
-		if (databaseEnabled) {
-			File conf = new File(getDataFolder().getAbsoluteFile().getParentFile().getParentFile(), "data.yml");
-			this.getLogger().info("Searching data.yml in " + conf.getAbsolutePath());
-			if (!conf.exists()) {
-				log(Level.SEVERE, "Cannot find database configuration. Disabling database mode.");
-				log(Level.WARNING, "Database is disabled for this session. API will work perfectly, but some plugins might have issues during run.");
-				databaseEnabled = false;
-				databaseConnector = new DatabaseConnector(this);
-			} else {
-				YamlConfiguration dataYML = YamlConfiguration.loadConfiguration(conf);
+		File conf = new File(getDataFolder().getAbsoluteFile().getParentFile().getParentFile(), "data.yml");
+        this.getLogger().info("Searching data.yml in " + conf.getAbsolutePath());
+        if (!conf.exists()) {
+            log(Level.SEVERE, "Cannot find database configuration. Disabling database mode.");
+            log(Level.WARNING, "Database is disabled for this session. API will work perfectly, but some plugins might have issues during run.");
+            databaseConnector = new DatabaseConnector(this);
+        } else {
+            YamlConfiguration dataYML = YamlConfiguration.loadConfiguration(conf);
 
-				String mainIp = dataYML.getString("redis-ip", "127.0.0.1");
-				int mainPort = dataYML.getInt("redis-port", 6379);
-				String mainPassword = dataYML.getString("redis-password", "passw0rd");
-				RedisServer main = new RedisServer(mainIp, mainPort, mainPassword);
+            String mainIp = dataYML.getString("redis-ip", "127.0.0.1");
+            int mainPort = dataYML.getInt("redis-port", 6379);
+            String mainPassword = dataYML.getString("redis-password", "passw0rd");
+            RedisServer main = new RedisServer(mainIp, mainPort, mainPassword);
 
-				String bungeeIp = dataYML.getString("redis-bungee-ip", "127.0.0.1");
-				int bungeePort = dataYML.getInt("redis-bungee-port", 4242);
-				String bungeePassword = dataYML.getString("redis-bungee-password", "passw0rd");
-				RedisServer bungee = new RedisServer(bungeeIp, bungeePort, bungeePassword);
+            String bungeeIp = dataYML.getString("redis-bungee-ip", "127.0.0.1");
+            int bungeePort = dataYML.getInt("redis-bungee-port", 4242);
+            String bungeePassword = dataYML.getString("redis-bungee-password", "passw0rd");
+            RedisServer bungee = new RedisServer(bungeeIp, bungeePort, bungeePassword);
 
-				databaseConnector = new DatabaseConnector(this, main, bungee);
+            databaseConnector = new DatabaseConnector(this, main, bungee);
 
-			}
-		} else {
-			log(Level.WARNING, "Database is disabled for this session. API will work perfectly, but some plugins might have issues during run.");
-			databaseConnector = new DatabaseConnector(this);
-		}
+        }
 
-		api = new ApiImplementation(this, databaseEnabled);
+		api = new ApiImplementation(this);
 
 		/*
 		Loading listeners
 		 */
 
 		debugListener = new DebugListener();
-		api.getJoinManager().registerHandler(debugListener, 0);
+		api.getIJoinManager().registerHandler(debugListener, 0);
 		api.getPubSub().subscribe("*", debugListener);
 
 		//Nickname
@@ -228,10 +220,7 @@ public class APIPlugin extends JavaPlugin implements Listener {
 	}
 
 	public boolean canConnect(String ip) {
-		if (!databaseEnabled)
-			return true;
-		else
-			return containsIp(ip);
+		return containsIp(ip);
 	}
 
 	public void refreshIps(Set<String> ips) {
@@ -248,10 +237,6 @@ public class APIPlugin extends JavaPlugin implements Listener {
 
 	public boolean containsIp(String ip) {
 		return ipWhitelist.contains(ip);
-	}
-
-	public boolean isDatabaseEnabled() {
-		return databaseEnabled;
 	}
 
     public boolean isGameServer() {
@@ -328,10 +313,6 @@ public class APIPlugin extends JavaPlugin implements Listener {
 		}
 
 		String ip = event.getRealAddress().getHostAddress();
-		if (!databaseEnabled) {
-			Bukkit.getLogger().info("[WARNING] Allowing connexion without check from IP "+ip);
-			return;
-		}
 
 		if (joinPermission != null && ! api.getPermissionsManager().hasPermission(event.getPlayer(), joinPermission)) {
 			event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, "Vous n'avez pas la permission de rejoindre ce serveur.");

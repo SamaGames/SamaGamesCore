@@ -1,6 +1,6 @@
 package net.samagames.core.api.parties;
 
-import net.samagames.api.parties.PartiesManager;
+import net.samagames.api.parties.IPartiesManager;
 import net.samagames.core.ApiImplementation;
 import redis.clients.jedis.Jedis;
 
@@ -15,11 +15,11 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class PartiesManagerWithDB implements PartiesManager {
+public class PartiesManager implements IPartiesManager {
 
 	private final ApiImplementation api;
 
-	public PartiesManagerWithDB(ApiImplementation api) {
+	public PartiesManager(ApiImplementation api) {
 		this.api = api;
 	}
 

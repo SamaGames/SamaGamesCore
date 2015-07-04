@@ -3,7 +3,7 @@ package net.samagames.core.api.network;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.samagames.api.SamaGamesAPI;
-import net.samagames.api.channels.PacketsReceiver;
+import net.samagames.api.channels.IPacketsReceiver;
 import net.samagames.api.network.JoinResponse;
 
 import java.util.UUID;
@@ -15,11 +15,11 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class RegularJoinHandler implements PacketsReceiver {
+public class RegularJoinHandler implements IPacketsReceiver {
 
-	private final JoinManagerImplement manager;
+	private final IJoinManagerImplement manager;
 
-	public RegularJoinHandler(JoinManagerImplement manager) {
+	public RegularJoinHandler(IJoinManagerImplement manager) {
 		this.manager = manager;
 	}
 
@@ -30,9 +30,9 @@ public class RegularJoinHandler implements PacketsReceiver {
 		if (!response.isAllowed()) {
 			TextComponent component = new TextComponent(response.getReason());
 			component.setColor(ChatColor.RED);
-			SamaGamesAPI.get().getProxyDataManager().getProxiedPlayer(player).sendMessage(component);
+			SamaGamesAPI.get().getIProxyDataManager().getProxiedPlayer(player).sendMessage(component);
 		} else {
-			SamaGamesAPI.get().getProxyDataManager().getProxiedPlayer(player).connect(SamaGamesAPI.get().getServerName());
+			SamaGamesAPI.get().getIProxyDataManager().getProxiedPlayer(player).connect(SamaGamesAPI.get().getServerName());
 		}
 	}
 }

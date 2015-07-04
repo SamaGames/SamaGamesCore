@@ -1,17 +1,17 @@
 package net.samagames.core.api.settings;
 
 import net.samagames.api.SamaGamesAPI;
-import net.samagames.api.settings.SettingsManager;
+import net.samagames.api.settings.ISettingsManager;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class SettingsManagerDB implements SettingsManager {
+public class SettingsManager implements ISettingsManager {
 
 	protected SamaGamesAPI api;
 
-	public SettingsManagerDB(SamaGamesAPI api) {
+	public SettingsManager(SamaGamesAPI api) {
 		this.api = api;
 	}
 

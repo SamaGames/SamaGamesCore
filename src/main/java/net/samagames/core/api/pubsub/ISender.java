@@ -14,13 +14,13 @@ import java.util.concurrent.LinkedBlockingQueue;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class Sender implements Runnable, net.samagames.api.channels.Sender {
+public class ISender implements Runnable, net.samagames.api.channels.ISender {
 
 	private LinkedBlockingQueue<PendingMessage> pendingMessages = new LinkedBlockingQueue<>();
 	private final ApiImplementation connector;
 	private Jedis jedis;
 
-	public Sender(ApiImplementation connector) {
+	public ISender(ApiImplementation connector) {
 		this.connector = connector;
 	}
 

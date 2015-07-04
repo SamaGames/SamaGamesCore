@@ -1,6 +1,6 @@
 package net.samagames.core.api.friends;
 
-import net.samagames.api.friends.FriendsManager;
+import net.samagames.api.friends.IFriendsManager;
 import net.samagames.core.ApiImplementation;
 import redis.clients.jedis.Jedis;
 
@@ -12,11 +12,11 @@ import java.util.*;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class FriendsManagementDB implements FriendsManager {
+public class FriendsManagement implements IFriendsManager {
 
 	private final ApiImplementation api;
 
-	public FriendsManagementDB(ApiImplementation api) {
+	public FriendsManagement(ApiImplementation api) {
 		this.api = api;
 	}
 

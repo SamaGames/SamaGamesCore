@@ -1,15 +1,7 @@
-/**
- * Copyright © 2013 tuxed <write@imaginarycode.com>
- * This work is free. You can redistribute it and/or modify it under the
- * terms of the Do What The Fuck You Want To Public License, Version 2,
- * as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
- *
- * Updated by zyuiop to be used with Bukkit API
- */
 package net.samagames.core.api.names;
 
 import com.google.gson.Gson;
-import net.samagames.api.names.UUIDTranslator;
+import net.samagames.api.names.IUUIDTranslator;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import org.bukkit.Bukkit;
@@ -24,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
-public final class UUIDTranslatorDB implements UUIDTranslator {
+public final class UUIDTranslator implements IUUIDTranslator {
     private final Pattern UUID_PATTERN = Pattern.compile("[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}");
     private final Pattern MOJANGIAN_UUID_PATTERN = Pattern.compile("[a-fA-F0-9]{32}");
     private final Map<String, CachedUUIDEntry> nameToUuidMap = new ConcurrentHashMap<>(128, 0.5f, 4);
@@ -32,7 +24,7 @@ public final class UUIDTranslatorDB implements UUIDTranslator {
 	private final ApiImplementation api;
 	private final APIPlugin plugin;
 
-	public UUIDTranslatorDB(APIPlugin plugin, ApiImplementation api) {
+	public UUIDTranslator(APIPlugin plugin, ApiImplementation api) {
 		this.api = api;
 		this.plugin = plugin;
 	}

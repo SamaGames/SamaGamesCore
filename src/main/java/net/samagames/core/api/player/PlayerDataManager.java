@@ -1,7 +1,7 @@
 package net.samagames.core.api.player;
 
-import net.samagames.api.player.PlayerData;
-import net.samagames.api.player.PlayerDataManager;
+import net.samagames.api.player.AbstractPlayerData;
+import net.samagames.api.player.IPlayerDataManager;
 import net.samagames.core.ApiImplementation;
 
 import java.util.UUID;
@@ -14,14 +14,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class PlayerDataManagerWithDB implements PlayerDataManager {
+public class PlayerDataManager implements IPlayerDataManager {
 
 	protected ApiImplementation api;
-	protected ConcurrentHashMap<UUID, PlayerDataDB> cachedData = new ConcurrentHashMap<>();
+	protected ConcurrentHashMap<UUID, PlayerData> cachedData = new ConcurrentHashMap<>();
 	protected CoinsManager coinsManager;
 	protected StarsManager starsManager;
 
-	public PlayerDataManagerWithDB(ApiImplementation api) {
+	public PlayerDataManager(ApiImplementation api) {
 		this.api = api;
 		coinsManager = new CoinsManager(api);
 		starsManager = new StarsManager(api);
@@ -36,19 +36,19 @@ public class PlayerDataManagerWithDB implements PlayerDataManager {
 	}
 
 	@Override
-	public PlayerData getPlayerData(UUID player) {
+	public AbstractPlayerData getPlayerData(UUID player) {
 		return getPlayerData(player, false);
 	}
 
 	@Override
-	public PlayerData getPlayerData(UUID player, boolean forceRefresh) {
+	public AbstractPlayerData getPlayerData(UUID player, boolean forceRefresh) {
 		if (!cachedData.containsKey(player)) {
-			PlayerDataDB data = new PlayerDataDB(player, api, this);
+			PlayerData data = new PlayerData(player, api, this);
 			cachedData.put(player, data);
 			return data;
 		}
 
-		PlayerDataDB data = cachedData.get(player);
+		PlayerData data = cachedData.get(player);
 
 		if (forceRefresh) {
 			data.updateData();
@@ -61,12 +61,12 @@ public class PlayerDataManagerWithDB implements PlayerDataManager {
 
 	public void update(UUID player) {
 		if (!cachedData.containsKey(player)) {
-			PlayerDataDB data = new PlayerDataDB(player, api, this);
+			PlayerData data = new PlayerData(player, api, this);
 			cachedData.put(player, data);
 			return;
 		}
 
-		PlayerDataDB data = cachedData.get(player);
+		PlayerData data = cachedData.get(player);
 		data.updateData();
 	}
 

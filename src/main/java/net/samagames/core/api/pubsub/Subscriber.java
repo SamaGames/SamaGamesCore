@@ -1,7 +1,7 @@
 package net.samagames.core.api.pubsub;
 
-import net.samagames.api.channels.PacketsReceiver;
-import net.samagames.api.channels.PatternReceiver;
+import net.samagames.api.channels.IPacketsReceiver;
+import net.samagames.api.channels.IPatternReceiver;
 import net.samagames.core.APIPlugin;
 import redis.clients.jedis.JedisPubSub;
 
@@ -18,11 +18,11 @@ import java.util.logging.Level;
  */
 public class Subscriber extends JedisPubSub {
 
-	protected HashMap<String, HashSet<PacketsReceiver>> packetsReceivers = new HashMap<>();
-	protected HashMap<String, HashSet<PatternReceiver>> patternsReceivers = new HashMap<>();
+	protected HashMap<String, HashSet<IPacketsReceiver>> packetsReceivers = new HashMap<>();
+	protected HashMap<String, HashSet<IPatternReceiver>> patternsReceivers = new HashMap<>();
 
-	public void registerReceiver(String channel, PacketsReceiver receiver) {
-		HashSet<PacketsReceiver> receivers = packetsReceivers.get(channel);
+	public void registerReceiver(String channel, IPacketsReceiver receiver) {
+		HashSet<IPacketsReceiver> receivers = packetsReceivers.get(channel);
 		if (receivers == null)
 			receivers = new HashSet<>();
 		receivers.add(receiver);
@@ -30,8 +30,8 @@ public class Subscriber extends JedisPubSub {
 		packetsReceivers.put(channel, receivers);
 	}
 
-	public void registerPattern(String pattern, PatternReceiver receiver) {
-		HashSet<PatternReceiver> receivers = patternsReceivers.get(pattern);
+	public void registerPattern(String pattern, IPatternReceiver receiver) {
+		HashSet<IPatternReceiver> receivers = patternsReceivers.get(pattern);
 		if (receivers == null)
 			receivers = new HashSet<>();
 		receivers.add(receiver);
@@ -42,9 +42,9 @@ public class Subscriber extends JedisPubSub {
 	@Override
 	public void onMessage(String channel, String message) {
 		try {
-			HashSet<PacketsReceiver> receivers = packetsReceivers.get(channel);
+			HashSet<IPacketsReceiver> receivers = packetsReceivers.get(channel);
 			if (receivers != null)
-				receivers.forEach((PacketsReceiver receiver) -> receiver.receive(channel, message));
+				receivers.forEach((IPacketsReceiver receiver) -> receiver.receive(channel, message));
 			else
 				APIPlugin.log(Level.WARNING, "{PubSub} Received message on a channel, but no packetsReceivers were found.");
 		} catch (Exception ignored) {
@@ -56,9 +56,9 @@ public class Subscriber extends JedisPubSub {
 	@Override
 	public void onPMessage(String pattern, String channel, String message) {
 		try {
-			HashSet<PatternReceiver> receivers = patternsReceivers.get(pattern);
+			HashSet<IPatternReceiver> receivers = patternsReceivers.get(pattern);
 			if (receivers != null)
-				receivers.forEach((PatternReceiver receiver) -> receiver.receive(pattern, channel, message));
+				receivers.forEach((IPatternReceiver receiver) -> receiver.receive(pattern, channel, message));
 			else
 				APIPlugin.log(Level.WARNING, "{PubSub} Received pmessage on a channel, but no packetsReceivers were found.");
 		} catch (Exception ignored) {

@@ -3,7 +3,7 @@ package net.samagames.core.api.games;
 import net.samagames.api.games.IGame;
 import net.samagames.api.games.IGameManager;
 import net.samagames.api.games.Status;
-import net.samagames.api.network.JoinHandler;
+import net.samagames.api.network.IJoinHandler;
 import net.samagames.api.network.JoinResponse;
 import net.samagames.api.network.ResponseType;
 import org.apache.commons.lang3.tuple.Pair;
@@ -12,11 +12,11 @@ import org.bukkit.entity.Player;
 import java.util.Set;
 import java.util.UUID;
 
-public class GameLoginHandler implements JoinHandler
+public class GameLoginHandlerI implements IJoinHandler
 {
     private final IGameManager api;
 
-    public GameLoginHandler(IGameManager api)
+    public GameLoginHandlerI(IGameManager api)
     {
         this.api = api;
     }

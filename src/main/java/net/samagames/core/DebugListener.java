@@ -1,8 +1,8 @@
 package net.samagames.core;
 
 import net.md_5.bungee.api.ChatColor;
-import net.samagames.api.channels.PatternReceiver;
-import net.samagames.api.network.JoinHandler;
+import net.samagames.api.channels.IPatternReceiver;
+import net.samagames.api.network.IJoinHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,7 +17,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class DebugListener implements PatternReceiver, JoinHandler {
+public class DebugListener implements IPatternReceiver, IJoinHandler {
 
 	private CopyOnWriteArraySet<UUID> debugs = new CopyOnWriteArraySet<>();
 	private boolean console = false;

@@ -1,7 +1,7 @@
 package net.samagames.core.api.permissions;
 
 import net.samagames.api.SamaGamesAPI;
-import net.samagames.api.permissions.PermissionsManager;
+import net.samagames.api.permissions.IPermissionsManager;
 import net.samagames.core.APIPlugin;
 import net.samagames.permissionsapi.PermissionsAPI;
 import net.samagames.permissionsapi.rawtypes.RawPlayer;
@@ -24,7 +24,7 @@ import java.util.logging.Level;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public abstract class BasicPermissionManager implements RawPlugin, PermissionsManager {
+public abstract class BasicPermissionManager implements RawPlugin, IPermissionsManager {
 
 	private final boolean isLobby;
 	protected PermissionsAPI api = null;

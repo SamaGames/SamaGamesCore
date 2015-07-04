@@ -1,8 +1,8 @@
 package net.samagames.core.api.network;
 
 import net.samagames.api.SamaGamesAPI;
-import net.samagames.api.channels.PacketsReceiver;
-import net.samagames.api.network.JoinHandler;
+import net.samagames.api.channels.IPacketsReceiver;
+import net.samagames.api.network.IJoinHandler;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,12 +15,12 @@ import java.util.UUID;
 /**
  * Created by LeadDev on 09/03/2015.
  */
-public class ModerationJoinHandler implements JoinHandler, PacketsReceiver {
+public class ModerationIJoinHandler implements IJoinHandler, IPacketsReceiver {
 
     protected HashMap<UUID, UUID> teleportTargets = new HashMap<>();
-    protected JoinManagerImplement manager;
+    protected IJoinManagerImplement manager;
 
-    public ModerationJoinHandler(JoinManagerImplement manager) {
+    public ModerationIJoinHandler(IJoinManagerImplement manager) {
         this.manager = manager;
     }
 
@@ -56,6 +56,6 @@ public class ModerationJoinHandler implements JoinHandler, PacketsReceiver {
             }
         }
 
-        SamaGamesAPI.get().getProxyDataManager().getProxiedPlayer(uuid).connect(SamaGamesAPI.get().getServerName());
+        SamaGamesAPI.get().getIProxyDataManager().getProxiedPlayer(uuid).connect(SamaGamesAPI.get().getServerName());
     }
 }

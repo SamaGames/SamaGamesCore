@@ -3,7 +3,6 @@ package net.samagames.core.api.network;
 import com.google.gson.Gson;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.samagames.api.SamaGamesAPI;
-import net.samagames.api.network.ProxiedPlayer;
 import net.samagames.core.APIPlugin;
 
 import java.util.UUID;
@@ -15,11 +14,11 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class ProxiedPlayerDB implements ProxiedPlayer {
+public class IProxiedPlayer implements net.samagames.api.network.IProxiedPlayer {
 
 	private final UUID playerId;
 
-	public ProxiedPlayerDB(UUID playerId) {
+	public IProxiedPlayer(UUID playerId) {
 		this.playerId = playerId;
 	}
 

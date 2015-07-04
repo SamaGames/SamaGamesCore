@@ -1,7 +1,7 @@
 package net.samagames.core.api.resourcepacks;
 
 import net.minecraft.server.v1_8_R2.PacketPlayInResourcePackStatus;
-import net.samagames.api.resourcepacks.ResourceCallback;
+import net.samagames.api.resourcepacks.IResourceCallback;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -15,11 +15,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 class KillerTask extends BukkitRunnable {
 
 	private final Player player;
-	private final ResourceCallback callback;
+	private final IResourceCallback callback;
 	private final ResourcePacksManagerImpl impl;
 	private int remaining;
 
-	public KillerTask(Player player, ResourceCallback callback, ResourcePacksManagerImpl impl) {
+	public KillerTask(Player player, IResourceCallback callback, ResourcePacksManagerImpl impl) {
 		this.player = player;
 		this.callback = callback;
 		this.impl = impl;

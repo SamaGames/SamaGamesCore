@@ -1,6 +1,6 @@
 package net.samagames.core;
 
-import net.samagames.api.channels.PacketsReceiver;
+import net.samagames.api.channels.IPacketsReceiver;
 import org.bukkit.Bukkit;
 
 /**
@@ -10,7 +10,7 @@ import org.bukkit.Bukkit;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class RemoteCommandsHandler implements PacketsReceiver {
+public class RemoteCommandsHandler implements IPacketsReceiver {
 	@Override
 	public void receive(String channel, String command) {
 		Bukkit.getLogger().info("Executing command remotely : " + command);

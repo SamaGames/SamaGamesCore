@@ -1,8 +1,8 @@
 package net.samagames.core.api.player;
 
 import net.md_5.bungee.api.chat.TextComponent;
-import net.samagames.api.player.FinancialCallback;
-import net.samagames.api.player.PlayerData;
+import net.samagames.api.player.AbstractPlayerData;
+import net.samagames.api.player.IFinancialCallback;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import org.bukkit.Bukkit;
@@ -21,13 +21,14 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class PlayerDataDB extends PlayerData {
+public class PlayerData extends AbstractPlayerData {
 
 	protected final ApiImplementation api;
-	protected final PlayerDataManagerWithDB manager;
+	protected final PlayerDataManager manager;
 
-	protected PlayerDataDB(UUID player, ApiImplementation api, PlayerDataManagerWithDB manager) {
-		super(player);
+	protected PlayerData(UUID player, ApiImplementation api, PlayerDataManager manager) {
+        super(player);
+
 		this.api = api;
 		this.manager = manager;
 		updateData();
@@ -51,7 +52,7 @@ public class PlayerDataDB extends PlayerData {
 	@Override
 	public String get(String key) {
 		refreshIfNeeded();
-		return super.get(key);
+        return super.get(key);
 	}
 
 	@Override
@@ -132,7 +133,7 @@ public class PlayerDataDB extends PlayerData {
 	}
 
 	@Override
-	public void creditCoins(final long famount, final String reason, final boolean applyMultiplier, final FinancialCallback<Long> financialCallback) {
+	public void creditCoins(final long famount, final String reason, final boolean applyMultiplier, final IFinancialCallback<Long> financialCallback) {
 		APIPlugin.getInstance().getExecutor().execute(() -> {
 			try {
 				long amount = famount;
@@ -161,7 +162,7 @@ public class PlayerDataDB extends PlayerData {
 	}
 
 	@Override
-	public void withdrawCoins(final long famount, final FinancialCallback<Long> financialCallback) {
+	public void withdrawCoins(final long famount, final IFinancialCallback<Long> financialCallback) {
 		APIPlugin.getInstance().getExecutor().execute(() -> {
 			long result = decreaseCoins(famount);
 			if (financialCallback != null)
@@ -186,7 +187,7 @@ public class PlayerDataDB extends PlayerData {
 	}
 
 	@Override
-	public void creditStars(final long famount, final String reason, final boolean applyMultiplier, FinancialCallback<Long> financialCallback) {
+	public void creditStars(final long famount, final String reason, final boolean applyMultiplier, IFinancialCallback<Long> financialCallback) {
 		APIPlugin.getInstance().getExecutor().execute(() -> {
 			try {
 				long amount = famount;
@@ -215,7 +216,7 @@ public class PlayerDataDB extends PlayerData {
 	}
 
 	@Override
-	public void withdrawStars(final long amount, FinancialCallback<Long> financialCallback) {
+	public void withdrawStars(final long amount, IFinancialCallback<Long> financialCallback) {
 		APIPlugin.getInstance().getExecutor().execute(() -> {
 			long result = decreaseStars(amount);
 

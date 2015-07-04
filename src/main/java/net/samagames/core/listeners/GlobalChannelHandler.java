@@ -1,6 +1,6 @@
 package net.samagames.core.listeners;
 
-import net.samagames.api.channels.PacketsReceiver;
+import net.samagames.api.channels.IPacketsReceiver;
 import net.samagames.core.APIPlugin;
 
 /**
@@ -9,7 +9,7 @@ import net.samagames.core.APIPlugin;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class GlobalChannelHandler implements PacketsReceiver {
+public class GlobalChannelHandler implements IPacketsReceiver {
 
 	private final APIPlugin plugin;
 

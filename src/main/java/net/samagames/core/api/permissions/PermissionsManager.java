@@ -1,6 +1,7 @@
 package net.samagames.core.api.permissions;
 
 import net.samagames.permissionsapi.permissions.PermissionEntity;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import java.util.UUID;
@@ -11,27 +12,41 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class PermissionsManagerNoDB extends BasicPermissionManager {
+public class PermissionsManager extends BasicPermissionManager {
 
 	@Override
 	public String getPrefix(PermissionEntity entity) {
-		return ChatColor.RED + "";
+		String prefix = entity.getProperty("prefix");
+		if (prefix == null)
+			return null;
+		prefix = prefix.replaceAll("&s", " ");
+		prefix = ChatColor.translateAlternateColorCodes('&', prefix);
+		return prefix;
 	}
 
 	@Override
 	public String getSuffix(PermissionEntity entity) {
-		return ChatColor.WHITE + "";
+		String suffix = entity.getProperty("suffix");
+		if (suffix == null)
+			return null;
+		suffix = suffix.replaceAll("&s", " ");
+		suffix = ChatColor.translateAlternateColorCodes('&', suffix);
+		return suffix;
 	}
 
 	@Override
 	public String getDisplay(PermissionEntity entity) {
-		return ChatColor.RED + "[ADM/NODB] ";
+		String display = entity.getProperty("display");
+		if (display == null)
+			return null;
+		display = display.replaceAll("&s", " ");
+		display = ChatColor.translateAlternateColorCodes('&', display);
+		return display;
 	}
 
 	@Override
 	public boolean hasPermission(PermissionEntity entity, String permission) {
-		logWarning("Granting permission as database is disabled.");
-		return true;
+		return entity.hasPermission(permission);
 	}
 
 	/**
@@ -44,7 +59,7 @@ public class PermissionsManagerNoDB extends BasicPermissionManager {
 	public boolean hasPermission(UUID player, String permission) {
 		PermissionEntity entity = api.getManager().getUserFromCache(player);
 		if (entity == null) {
-			logWarning("Entity "+player+" is not found in cache.");
+			Bukkit.getLogger().warning("Entity "+player+" is not found in cache.");
 			return false;
 		}
 		return entity.hasPermission(permission);

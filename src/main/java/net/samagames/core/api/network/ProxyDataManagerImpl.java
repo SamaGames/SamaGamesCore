@@ -1,7 +1,7 @@
 package net.samagames.core.api.network;
 
-import net.samagames.api.network.ProxiedPlayer;
-import net.samagames.api.network.ProxyDataManager;
+import net.samagames.api.network.IProxiedPlayer;
+import net.samagames.api.network.IProxyDataManager;
 import net.samagames.core.ApiImplementation;
 import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.Jedis;
@@ -18,11 +18,11 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class ProxyDataManagerImplDB implements ProxyDataManager {
+public class ProxyDataManagerImpl implements IProxyDataManager {
 
 	private final ApiImplementation api;
 
-	public ProxyDataManagerImplDB(ApiImplementation api) {
+	public ProxyDataManagerImpl(ApiImplementation api) {
 		this.api = api;
 	}
 
@@ -51,8 +51,8 @@ public class ProxyDataManagerImplDB implements ProxyDataManager {
 	}
 
 	@Override
-	public ProxiedPlayer getProxiedPlayer(UUID uuid) {
-		return new ProxiedPlayerDB(uuid);
+	public IProxiedPlayer getProxiedPlayer(UUID uuid) {
+		return new net.samagames.core.api.network.IProxiedPlayer(uuid);
 	}
 
 	@Override

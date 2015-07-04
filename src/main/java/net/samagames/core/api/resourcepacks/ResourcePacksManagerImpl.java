@@ -2,8 +2,8 @@ package net.samagames.core.api.resourcepacks;
 
 import net.minecraft.server.v1_8_R2.PacketPlayInResourcePackStatus;
 import net.minecraft.server.v1_8_R2.PacketPlayOutResourcePackSend;
-import net.samagames.api.resourcepacks.ResourceCallback;
-import net.samagames.api.resourcepacks.ResourcePacksManager;
+import net.samagames.api.resourcepacks.IResourceCallback;
+import net.samagames.api.resourcepacks.IResourcePacksManager;
 import net.samagames.core.APIPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,7 +24,7 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class ResourcePacksManagerImpl implements ResourcePacksManager, Listener {
+public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener {
 
 	private final String resetUrl;
 	protected HashSet<UUID> currentlyDownloading = new HashSet<>();
@@ -32,7 +32,7 @@ public class ResourcePacksManagerImpl implements ResourcePacksManager, Listener 
 	private ProtocolHandler handler = null;
 	private String forceUrl;
 	private String forceHash;
-	private ResourceCallback callback;
+	private IResourceCallback callback;
 
 	public ResourcePacksManagerImpl() {
 		Bukkit.getPluginManager().registerEvents(this, APIPlugin.getInstance());
@@ -51,7 +51,7 @@ public class ResourcePacksManagerImpl implements ResourcePacksManager, Listener 
 	}
 
 	@Override
-	public void forcePack(String name, ResourceCallback callback) {
+	public void forcePack(String name, IResourceCallback callback) {
 		Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
 			Jedis jedis = APIPlugin.getApi().getResource();
 			forceUrl = jedis.hget("resourcepack:" + name, "url");

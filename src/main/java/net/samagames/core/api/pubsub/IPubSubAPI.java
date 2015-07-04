@@ -1,9 +1,9 @@
 package net.samagames.core.api.pubsub;
 
-import net.samagames.api.channels.PacketsReceiver;
-import net.samagames.api.channels.PatternReceiver;
+import net.samagames.api.channels.IPacketsReceiver;
+import net.samagames.api.channels.IPatternReceiver;
+import net.samagames.api.channels.ISender;
 import net.samagames.api.channels.PendingMessage;
-import net.samagames.api.channels.PubSubAPI;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import org.bukkit.Bukkit;
@@ -16,14 +16,14 @@ import redis.clients.jedis.Jedis;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class PubSubAPIDB implements PubSubAPI {
+public class IPubSubAPI implements net.samagames.api.channels.IPubSubAPI {
 
 	private ApiImplementation api;
 	private Subscriber subscriber;
-	private Sender sender;
+	private net.samagames.core.api.pubsub.ISender sender;
 	private boolean continueSub = true;
 
-	public PubSubAPIDB(ApiImplementation api) {
+	public IPubSubAPI(ApiImplementation api) {
 		this.api = api;
 		subscriber = new Subscriber();
 		new Thread(() -> {
@@ -51,17 +51,17 @@ public class PubSubAPIDB implements PubSubAPI {
 
 		Bukkit.getLogger().info("Correctly subscribed.");
 
-		sender = new Sender(api);
+		sender = new net.samagames.core.api.pubsub.ISender(api);
 		new Thread(sender, "SenderThread").start();
 	}
 
 	@Override
-	public void subscribe(String channel, PacketsReceiver receiver) {
+	public void subscribe(String channel, IPacketsReceiver receiver) {
 		subscriber.registerReceiver(channel, receiver);
 	}
 
 	@Override
-	public void subscribe(String pattern, PatternReceiver receiver) {
+	public void subscribe(String pattern, IPatternReceiver receiver) {
 		subscriber.registerPattern(pattern, receiver);
 	}
 
@@ -76,7 +76,7 @@ public class PubSubAPIDB implements PubSubAPI {
 	}
 
 	@Override
-	public net.samagames.api.channels.Sender getSender() {
+	public ISender getSender() {
 		return sender;
 	}
 

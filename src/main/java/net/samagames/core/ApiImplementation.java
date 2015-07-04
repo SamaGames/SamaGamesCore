@@ -1,43 +1,33 @@
 package net.samagames.core;
 
 import net.samagames.api.SamaGamesAPI;
-import net.samagames.api.achievements.AchievementManager;
-import net.samagames.api.channels.PubSubAPI;
-import net.samagames.api.friends.FriendsManager;
+import net.samagames.api.achievements.IAchievementManager;
+import net.samagames.api.channels.IPubSubAPI;
+import net.samagames.api.friends.IFriendsManager;
 import net.samagames.api.games.IGameManager;
-import net.samagames.api.names.UUIDTranslator;
-import net.samagames.api.network.JoinManager;
-import net.samagames.api.network.ProxyDataManager;
-import net.samagames.api.parties.PartiesManager;
-import net.samagames.api.permissions.PermissionsManager;
-import net.samagames.api.player.PlayerDataManager;
-import net.samagames.api.resourcepacks.ResourcePacksManager;
-import net.samagames.api.settings.SettingsManager;
-import net.samagames.api.shops.ShopsManager;
-import net.samagames.api.stats.StatsManager;
-import net.samagames.core.api.achievements.AchievementManagerImplDB;
-import net.samagames.core.api.friends.FriendsManagementDB;
-import net.samagames.core.api.friends.FriendsManagerNoDB;
+import net.samagames.api.names.IUUIDTranslator;
+import net.samagames.api.network.IJoinManager;
+import net.samagames.api.network.IProxyDataManager;
+import net.samagames.api.parties.IPartiesManager;
+import net.samagames.api.permissions.IPermissionsManager;
+import net.samagames.api.player.IPlayerDataManager;
+import net.samagames.api.resourcepacks.IResourcePacksManager;
+import net.samagames.api.settings.ISettingsManager;
+import net.samagames.api.shops.AbstractShopsManager;
+import net.samagames.api.stats.AbstractStatsManager;
+import net.samagames.core.api.achievements.AchievementManagerImpl;
+import net.samagames.core.api.friends.FriendsManagement;
 import net.samagames.core.api.games.GameManagerImpl;
-import net.samagames.core.api.names.UUIDTranslatorDB;
-import net.samagames.core.api.names.UUIDTranslatorNODB;
+import net.samagames.core.api.names.UUIDTranslator;
 import net.samagames.core.api.network.*;
-import net.samagames.core.api.parties.PartiesManagerNoDb;
-import net.samagames.core.api.parties.PartiesManagerWithDB;
+import net.samagames.core.api.parties.PartiesManager;
 import net.samagames.core.api.permissions.BasicPermissionManager;
-import net.samagames.core.api.permissions.PermissionsManagerDB;
-import net.samagames.core.api.permissions.PermissionsManagerNoDB;
-import net.samagames.core.api.player.PlayerDataManagerNoDB;
-import net.samagames.core.api.player.PlayerDataManagerWithDB;
-import net.samagames.core.api.pubsub.PubSubAPIDB;
-import net.samagames.core.api.pubsub.PubSubNoDB;
+import net.samagames.core.api.permissions.PermissionsManager;
+import net.samagames.core.api.player.PlayerDataManager;
 import net.samagames.core.api.resourcepacks.ResourcePacksManagerImpl;
-import net.samagames.core.api.settings.SettingsManagerDB;
-import net.samagames.core.api.settings.SettingsManagerNoDB;
-import net.samagames.core.api.shops.ShopsManagerDB;
-import net.samagames.core.api.shops.ShopsManagerNoDB;
-import net.samagames.core.api.stats.StatsManagerDB;
-import net.samagames.core.api.stats.StatsManagerNoDB;
+import net.samagames.core.api.settings.SettingsManager;
+import net.samagames.core.api.shops.ShopsManager;
+import net.samagames.core.api.stats.StatsManager;
 import net.samagames.core.database.DatabaseConnector;
 import net.samagames.core.listeners.GlobalChannelHandler;
 import net.samagames.tools.BarAPI.BarAPI;
@@ -55,82 +45,68 @@ public class ApiImplementation extends SamaGamesAPI
 {
 
 	protected APIPlugin plugin;
-	protected boolean database;
-	protected SettingsManager settingsManager;
-	protected PlayerDataManager playerDataManager;
-    protected AchievementManager achievementManager;
-	protected PubSubAPI pubSub;
-	protected UUIDTranslator uuidTranslator;
-	protected JoinManager joinManager;
+	protected ISettingsManager settingsManager;
+	protected IPlayerDataManager playerDataManager;
+    protected IAchievementManager achievementManager;
+	protected IPubSubAPI pubSub;
+	protected IUUIDTranslator uuidTranslator;
+	protected IJoinManager IJoinManager;
 	protected IGameManager gameApi;
-	protected ProxyDataManager proxyDataManager;
-	protected PartiesManager partiesManager;
-	protected ResourcePacksManager resourcePacksManager;
+	protected IProxyDataManager IProxyDataManager;
+	protected IPartiesManager partiesManager;
+	protected IResourcePacksManager resourcePacksManager;
 	protected BasicPermissionManager permissionsManager;
-    protected FriendsManager friendsManager;
+    protected IFriendsManager friendsManager;
 
 	protected BarAPI barAPI;
 
-	public ApiImplementation(APIPlugin plugin, boolean database) {
-		this.plugin = plugin;
-		this.database = database;
+	public ApiImplementation(APIPlugin plugin) {
+        super(plugin);
 
-		JoinManagerImplement implement = new JoinManagerImplement();
+		this.plugin = plugin;
+
+		IJoinManagerImplement implement = new IJoinManagerImplement();
 		Bukkit.getServer().getPluginManager().registerEvents(implement, plugin);
-		this.joinManager = implement;
+		this.IJoinManager = implement;
 		resourcePacksManager = new ResourcePacksManagerImpl();
 
 		barAPI = new BarAPI(plugin);
 
-		if (database) {
-			settingsManager = new SettingsManagerDB(this);
-			playerDataManager = new PlayerDataManagerWithDB(this);
-            achievementManager = new AchievementManagerImplDB(this);
-			pubSub = new PubSubAPIDB(this);
-			pubSub.subscribe("global", new GlobalChannelHandler(plugin));
-			pubSub.subscribe(plugin.getServerName(), new GlobalChannelHandler(plugin));
+        settingsManager = new SettingsManager(this);
+        playerDataManager = new PlayerDataManager(this);
+        achievementManager = new AchievementManagerImpl(this);
+        pubSub = new net.samagames.core.api.pubsub.IPubSubAPI(this);
+        pubSub.subscribe("global", new GlobalChannelHandler(plugin));
+        pubSub.subscribe(plugin.getServerName(), new GlobalChannelHandler(plugin));
 
-			pubSub.subscribe("commands.servers." + getServerName(), new RemoteCommandsHandler());
-			pubSub.subscribe("commands.servers.all", new RemoteCommandsHandler());
+        pubSub.subscribe("commands.servers." + getServerName(), new RemoteCommandsHandler());
+        pubSub.subscribe("commands.servers.all", new RemoteCommandsHandler());
 
-			ModerationJoinHandler moderationJoinHandler = new ModerationJoinHandler(implement);
-			implement.registerHandler(moderationJoinHandler, - 1);
-            pubSub.subscribe(plugin.getServerName(), moderationJoinHandler);
-			pubSub.subscribe("partyjoin." + getServerName(), new PartiesPubSub(implement));
-			pubSub.subscribe("join." + getServerName(), new RegularJoinHandler(implement));
+        ModerationIJoinHandler moderationJoinHandler = new ModerationIJoinHandler(implement);
+        implement.registerHandler(moderationJoinHandler, - 1);
+        pubSub.subscribe(plugin.getServerName(), moderationJoinHandler);
+        pubSub.subscribe("partyjoin." + getServerName(), new PartiesPubSub(implement));
+        pubSub.subscribe("join." + getServerName(), new RegularJoinHandler(implement));
 
-			uuidTranslator = new UUIDTranslatorDB(plugin, this);
-			proxyDataManager = new ProxyDataManagerImplDB(this);
-			partiesManager = new PartiesManagerWithDB(this);
-			permissionsManager = new PermissionsManagerDB();
-            friendsManager = new FriendsManagementDB(this);
-		} else {
-			settingsManager = new SettingsManagerNoDB();
-			playerDataManager = new PlayerDataManagerNoDB();
-			pubSub = new PubSubNoDB();
-			uuidTranslator = new UUIDTranslatorNODB();
-			ModerationJoinHandler moderationJoinHandler = new ModerationJoinHandler(implement);
-			implement.registerHandler(moderationJoinHandler, - 1);
-            pubSub.subscribe(plugin.getServerName(), moderationJoinHandler);
-            proxyDataManager = new ProxyDataManagerImplNoDB();
-			partiesManager = new PartiesManagerNoDb();
-			permissionsManager = new PermissionsManagerNoDB();
-            friendsManager = new FriendsManagerNoDB();
-		}
+        uuidTranslator = new UUIDTranslator(plugin, this);
+        IProxyDataManager = new ProxyDataManagerImpl(this);
+        partiesManager = new PartiesManager(this);
+        permissionsManager = new PermissionsManager();
+        friendsManager = new FriendsManagement(this);
 	}
 
 	@Override
-	public PermissionsManager getPermissionsManager() {
+	public IPermissionsManager getPermissionsManager() {
 		return permissionsManager;
 	}
 
 	@Override
-	public ResourcePacksManager getResourcePacksManager() {
+	public IResourcePacksManager getResourcePacksManager() {
 		return resourcePacksManager;
 	}
 
     @Override
-    public FriendsManager getFriendsManager() {
+    public IFriendsManager getFriendsManager() {
         return friendsManager;
     }
 
@@ -138,20 +114,20 @@ public class ApiImplementation extends SamaGamesAPI
 		return plugin;
 	}
 
-	public ProxyDataManager getProxyDataManager() {
-		return proxyDataManager;
+	public IProxyDataManager getIProxyDataManager() {
+		return IProxyDataManager;
 	}
 
 	public IGameManager getGameManager() {
 		return (gameApi == null) ? (this.gameApi = new GameManagerImpl(this)) : this.gameApi;
 	}
 
-	public void replaceJoinManager(JoinManager manager) {
-		this.joinManager = manager;
+	public void replaceJoinManager(IJoinManager manager) {
+		this.IJoinManager = manager;
 	}
 
 	@Override
-	public PartiesManager getPartiesManager() {
+	public IPartiesManager getPartiesManager() {
 		return partiesManager;
 	}
 
@@ -160,51 +136,45 @@ public class ApiImplementation extends SamaGamesAPI
 		return barAPI;
 	}
 
-	public JoinManager getJoinManager() {
-		return joinManager;
+	public IJoinManager getIJoinManager() {
+		return IJoinManager;
 	}
 
 	public Jedis getResource() {
 		return plugin.databaseConnector.getResource();
 	}
 
-	public StatsManager getStatsManager(String game) {
-		if (database)
-			return new StatsManagerDB(game);
-		else
-			return new StatsManagerNoDB(game);
+	public AbstractStatsManager getStatsManager(String game) {
+		return new StatsManager(game);
 	}
 
 	@Override
-	public ShopsManager getShopsManager(String game) {
-		if (database)
-			return new ShopsManagerDB(game, this);
-		else
-			return new ShopsManagerNoDB(game, this);
+	public AbstractShopsManager getShopsManager(String game) {
+		return new ShopsManager(game, this);
 	}
 
 	@Override
-	public SettingsManager getSettingsManager() {
+	public ISettingsManager getSettingsManager() {
 		return settingsManager;
 	}
 
 	@Override
-	public PlayerDataManager getPlayerManager() {
+	public IPlayerDataManager getPlayerManager() {
 		return playerDataManager;
 	}
 
     @Override
-    public AchievementManager getAchievementManager()
+    public IAchievementManager getAchievementManager()
     {
         return achievementManager;
     }
 
-	public PubSubAPI getPubSub() {
+	public IPubSubAPI getPubSub() {
 		return pubSub;
 	}
 
 	@Override
-	public UUIDTranslator getUUIDTranslator() {
+	public IUUIDTranslator getUUIDTranslator() {
 		return uuidTranslator;
 	}
 

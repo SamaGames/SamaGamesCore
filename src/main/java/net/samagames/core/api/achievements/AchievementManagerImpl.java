@@ -14,14 +14,14 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
-public class AchievementManagerImplDB implements AchievementManager
+public class AchievementManagerImpl implements IAchievementManager
 {
     private final ApiImplementation api;
 
     private ArrayList<Achievement> achievements;
     private ArrayList<AchievementCategory> achievementCategories;
 
-    public AchievementManagerImplDB(ApiImplementation api)
+    public AchievementManagerImpl(ApiImplementation api)
     {
         this.api = api;
 
