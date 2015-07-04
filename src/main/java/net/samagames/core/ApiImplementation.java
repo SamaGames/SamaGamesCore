@@ -68,10 +68,10 @@ public class ApiImplementation extends SamaGamesAPI
 		IJoinManagerImplement implement = new IJoinManagerImplement();
 		Bukkit.getServer().getPluginManager().registerEvents(implement, plugin);
 		this.IJoinManager = implement;
-		resourcePacksManager = new ResourcePacksManagerImpl();
 
 		barAPI = new BarAPI(plugin);
 
+        resourcePacksManager = new ResourcePacksManagerImpl(this);
         settingsManager = new SettingsManager(this);
         playerDataManager = new PlayerDataManager(this);
         achievementManager = new AchievementManagerImpl(this);
