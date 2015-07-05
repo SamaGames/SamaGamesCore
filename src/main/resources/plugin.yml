@@ -1,5 +1,6 @@
 name: SamaGamesCore
 main: net.samagames.core.APIPlugin
+version: 1.0.0
 authors: [geekpower14, BlueSlime]
 website: http://samagames.net/
 load: STARTUP
