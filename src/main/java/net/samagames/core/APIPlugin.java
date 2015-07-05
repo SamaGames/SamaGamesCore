@@ -146,7 +146,7 @@ public class APIPlugin extends JavaPlugin implements Listener {
 
 		for (String command : this.getDescription().getCommands().keySet()) {
 			try {
-				Class clazz = Class.forName("net.samagames.net.samagames.core.commands.Command" + StringUtils.capitalize(command));
+				Class clazz = Class.forName("net.samagames.core.commands.Command" + StringUtils.capitalize(command));
 				Constructor ctor = clazz.getConstructor(APIPlugin.class);
 				getCommand(command).setExecutor((CommandExecutor) ctor.newInstance(this));
 				log("Loaded command " + command + " successfully. ");
