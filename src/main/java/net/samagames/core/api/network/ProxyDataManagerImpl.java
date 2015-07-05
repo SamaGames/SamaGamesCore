@@ -52,7 +52,7 @@ public class ProxyDataManagerImpl implements IProxyDataManager {
 
 	@Override
 	public IProxiedPlayer getProxiedPlayer(UUID uuid) {
-		return new net.samagames.core.api.network.IProxiedPlayer(uuid);
+		return new ProxiedPlayer(uuid);
 	}
 
 	@Override
