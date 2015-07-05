@@ -100,7 +100,7 @@ public class IJoinManagerImplement implements IJoinManager, Listener {
             }
 
             new Thread(() -> {
-                Jedis jedis = APIPlugin.getApi().getBungeeResource();
+                Jedis jedis = SamaGamesAPI.get().getBungeeResource();
                 jedis.set("party:" + partyID + ":server", SamaGamesAPI.get().getServerName());
                 jedis.close();
             }, "PartyUpdater").start();
@@ -172,7 +172,7 @@ public class IJoinManagerImplement implements IJoinManager, Listener {
 
 		// Enregistrement du joueur
 		APIPlugin.getInstance().getExecutor().execute(() -> {
-            Jedis jedis = APIPlugin.getApi().getBungeeResource();
+            Jedis jedis = SamaGamesAPI.get().getBungeeResource();
             jedis.sadd("connectedonserv:" + APIPlugin.getInstance().getServerName(), player.getUniqueId().toString());
             jedis.close();
         });
@@ -187,7 +187,7 @@ public class IJoinManagerImplement implements IJoinManager, Listener {
             handler.onLogout(event.getPlayer());
 
 		APIPlugin.getInstance().getExecutor().execute(() -> {
-            Jedis jedis = APIPlugin.getApi().getBungeeResource();
+            Jedis jedis = SamaGamesAPI.get().getBungeeResource();
             jedis.srem("connectedonserv:" + APIPlugin.getInstance().getServerName(), event.getPlayer().getUniqueId().toString());
             jedis.close();
         });

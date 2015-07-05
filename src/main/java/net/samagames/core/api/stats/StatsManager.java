@@ -1,5 +1,6 @@
 package net.samagames.core.api.stats;
 
+import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.stats.AbstractStatsManager;
 import net.samagames.api.stats.IPlayerStat;
 import net.samagames.api.stats.Leaderboard;
@@ -26,7 +27,7 @@ public class StatsManager extends AbstractStatsManager {
 	@Override
 	public void increase(final UUID player, final String stat, final int amount) {
 		Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
-			Jedis j = APIPlugin.getApi().getResource();
+			Jedis j = SamaGamesAPI.get().getResource();
 			j.zincrby("gamestats:" + game + ":" + stat, amount, player.toString());
 			j.close();
 		});
@@ -35,7 +36,7 @@ public class StatsManager extends AbstractStatsManager {
 	@Override
 	public void setValue(UUID player, String stat, int value) {
 		Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
-			Jedis j = APIPlugin.getApi().getResource();
+			Jedis j = SamaGamesAPI.get().getResource();
 			j.zadd("gamestats:" + game + ":" + stat, value, player.toString());
 			j.close();
 		});
@@ -43,7 +44,7 @@ public class StatsManager extends AbstractStatsManager {
 
 	@Override
 	public double getStatValue(UUID player, String stat) {
-		Jedis j = APIPlugin.getApi().getResource();
+		Jedis j = SamaGamesAPI.get().getResource();
 		double value = j.zscore("gamestats:"+game+":"+stat, player.toString());
 		j.close();
 
@@ -54,7 +55,7 @@ public class StatsManager extends AbstractStatsManager {
 	public Leaderboard getLeaderboard(String stat)
 	{
 		ArrayList<IPlayerStat> leaderboard = new ArrayList<>();
-		Jedis jedis = APIPlugin.getApi().getResource();
+		Jedis jedis = SamaGamesAPI.get().getResource();
 		Set<String> ids = jedis.zrevrange("gamestats:" + game + ":" + stat, 0, 2);
 		jedis.close();
 

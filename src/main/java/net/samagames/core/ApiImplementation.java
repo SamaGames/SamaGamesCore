@@ -50,7 +50,7 @@ public class ApiImplementation extends SamaGamesAPI
     protected IAchievementManager achievementManager;
 	protected IPubSubAPI pubSub;
 	protected IUUIDTranslator uuidTranslator;
-	protected IJoinManager IJoinManager;
+	protected IJoinManager joinManager;
 	protected IGameManager gameApi;
 	protected IProxyDataManager IProxyDataManager;
 	protected IPartiesManager partiesManager;
@@ -67,7 +67,7 @@ public class ApiImplementation extends SamaGamesAPI
 
 		IJoinManagerImplement implement = new IJoinManagerImplement();
 		Bukkit.getServer().getPluginManager().registerEvents(implement, plugin);
-		this.IJoinManager = implement;
+		this.joinManager = implement;
 
 		barAPI = new BarAPI(plugin);
 
@@ -123,7 +123,7 @@ public class ApiImplementation extends SamaGamesAPI
 	}
 
 	public void replaceJoinManager(IJoinManager manager) {
-		this.IJoinManager = manager;
+		this.joinManager = manager;
 	}
 
 	@Override
@@ -136,8 +136,8 @@ public class ApiImplementation extends SamaGamesAPI
 		return barAPI;
 	}
 
-	public IJoinManager getIJoinManager() {
-		return IJoinManager;
+	public IJoinManager getJoinManager() {
+		return joinManager;
 	}
 
 	public Jedis getResource() {

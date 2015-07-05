@@ -12,11 +12,11 @@ import org.bukkit.entity.Player;
 import java.util.Set;
 import java.util.UUID;
 
-public class GameLoginHandlerI implements IJoinHandler
+public class GameLoginHandler implements IJoinHandler
 {
     private final IGameManager api;
 
-    public GameLoginHandlerI(IGameManager api)
+    public GameLoginHandler(IGameManager api)
     {
         this.api = api;
     }

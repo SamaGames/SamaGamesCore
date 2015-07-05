@@ -1,9 +1,9 @@
-name: SamaGamesAPI
+name: SamaGamesCore
 main: net.samagames.core.APIPlugin
-version: gitcommit
 authors: [geekpower14, BlueSlime]
 website: http://samagames.net/
 load: STARTUP
+
 commands:
    coins:
      description: Commandes relatives aux coins

@@ -3,7 +3,6 @@ package net.samagames.core.api.network;
 import com.google.gson.Gson;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.samagames.api.SamaGamesAPI;
-import net.samagames.core.APIPlugin;
 
 import java.util.UUID;
 
@@ -49,21 +48,21 @@ public class IProxiedPlayer implements net.samagames.api.network.IProxiedPlayer 
 
 	@Override
 	public void disconnect(TextComponent reason) {
-		APIPlugin.getApi().getPubSub().send("apiexec.kick", playerId + " " + new Gson().toJson(reason));
+        SamaGamesAPI.get().getPubSub().send("apiexec.kick", playerId + " " + new Gson().toJson(reason));
 	}
 
 	@Override
 	public void connect(String server) {
-		APIPlugin.getApi().getPubSub().send("apiexec.connect", playerId + " " + server);
+        SamaGamesAPI.get().getPubSub().send("apiexec.connect", playerId + " " + server);
 	}
 
 	@Override
 	public void connectGame(String game) {
-		APIPlugin.getApi().getPubSub().send("join." + game, playerId + "");
+        SamaGamesAPI.get().getPubSub().send("join." + game, playerId + "");
 	}
 
 	@Override
 	public void sendMessage(TextComponent component) {
-		APIPlugin.getApi().getPubSub().send("apiexec.message", playerId + " " + new Gson().toJson(component));
+        SamaGamesAPI.get().getPubSub().send("apiexec.message", playerId + " " + new Gson().toJson(component));
 	}
 }

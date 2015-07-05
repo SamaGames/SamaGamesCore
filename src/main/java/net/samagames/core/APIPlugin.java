@@ -126,7 +126,7 @@ public class APIPlugin extends JavaPlugin implements Listener {
 		 */
 
 		debugListener = new DebugListener();
-		api.getIJoinManager().registerHandler(debugListener, 0);
+		api.getJoinManager().registerHandler(debugListener, 0);
 		api.getPubSub().subscribe("*", debugListener);
 
 		//Nickname

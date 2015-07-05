@@ -102,7 +102,7 @@ public abstract class BasicPermissionManager implements RawPlugin, IPermissionsM
 
 	@Override
 	public Jedis getJedis() {
-		return APIPlugin.getApi().getResource();
+		return SamaGamesAPI.get().getResource();
 	}
 
 	@Override

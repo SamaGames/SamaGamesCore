@@ -1,5 +1,6 @@
 package net.samagames.core.commands;
 
+import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.APIPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -38,7 +39,7 @@ public abstract class AbstractCommand implements CommandExecutor {
 
 		boolean val = false;
 		if (sender instanceof Player) {
-			val = APIPlugin.getApi().getPermissionsManager().hasPermission(sender, permission);
+			val = SamaGamesAPI.get().getPermissionsManager().hasPermission(sender, permission);
 		}
 
 		if (!val)
