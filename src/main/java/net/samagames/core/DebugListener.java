@@ -1,8 +1,8 @@
 package net.samagames.core;
 
 import net.md_5.bungee.api.ChatColor;
-import net.samagames.api.channels.IPatternReceiver;
 import net.samagames.api.network.IJoinHandler;
+import net.samagames.api.pubsub.IPatternReceiver;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

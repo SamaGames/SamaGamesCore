@@ -1,9 +1,6 @@
 package net.samagames.core.api.pubsub;
 
-import net.samagames.api.channels.IPacketsReceiver;
-import net.samagames.api.channels.IPatternReceiver;
-import net.samagames.api.channels.ISender;
-import net.samagames.api.channels.PendingMessage;
+import net.samagames.api.pubsub.*;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import org.bukkit.Bukkit;
@@ -16,14 +13,14 @@ import redis.clients.jedis.Jedis;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class IPubSubAPI implements net.samagames.api.channels.IPubSubAPI {
+public class PubSubAPI implements IPubSubAPI {
 
 	private ApiImplementation api;
 	private Subscriber subscriber;
-	private net.samagames.core.api.pubsub.ISender sender;
+	private Sender sender;
 	private boolean continueSub = true;
 
-	public IPubSubAPI(ApiImplementation api) {
+	public PubSubAPI(ApiImplementation api) {
 		this.api = api;
 		subscriber = new Subscriber();
 		new Thread(() -> {
@@ -51,7 +48,7 @@ public class IPubSubAPI implements net.samagames.api.channels.IPubSubAPI {
 
 		Bukkit.getLogger().info("Correctly subscribed.");
 
-		sender = new net.samagames.core.api.pubsub.ISender(api);
+		sender = new Sender(api);
 		new Thread(sender, "SenderThread").start();
 	}
 

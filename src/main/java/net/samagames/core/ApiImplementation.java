@@ -2,7 +2,6 @@ package net.samagames.core;
 
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.achievements.IAchievementManager;
-import net.samagames.api.channels.IPubSubAPI;
 import net.samagames.api.friends.IFriendsManager;
 import net.samagames.api.games.IGameManager;
 import net.samagames.api.names.IUUIDTranslator;
@@ -11,6 +10,7 @@ import net.samagames.api.network.IProxyDataManager;
 import net.samagames.api.parties.IPartiesManager;
 import net.samagames.api.permissions.IPermissionsManager;
 import net.samagames.api.player.IPlayerDataManager;
+import net.samagames.api.pubsub.IPubSubAPI;
 import net.samagames.api.resourcepacks.IResourcePacksManager;
 import net.samagames.api.settings.ISettingsManager;
 import net.samagames.api.shops.AbstractShopsManager;
@@ -24,11 +24,11 @@ import net.samagames.core.api.parties.PartiesManager;
 import net.samagames.core.api.permissions.BasicPermissionManager;
 import net.samagames.core.api.permissions.PermissionsManager;
 import net.samagames.core.api.player.PlayerDataManager;
+import net.samagames.core.api.pubsub.PubSubAPI;
 import net.samagames.core.api.resourcepacks.ResourcePacksManagerImpl;
 import net.samagames.core.api.settings.SettingsManager;
 import net.samagames.core.api.shops.ShopsManager;
 import net.samagames.core.api.stats.StatsManager;
-import net.samagames.core.database.DatabaseConnector;
 import net.samagames.core.listeners.GlobalChannelHandler;
 import net.samagames.tools.BarAPI.BarAPI;
 import org.bukkit.Bukkit;
@@ -43,7 +43,6 @@ import redis.clients.jedis.Jedis;
  */
 public class ApiImplementation extends SamaGamesAPI
 {
-
 	protected APIPlugin plugin;
 	protected ISettingsManager settingsManager;
 	protected IPlayerDataManager playerDataManager;
@@ -52,7 +51,7 @@ public class ApiImplementation extends SamaGamesAPI
 	protected IUUIDTranslator uuidTranslator;
 	protected IJoinManager joinManager;
 	protected IGameManager gameApi;
-	protected IProxyDataManager IProxyDataManager;
+	protected IProxyDataManager proxyDataManager;
 	protected IPartiesManager partiesManager;
 	protected IResourcePacksManager resourcePacksManager;
 	protected BasicPermissionManager permissionsManager;
@@ -65,7 +64,7 @@ public class ApiImplementation extends SamaGamesAPI
 
 		this.plugin = plugin;
 
-		IJoinManagerImplement implement = new IJoinManagerImplement();
+		JoinManagerImplement implement = new JoinManagerImplement();
 		Bukkit.getServer().getPluginManager().registerEvents(implement, plugin);
 		this.joinManager = implement;
 
@@ -75,21 +74,22 @@ public class ApiImplementation extends SamaGamesAPI
         settingsManager = new SettingsManager(this);
         playerDataManager = new PlayerDataManager(this);
         achievementManager = new AchievementManagerImpl(this);
-        pubSub = new net.samagames.core.api.pubsub.IPubSubAPI(this);
+
+        pubSub = new PubSubAPI(this);
         pubSub.subscribe("global", new GlobalChannelHandler(plugin));
         pubSub.subscribe(plugin.getServerName(), new GlobalChannelHandler(plugin));
-
         pubSub.subscribe("commands.servers." + getServerName(), new RemoteCommandsHandler());
         pubSub.subscribe("commands.servers.all", new RemoteCommandsHandler());
 
-        ModerationIJoinHandler moderationJoinHandler = new ModerationIJoinHandler(implement);
+        ModerationJoinHandler moderationJoinHandler = new ModerationJoinHandler(implement);
         implement.registerHandler(moderationJoinHandler, - 1);
+
         pubSub.subscribe(plugin.getServerName(), moderationJoinHandler);
         pubSub.subscribe("partyjoin." + getServerName(), new PartiesPubSub(implement));
         pubSub.subscribe("join." + getServerName(), new RegularJoinHandler(implement));
 
         uuidTranslator = new UUIDTranslator(plugin, this);
-        IProxyDataManager = new ProxyDataManagerImpl(this);
+        proxyDataManager = new ProxyDataManagerImpl(this);
         partiesManager = new PartiesManager(this);
         permissionsManager = new PermissionsManager();
         friendsManager = new FriendsManagement(this);
@@ -114,16 +114,12 @@ public class ApiImplementation extends SamaGamesAPI
 		return plugin;
 	}
 
-	public IProxyDataManager getIProxyDataManager() {
-		return IProxyDataManager;
+	public IProxyDataManager getProxyDataManager() {
+		return proxyDataManager;
 	}
 
 	public IGameManager getGameManager() {
 		return (gameApi == null) ? (this.gameApi = new GameManagerImpl(this)) : this.gameApi;
-	}
-
-	public void replaceJoinManager(IJoinManager manager) {
-		this.joinManager = manager;
 	}
 
 	@Override
@@ -185,9 +181,5 @@ public class ApiImplementation extends SamaGamesAPI
 	@Override
 	public String getServerName() {
 		return plugin.getServerName();
-	}
-
-	public DatabaseConnector getDatabase() {
-		return plugin.databaseConnector;
 	}
 }

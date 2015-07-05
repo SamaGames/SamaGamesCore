@@ -1,7 +1,7 @@
 package net.samagames.core.api.pubsub;
 
-import net.samagames.api.channels.IPacketsReceiver;
-import net.samagames.api.channels.IPatternReceiver;
+import net.samagames.api.pubsub.IPacketsReceiver;
+import net.samagames.api.pubsub.IPatternReceiver;
 import net.samagames.core.APIPlugin;
 import redis.clients.jedis.JedisPubSub;
 

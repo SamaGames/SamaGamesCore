@@ -2,8 +2,8 @@ package net.samagames.core.api.network;
 
 import net.md_5.bungee.api.chat.TextComponent;
 import net.samagames.api.SamaGamesAPI;
-import net.samagames.api.channels.IPacketsReceiver;
 import net.samagames.api.network.JoinResponse;
+import net.samagames.api.pubsub.IPacketsReceiver;
 
 import java.util.UUID;
 
@@ -16,9 +16,9 @@ import java.util.UUID;
  */
 public class PartiesPubSub implements IPacketsReceiver {
 
-	private final IJoinManagerImplement implement;
+	private final JoinManagerImplement implement;
 
-	public PartiesPubSub(IJoinManagerImplement implement) {
+	public PartiesPubSub(JoinManagerImplement implement) {
 		this.implement = implement;
 	}
 
@@ -35,7 +35,7 @@ public class PartiesPubSub implements IPacketsReceiver {
 		if (!response.isAllowed()) {
 			TextComponent component = new TextComponent("Impossible de vous connecter : " + response.getReason());
 			component.setColor(net.md_5.bungee.api.ChatColor.RED);
-			SamaGamesAPI.get().getIProxyDataManager()
+			SamaGamesAPI.get().getProxyDataManager()
 					.getProxiedPlayer(SamaGamesAPI.get().getPartiesManager().getLeader(partyID))
 					.sendMessage(component);
 		}

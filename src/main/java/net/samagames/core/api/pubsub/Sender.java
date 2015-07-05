@@ -1,6 +1,7 @@
 package net.samagames.core.api.pubsub;
 
-import net.samagames.api.channels.PendingMessage;
+import net.samagames.api.pubsub.ISender;
+import net.samagames.api.pubsub.PendingMessage;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import redis.clients.jedis.Jedis;
@@ -14,13 +15,13 @@ import java.util.concurrent.LinkedBlockingQueue;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class ISender implements Runnable, net.samagames.api.channels.ISender {
+public class Sender implements Runnable, ISender {
 
 	private LinkedBlockingQueue<PendingMessage> pendingMessages = new LinkedBlockingQueue<>();
 	private final ApiImplementation connector;
 	private Jedis jedis;
 
-	public ISender(ApiImplementation connector) {
+	public Sender(ApiImplementation connector) {
 		this.connector = connector;
 	}
 

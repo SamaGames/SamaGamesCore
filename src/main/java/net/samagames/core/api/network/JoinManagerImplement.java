@@ -36,14 +36,14 @@ import java.util.UUID;
  *    -> Connection accepted : the system request the proxy to moove him
  */
 
-public class IJoinManagerImplement implements IJoinManager, Listener {
+public class JoinManagerImplement implements IJoinManager, Listener {
 
     protected TreeMap<Integer, IJoinHandler> handlerTreeMap = new TreeMap<>();
     protected HashSet<UUID> moderatorsExpected = new HashSet<>();
     protected HashSet<UUID> playersExpected = new HashSet<>();
     protected boolean isPartyLimited;
 
-    public IJoinManagerImplement() {
+    public JoinManagerImplement() {
         isPartyLimited = !SamaGamesAPI.get().getServerName().startsWith("Hub");
     }
 
@@ -96,7 +96,7 @@ public class IJoinManagerImplement implements IJoinManager, Listener {
             for (UUID player : members) {
                 playersExpected.add(player);
                 Bukkit.getScheduler().runTaskLater(APIPlugin.getInstance(), () -> playersExpected.remove(player), 20 * 15L);
-                SamaGamesAPI.get().getIProxyDataManager().getProxiedPlayer(player).connect(SamaGamesAPI.get().getServerName());
+                SamaGamesAPI.get().getProxyDataManager().getProxiedPlayer(player).connect(SamaGamesAPI.get().getServerName());
             }
 
             new Thread(() -> {

@@ -1,6 +1,6 @@
 package net.samagames.core.listeners;
 
-import net.samagames.api.channels.IPacketsReceiver;
+import net.samagames.api.pubsub.IPacketsReceiver;
 import net.samagames.core.APIPlugin;
 
 /**
