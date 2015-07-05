@@ -51,6 +51,7 @@ public class GameManagerImpl implements IGameManager
             throw new IllegalStateException("A game is already registered!");
 
         this.game = game;
+        this.refreshArena();
 
         this.api.getJoinManager().registerHandler(new GameLoginHandler(this), 100);
 
