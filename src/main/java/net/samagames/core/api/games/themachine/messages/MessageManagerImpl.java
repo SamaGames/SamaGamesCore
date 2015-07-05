@@ -16,16 +16,25 @@ public class MessageManagerImpl implements IMessageManager
     }
 
     @Override
+    public Message writeCustomMessage(String text, boolean gameTag)
+    {
+        if(gameTag)
+            return new Message(text, this.machine.getGameTag()).displayToAll();
+        else
+            return new Message(text).displayToAll();
+    }
+
+    @Override
     public Message writePlayerJoinToAll(Player player)
     {
         StringBuilder builder = new StringBuilder();
         builder.append(ChatColor.YELLOW).append(player.getName());
         builder.append(" a rejoint la partie ! ");
-        builder.append(ChatColor.GRAY).append("[");
+        builder.append(ChatColor.DARK_GRAY).append("[");
         builder.append(ChatColor.RED).append(this.machine.getGame().getConnectedPlayers());
         builder.append(ChatColor.DARK_GRAY).append("/");
         builder.append(ChatColor.RED).append(this.machine.getGameProperties().getMaxSlots());
-        builder.append(ChatColor.GRAY).append("]");
+        builder.append(ChatColor.DARK_GRAY).append("]");
 
         return new Message(builder.toString(), this.machine.getGameTag()).displayToAll();
     }
