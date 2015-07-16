@@ -1,6 +1,6 @@
 package net.samagames.core.api.resourcepacks;
 
-import net.minecraft.server.v1_8_R2.PacketPlayInResourcePackStatus;
+import net.minecraft.server.v1_8_R3.PacketPlayInResourcePackStatus;
 import net.samagames.api.resourcepacks.IResourceCallback;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
