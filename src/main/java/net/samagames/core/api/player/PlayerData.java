@@ -1,12 +1,10 @@
 package net.samagames.core.api.player;
 
-import net.md_5.bungee.api.chat.TextComponent;
 import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.api.player.IFinancialCallback;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 
 import java.util.Date;
@@ -126,28 +124,24 @@ public class PlayerData extends AbstractPlayerData {
 		return increaseCoins(-decrBy);
 	}
 
-	void displayMessage(TextComponent message) {
-		Player player = Bukkit.getPlayer(playerID);
-		if (player != null && message != null)
-			player.sendMessage(message.toLegacyText());
-	}
-
 	@Override
 	public void creditCoins(final long famount, final String reason, final boolean applyMultiplier, final IFinancialCallback<Long> financialCallback) {
 		APIPlugin.getInstance().getExecutor().execute(() -> {
 			try {
-				long amount = famount;
-				TextComponent message = null;
-				if (applyMultiplier) {
-					Multiplier multiplier = manager.getCoinsManager().getCurrentMultiplier(playerID);
-					amount *= multiplier.getGlobalAmount();
+                long amount = famount;
+                String message = null;
 
-					message = ((reason != null) ? manager.getCoinsManager().getCreditMessage(amount, reason, multiplier) : manager.getCoinsManager().getCreditMessage(amount));
-				} else {
-					message = ((reason != null) ? manager.getCoinsManager().getCreditMessage(amount, reason) : manager.getCoinsManager().getCreditMessage(amount));
-				}
+                if (applyMultiplier) {
+                    Multiplier multiplier = manager.getCoinsManager().getCurrentMultiplier(playerID);
+                    amount *= multiplier.getGlobalAmount();
 
-				displayMessage(message);
+                    message = manager.getCoinsManager().getCreditMessage(amount, reason, multiplier);
+                } else {
+                    message = manager.getCoinsManager().getCreditMessage(amount, reason, null);
+                }
+
+                if(Bukkit.getPlayer(playerID) != null)
+                    Bukkit.getPlayer(playerID).sendMessage(message);
 
 				long result = increaseCoins(amount);
 
@@ -191,17 +185,19 @@ public class PlayerData extends AbstractPlayerData {
 		APIPlugin.getInstance().getExecutor().execute(() -> {
 			try {
 				long amount = famount;
-				TextComponent message = null;
+				String message = null;
+
 				if (applyMultiplier) {
 					Multiplier multiplier = manager.getStarsManager().getCurrentMultiplier(playerID);
 					amount *= multiplier.getGlobalAmount();
 
-					message = ((reason != null) ? manager.getStarsManager().getCreditMessage(amount, reason, multiplier) : manager.getStarsManager().getCreditMessage(amount));
+					message = manager.getStarsManager().getCreditMessage(amount, reason, multiplier);
 				} else {
-					message = ((reason != null) ? manager.getStarsManager().getCreditMessage(amount, reason) : manager.getStarsManager().getCreditMessage(amount));
+					message = manager.getStarsManager().getCreditMessage(amount, reason, null);
 				}
 
-				displayMessage(message);
+				if(Bukkit.getPlayer(playerID) != null)
+                    Bukkit.getPlayer(playerID).sendMessage(message);
 
 				long result = increaseStars(amount);
 
