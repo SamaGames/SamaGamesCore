@@ -2,6 +2,7 @@ package net.samagames.core.api.games;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import net.samagames.api.games.IGameProperties;
 import net.samagames.core.APIPlugin;
 import org.bukkit.Bukkit;
@@ -61,6 +62,14 @@ public class GameProperties implements IGameProperties
     public int getMaxSlots()
     {
         return this.maxSlots;
+    }
+
+    public JsonPrimitive getOption(String key, JsonPrimitive defaultValue)
+    {
+        if(this.options.has(key))
+            return this.options.get(key).getAsJsonPrimitive();
+        else
+            return defaultValue;
     }
 
     public JsonObject getOptions()
