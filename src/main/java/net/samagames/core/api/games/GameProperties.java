@@ -19,11 +19,6 @@ public class GameProperties implements IGameProperties
     private int minSlots;
     private int maxSlots;
 
-    public GameProperties()
-    {
-        this.reload();
-    }
-
     public void reload()
     {
         try
@@ -31,7 +26,7 @@ public class GameProperties implements IGameProperties
             File file = new File(APIPlugin.getInstance().getDataFolder().getAbsoluteFile().getParentFile().getParentFile(), "game.json");
 
             if(!file.exists())
-                return;
+                throw new IllegalStateException("No game properties file! But this server is a game server!");
 
             JsonObject rootJson = new JsonParser().parse(new FileReader(file)).getAsJsonObject();
 

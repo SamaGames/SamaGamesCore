@@ -50,6 +50,8 @@ public class GameManagerImpl implements IGameManager
         if(this.game != null)
             throw new IllegalStateException("A game is already registered!");
 
+        this.gameProperties.reload();
+
         this.game = game;
         this.refreshArena();
 
