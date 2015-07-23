@@ -158,7 +158,7 @@ public class GameManagerImpl implements IGameManager
         if(this.game == null)
             throw new IllegalStateException("Can't refresh arena because the arena is null!");
 
-        new ServerStatus(SamaGamesAPI.get().getServerName(), this.game.getGameName(), this.gameProperties.getMapName(), this.game.getStatus(), this.game.getConnectedPlayers(), this.gameProperties.getMaxSlots()).sendToHubs();
+        new ServerStatus(SamaGamesAPI.get().getServerName(), this.game.getGameCodeName(), this.gameProperties.getMapName(), this.game.getStatus(), this.game.getConnectedPlayers(), this.gameProperties.getMaxSlots()).sendToHubs();
     }
 
     public void setStatus(Status gameStatus)
