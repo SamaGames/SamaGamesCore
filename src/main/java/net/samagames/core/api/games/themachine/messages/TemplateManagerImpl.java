@@ -20,9 +20,9 @@ public class TemplateManagerImpl implements ITemplateManager
     }
 
     @Override
-    public CustomWinTemplate getCustomWinTemplate()
+    public WinMessageTemplate getWinMessageTemplate()
     {
-        return new CustomWinTemplate();
+        return new WinMessageTemplate();
     }
 
     @Override
