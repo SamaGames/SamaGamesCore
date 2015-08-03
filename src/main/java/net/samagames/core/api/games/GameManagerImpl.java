@@ -13,6 +13,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -65,13 +68,39 @@ public class GameManagerImpl implements IGameManager
         APIPlugin.log(Level.INFO, "Registered game '" + game.getGameName() + "' successfuly!");
     }
 
-    @Override
+    /*@Override
     public void kickPlayer(Player player, String reason)
     {
         if(reason != null)
             player.sendMessage(reason);
 
         Bukkit.getScheduler().runTaskLater(APIPlugin.getInstance(), () -> player.kickPlayer(null), 10L);
+    }*/
+
+    @Override
+    public void kickPlayer(Player p, String msg)
+    {
+        if(!api.getPlugin().isEnabled())
+        {
+            p.kickPlayer(msg);
+            return;
+        }
+
+        if(!p.isOnline())
+            return;
+
+        //kickPlayer(p, "");
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(b);
+        try {
+            out.writeUTF("Connect");
+            out.writeUTF("lobby");
+
+        } catch (IOException eee) {
+            Bukkit.getLogger().info("You'll never see me!");
+        }
+        p.sendPluginMessage(api.getPlugin(), "BungeeCord", b.toByteArray());
+
     }
 
     @Override
@@ -158,7 +187,7 @@ public class GameManagerImpl implements IGameManager
         if(this.game == null)
             throw new IllegalStateException("Can't refresh arena because the arena is null!");
 
-        new ServerStatus(SamaGamesAPI.get().getServerName(), this.game.getGameCodeName(), this.gameProperties.getMapName(), this.game.getStatus(), this.game.getConnectedPlayers(), this.gameProperties.getMaxSlots()).sendToHubs();
+        new ServerStatus(SamaGamesAPI.get().getServerName(), this.game.getGameName(), this.gameProperties.getMapName(), this.game.getStatus(), this.game.getConnectedPlayers(), this.gameProperties.getMaxSlots()).sendToHubs();
     }
 
     public void setStatus(Status gameStatus)
@@ -168,12 +197,6 @@ public class GameManagerImpl implements IGameManager
 
         this.game.setStatus(gameStatus);
         this.refreshArena();
-    }
-
-    @Override
-    public void setMaxReconnectTime(int minutes)
-    {
-        this.maxReconnectTime = minutes;
     }
 
     @Override
@@ -210,6 +233,12 @@ public class GameManagerImpl implements IGameManager
     public int getMaxReconnectTime()
     {
         return this.maxReconnectTime;
+    }
+
+    @Override
+    public void setMaxReconnectTime(int minutes)
+    {
+        this.maxReconnectTime = minutes;
     }
 
     @Override
