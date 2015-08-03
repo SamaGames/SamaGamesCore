@@ -82,26 +82,32 @@ public class GameManagerImpl implements IGameManager
         if(!this.isReconnectAllowed())
             return;
 
+        if(this.game.getStatus() != Status.IN_GAME)
+            return;
+
         this.playersDisconnected.add(player.getUniqueId());
 
         this.api.getResource().set("rejoin:" + player.getUniqueId().toString(), this.api.getServerName());
         this.api.getResource().expire("rejoin:" + player.getUniqueId().toString(), this.maxReconnectTime * 60);
 
-        this.playerReconnectedTimers.put(player.getUniqueId(), Bukkit.getScheduler().runTaskTimerAsynchronously(APIPlugin.getInstance(), new Runnable() {
+        this.playerReconnectedTimers.put(player.getUniqueId(), Bukkit.getScheduler().runTaskTimerAsynchronously(APIPlugin.getInstance(), new Runnable()
+        {
             int before = 0;
             int now = 0;
             boolean bool = false;
 
             @Override
-            public void run() {
-                if (!this.bool) {
+            public void run()
+            {
+                if (!this.bool)
+                {
                     if (playerDisconnectTime.containsKey(player.getUniqueId()))
                         this.before = playerDisconnectTime.get(player.getUniqueId());
 
                     this.bool = true;
                 }
 
-                if (this.before == maxReconnectTime * 2 || this.now == maxReconnectTime)
+                if (this.before == (maxReconnectTime * 60) * 2 || this.now == (maxReconnectTime * 60))
                     onPlayerReconnectTimeOut(player);
 
                 this.before++;
@@ -152,7 +158,7 @@ public class GameManagerImpl implements IGameManager
         if(this.game == null)
             throw new IllegalStateException("Can't refresh arena because the arena is null!");
 
-        new ServerStatus(SamaGamesAPI.get().getServerName(), this.game.getGameName(), this.gameProperties.getMapName(), this.game.getStatus(), this.game.getConnectedPlayers(), this.gameProperties.getMaxSlots()).sendToHubs();
+        new ServerStatus(SamaGamesAPI.get().getServerName(), this.game.getGameCodeName(), this.gameProperties.getMapName(), this.game.getStatus(), this.game.getConnectedPlayers(), this.gameProperties.getMaxSlots()).sendToHubs();
     }
 
     public void setStatus(Status gameStatus)

@@ -1,7 +1,6 @@
 package net.samagames.core.api.player;
 
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.ApiImplementation;
 import net.samagames.permissionsapi.permissions.PermissionUser;
@@ -63,45 +62,20 @@ class StarsManager {
 		return ret;
 	}
 
-	public TextComponent getCreditMessage(long amount, String reason, Multiplier multiplier) {
-		TextComponent gain = getCreditMessage(amount, reason);
+    public String getCreditMessage(long amount, String reason, Multiplier multiplier) {
+        String text = ChatColor.AQUA + "+" + amount + " étoiles (" + reason + ")";
 
-		if (multiplier != null)
-			for (String multCause : multiplier.infos.keySet()) {
-				TextComponent line = new TextComponent(multCause);
-				line.setColor(ChatColor.GREEN);
-				if(multiplier.infos.containsKey(multCause)) {
-					TextComponent details = new TextComponent(" *" + multiplier.infos.get(multCause));
-					details.setColor(ChatColor.AQUA);
-					line.addExtra(details);
-				}
+        if (multiplier != null) {
+            for (String multCause : multiplier.infos.keySet()) {
+                String causes = "";
 
-				TextComponent toAdd = new TextComponent(" [");
-				toAdd.setColor(ChatColor.GOLD);
-				toAdd.addExtra(line);
-				toAdd.addExtra(ChatColor.GOLD + "]");
+                if(multiplier.infos.containsKey(multCause))
+                    causes += " *" + multiplier.infos.get(multCause);
 
-				gain.addExtra(line);
-			}
+                text += " [" + causes + "]";
+            }
+        }
 
-
-		return gain;
-	}
-
-	public TextComponent getCreditMessage(long amount, String reason) {
-		TextComponent gain = getCreditMessage(amount);
-		TextComponent rComponent = new TextComponent(" (" + reason + ") ");
-		rComponent.setColor(ChatColor.GREEN);
-		gain.addExtra(rComponent);
-		return gain;
-	}
-
-	public TextComponent getCreditMessage(long amount) {
-		TextComponent msg = new TextComponent("Vous gagnez ");
-		msg.setColor(ChatColor.DARK_AQUA);
-		TextComponent gain = new TextComponent(amount + " Étoiles !");
-		gain.setColor(ChatColor.AQUA);
-		msg.addExtra(gain);
-		return msg;
-	}
+        return text;
+    }
 }

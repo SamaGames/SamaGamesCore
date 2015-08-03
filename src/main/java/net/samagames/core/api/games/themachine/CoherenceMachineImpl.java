@@ -63,7 +63,7 @@ public class CoherenceMachineImpl implements ICoherenceMachine
     {
         ItemStack door = new ItemStack(Material.WOOD_DOOR, 1);
         ItemMeta meta = door.getItemMeta();
-        meta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Quitter le jeu");
+        meta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "Quitter le jeu");
         door.setItemMeta(meta);
 
         return door;

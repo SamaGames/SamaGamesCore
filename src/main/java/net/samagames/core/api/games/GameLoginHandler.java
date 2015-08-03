@@ -27,13 +27,9 @@ public class GameLoginHandler implements IJoinHandler
         if (this.api.getGame() != null)
         {
             if(!this.api.isWaited(player.getUniqueId()))
-            {
-                this.api.getGame().handleLogin(player, false);
-            }
+                this.api.getGame().handleLogin(player);
             else
-            {
                 this.api.getGame().handleReconnect(player);
-            }
 
             this.api.refreshArena();
         }
@@ -55,6 +51,7 @@ public class GameLoginHandler implements IJoinHandler
             else
             {
                 response.disallow(gameResponse.getValue());
+                return response;
             }
 
             if (game.getStatus() == Status.IN_GAME)
@@ -90,6 +87,7 @@ public class GameLoginHandler implements IJoinHandler
             else
             {
                 response.disallow(gameResponse.getValue());
+                return response;
             }
 
             if (game.getStatus() == Status.IN_GAME)

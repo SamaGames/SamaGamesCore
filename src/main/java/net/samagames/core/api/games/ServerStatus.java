@@ -29,9 +29,10 @@ public class ServerStatus
     public void sendToHubs()
     {
         String json = new Gson().toJson(this);
+        //SamaGamesAPI.get().getPubSub().send("serverUpdateChannel", json);
         SamaGamesAPI.get().getPubSub().send("hubsChannel", json);
 
-        APIPlugin.log(Level.INFO, "Sended server status to hubs. (" + json + ")");
+        APIPlugin.log(Level.INFO, "Sended server status to Hydroangeas. (" + json + ")");
     }
 
     public String getBungeeName()

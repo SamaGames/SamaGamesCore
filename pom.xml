@@ -18,6 +18,10 @@
             <id>samagames-public</id>
             <url>http://maven.samagames.net/public/</url>
         </repository>
+        <repository>
+            <id>samagames-network</id>
+            <url>http://maven.samagames.net/public/</url>
+        </repository>
     </repositories>
 
     <build>
@@ -56,14 +60,14 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.8.7-R0.1-SNAPSHOT</version>
+            <version>1.8.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.samagames</groupId>
             <artifactId>PermissionsAPI</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.samagames</groupId>
@@ -87,7 +91,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
             <version>2.0</version>
-            <type>jar</type>
             <scope>compile</scope>
         </dependency>
     </dependencies>
