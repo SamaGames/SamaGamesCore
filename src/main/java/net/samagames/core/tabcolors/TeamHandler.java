@@ -244,7 +244,7 @@ public class TeamHandler {
 
             PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam();
             try {
-                Reflection.setValue(packet, "a", team.getName());
+                Reflection.setValue(packet, "a", team.getRealName());
                 Reflection.setValue(packet, "b", team.getDisplayName());
                 Reflection.setValue(packet, "c", team.getPrefix());
                 Reflection.setValue(packet, "d", team.getSuffix());
@@ -280,6 +280,7 @@ public class TeamHandler {
     public class VTeam {
 
         private String name = "";
+        private String realName = "";
         private String display = "";
         private String prefix = ChatColor.GRAY + "";
         private String suffix = "";
@@ -291,8 +292,9 @@ public class TeamHandler {
             this.display = display;
         }
 
-        public VTeam(String name, String display, String prefix, String suffix) {
+        public VTeam(String name, String realName, String display, String prefix, String suffix) {
             this.name = name;
+            this.realName = realName;
             this.display = display;
             this.prefix = prefix;
             this.suffix = suffix;
@@ -353,6 +355,14 @@ public class TeamHandler {
 
         public int getSize() {
             return players.size();
+        }
+
+        public String getRealName() {
+            return realName;
+        }
+
+        public void setRealName(String realName) {
+            this.realName = realName;
         }
     }
 }

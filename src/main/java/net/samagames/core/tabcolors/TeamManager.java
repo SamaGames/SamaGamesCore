@@ -40,15 +40,15 @@ public class TeamManager {
             if(pg == null)
                 continue;
 
-            String teamName = pg.getProperty("team-name");
-            if (teamName == null)
-                teamName = pg.getGroupName();
+            //String teamName = pg.getProperty("team-name");
+            String teamName = pg.getGroupName();
 
             if (teamHandler.getTeamByName(teamName) != null)
                 continue;
 
             TeamHandler.VTeam vt = teamHandler.createNewTeam(teamName, "");
 
+                vt.setRealName(getTeamName(pg));
             if (manager.getDisplay(pg) != null)
                 vt.setPrefix(manager.getDisplay(pg));
             if (manager.getDisplay(pg) != null)
@@ -107,6 +107,12 @@ public class TeamManager {
         return Collections.unmodifiableList(list);
     }
 
+    public String getTeamName(PermissionGroup group)
+    {
+        String teamName = group.getLadder() + group.getGroupName();
+        return teamName.substring(0, Math.min(teamName.length(), 16));
+    }
+
     /**
      * Takes a string and replaces &# color codes with ChatColors
      */
@@ -120,11 +126,11 @@ public class TeamManager {
             teamHandler.addReceiver(p);
 
             final PermissionUser user = manager.getApi().getUser(p.getUniqueId());
-            final String prefix = user.getProperty("team-name");
+            final String prefix = user.getParents().last().getGroupName();
 
             TeamHandler.VTeam vtt = teamHandler.getTeamByName(prefix);
             if (vtt == null) {
-                vtt = teamHandler.getTeamByName("zzjoueur");
+                vtt = teamHandler.getTeamByName("joueur");
             }
 
             teamHandler.addPlayerToTeam(p, vtt);
