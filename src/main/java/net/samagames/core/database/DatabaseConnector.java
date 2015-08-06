@@ -63,7 +63,7 @@ public class DatabaseConnector {
 
 		if (keeper == null) {
 			keeper = new WhitelistRefresher(plugin, this);
-			keepTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, keeper, 3*20, 30*20);
+			keepTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, keeper, 0, 30*20);
 		}
 	}
 
