@@ -16,6 +16,7 @@ public class GameProperties implements IGameProperties
 {
     private String mapName;
     private JsonObject options;
+    private JsonObject mapProperties;
     private int minSlots;
     private int maxSlots;
 
@@ -42,6 +43,9 @@ public class GameProperties implements IGameProperties
             this.minSlots = rootJson.get("min-slots").getAsInt();
             this.maxSlots = rootJson.get("max-slots").getAsInt();
             this.options = rootJson.get("options").getAsJsonObject();
+            
+            File arenaFile = new File(worldFolder, "arena.json");
+            this.mapProperties = new JsonParser().parse(new FileReader(arenaFile)).getAsJsonObject();
         }
         catch (FileNotFoundException e)
         {
@@ -78,5 +82,10 @@ public class GameProperties implements IGameProperties
     public JsonObject getOptions()
     {
         return this.options;
+    }
+    
+    public JsonObject getMapProperties()
+    {
+        return this.mapProperties;
     }
 }
