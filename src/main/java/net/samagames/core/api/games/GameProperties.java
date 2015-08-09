@@ -45,6 +45,13 @@ public class GameProperties implements IGameProperties
             this.options = rootJson.get("options").getAsJsonObject();
             
             File arenaFile = new File(worldFolder, "arena.json");
+            
+            if(!arenaFile.exists())
+            {
+                APIPlugin.log(Level.WARNING, "No arena properties file found! If this serveur isn't a game server, don't worry about this message!");
+                return;
+            }
+            
             this.mapProperties = new JsonParser().parse(new FileReader(arenaFile)).getAsJsonObject();
         }
         catch (FileNotFoundException e)
