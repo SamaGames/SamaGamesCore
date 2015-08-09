@@ -44,6 +44,7 @@ public class GameProperties implements IGameProperties
             this.maxSlots = rootJson.get("max-slots").getAsInt();
             this.options = rootJson.get("options").getAsJsonObject();
             
+            File worldFolder = Bukkit.getWorlds().get(0).getWorldFolder();
             File arenaFile = new File(worldFolder, "arena.json");
             
             if(!arenaFile.exists())
