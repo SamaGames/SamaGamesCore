@@ -91,8 +91,16 @@ public class GameProperties implements IGameProperties
     {
         return this.options;
     }
+
+    public JsonElement getConfig(String key, JsonElement defaultValue)
+    {
+        if(this.mapProperties.has(key))
+            return this.mapProperties.get(key);
+        else
+            return defaultValue;
+    }
     
-    public JsonObject getMapProperties()
+    public JsonObject getConfigs()
     {
         return this.mapProperties;
     }
