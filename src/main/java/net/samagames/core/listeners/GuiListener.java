@@ -1,7 +1,7 @@
 package net.samagames.core.listeners;
 
+import net.samagames.api.gui.AbstractGui;
 import net.samagames.core.api.gui.GuiManager;
-import net.samagames.tools.AbstractGui;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
