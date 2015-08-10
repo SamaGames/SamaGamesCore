@@ -4,6 +4,7 @@ import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.achievements.IAchievementManager;
 import net.samagames.api.friends.IFriendsManager;
 import net.samagames.api.games.IGameManager;
+import net.samagames.api.gui.IGuiManager;
 import net.samagames.api.names.IUUIDTranslator;
 import net.samagames.api.network.IJoinManager;
 import net.samagames.api.network.IProxyDataManager;
@@ -18,6 +19,7 @@ import net.samagames.api.stats.AbstractStatsManager;
 import net.samagames.core.api.achievements.AchievementManagerImpl;
 import net.samagames.core.api.friends.FriendsManagement;
 import net.samagames.core.api.games.GameManagerImpl;
+import net.samagames.core.api.gui.GuiManager;
 import net.samagames.core.api.names.UUIDTranslator;
 import net.samagames.core.api.network.*;
 import net.samagames.core.api.parties.PartiesManager;
@@ -44,6 +46,7 @@ import redis.clients.jedis.Jedis;
 public class ApiImplementation extends SamaGamesAPI
 {
 	protected APIPlugin plugin;
+	protected IGuiManager guiManager;
 	protected ISettingsManager settingsManager;
 	protected IPlayerDataManager playerDataManager;
     protected IAchievementManager achievementManager;
@@ -69,6 +72,8 @@ public class ApiImplementation extends SamaGamesAPI
 		this.joinManager = implement;
 
 		barAPI = new BarAPI(plugin);
+
+		guiManager = new GuiManager(plugin);
 
         resourcePacksManager = new ResourcePacksManagerImpl(this);
         settingsManager = new SettingsManager(this);
@@ -149,7 +154,12 @@ public class ApiImplementation extends SamaGamesAPI
 		return new ShopsManager(game, this);
 	}
 
-	@Override
+    @Override
+    public IGuiManager getGuiManager() {
+        return guiManager;
+    }
+
+    @Override
 	public ISettingsManager getSettingsManager() {
 		return settingsManager;
 	}
