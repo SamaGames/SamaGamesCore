@@ -39,10 +39,10 @@ public class NicknamePacketListener extends TinyProtocol{
         field.set(destination, newValue);
     }
 
-    @Override
+    /*@Override
     public Object onPacketOutAsync(Player reciever, Channel channel, Object packet) {
 
-      /*  if(packet instanceof PacketPlayOutPlayerInfo)
+        if(packet instanceof PacketPlayOutPlayerInfo)
         {
             PacketPlayOutPlayerInfo p = (PacketPlayOutPlayerInfo)packet;
 
@@ -128,10 +128,10 @@ public class NicknamePacketListener extends TinyProtocol{
             }
 
             packet = p;
-        }*/
+        }
 
         return super.onPacketOutAsync(reciever, channel, packet);
-    }
+    }*/
 
 
 
