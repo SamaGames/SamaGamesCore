@@ -20,7 +20,7 @@ public class DatabaseConnector
     protected JedisPool cachePool;
     private RedisServer main;
     private RedisServer bungee;
-    private WhiteListRefresher keeper;
+    private WhiteListRefreshTask keeper;
 
     public DatabaseConnector(APIPlugin plugin)
     {
@@ -67,7 +67,7 @@ public class DatabaseConnector
 
         if (keeper == null)
         {
-            keeper = new WhiteListRefresher(plugin, this);
+            keeper = new WhiteListRefreshTask(plugin, this);
             Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, keeper, 0, 30 * 20);
         }
     }

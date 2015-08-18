@@ -12,13 +12,13 @@ import java.util.Set;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class WhiteListRefresher implements Runnable
+public class WhiteListRefreshTask implements Runnable
 {
 
     protected final APIPlugin plugin;
     protected final DatabaseConnector databaseConnector;
 
-    protected WhiteListRefresher(APIPlugin plugin, DatabaseConnector connector)
+    protected WhiteListRefreshTask(APIPlugin plugin, DatabaseConnector connector)
     {
         this.plugin = plugin;
         this.databaseConnector = connector;
