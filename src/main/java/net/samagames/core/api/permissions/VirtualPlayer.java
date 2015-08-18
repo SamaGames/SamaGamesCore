@@ -14,32 +14,38 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class VirtualPlayer implements RawPlayer {
+public class VirtualPlayer implements RawPlayer
+{
 
-    protected Player player;
-    protected UUID id;
-    protected PermissionAttachment attachment;
+    protected final Player player;
+    protected final UUID id;
+    protected final PermissionAttachment attachment;
 
-    public VirtualPlayer(Player p) {
+    public VirtualPlayer(Player p)
+    {
         this.player = p;
         this.id = p.getUniqueId();
         this.attachment = player.addAttachment(APIPlugin.getInstance());
     }
 
     @Override
-    public void setPermission(String permission, boolean value) {
-        if (player != null) {
+    public void setPermission(String permission, boolean value)
+    {
+        if (player != null)
+        {
             attachment.setPermission(permission, value);
         }
     }
 
     @Override
-    public UUID getUniqueId() {
+    public UUID getUniqueId()
+    {
         return id;
     }
 
     @Override
-    public void clearPermissions() {
+    public void clearPermissions()
+    {
         ArrayList<String> perms = new ArrayList<>();
         for (String perm : attachment.getPermissions().keySet())
             perms.add(perm);

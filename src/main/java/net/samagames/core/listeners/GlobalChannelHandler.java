@@ -9,21 +9,26 @@ import net.samagames.core.APIPlugin;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class GlobalChannelHandler implements IPacketsReceiver {
+public class GlobalChannelHandler implements IPacketsReceiver
+{
 
-	private final APIPlugin plugin;
+    private final APIPlugin plugin;
 
-	public GlobalChannelHandler(APIPlugin plugin) {
-		this.plugin = plugin;
-	}
+    public GlobalChannelHandler(APIPlugin plugin)
+    {
+        this.plugin = plugin;
+    }
 
-	@Override
-	public void receive(String channel, String packet) {
-		if (packet.equalsIgnoreCase("reboot")) {
-			plugin.getServer().shutdown();
-		} else if (packet.equalsIgnoreCase("rebootIfEmpty")) {
-			if (plugin.getServer().getOnlinePlayers().size() == 0)
-				plugin.getServer().shutdown();
-		}
-	}
+    @Override
+    public void receive(String channel, String packet)
+    {
+        if (packet.equalsIgnoreCase("reboot"))
+        {
+            plugin.getServer().shutdown();
+        } else if (packet.equalsIgnoreCase("rebootIfEmpty"))
+        {
+            if (plugin.getServer().getOnlinePlayers().size() == 0)
+                plugin.getServer().shutdown();
+        }
+    }
 }

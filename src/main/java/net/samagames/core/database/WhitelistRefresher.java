@@ -1,7 +1,6 @@
 package net.samagames.core.database;
 
 import net.samagames.core.APIPlugin;
-import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
 
 import java.util.Set;
@@ -13,24 +12,26 @@ import java.util.Set;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class WhitelistRefresher implements Runnable {
+public class WhiteListRefresher implements Runnable
+{
 
-	protected APIPlugin plugin;
-	protected DatabaseConnector databaseConnector;
-	protected HostAndPort lastMaster;
+    protected final APIPlugin plugin;
+    protected final DatabaseConnector databaseConnector;
 
-	protected WhitelistRefresher(APIPlugin plugin, DatabaseConnector connector) {
-		this.plugin = plugin;
-		this.databaseConnector = connector;
-	}
+    protected WhiteListRefresher(APIPlugin plugin, DatabaseConnector connector)
+    {
+        this.plugin = plugin;
+        this.databaseConnector = connector;
+    }
 
-	public void run() {
-		Jedis jedis = databaseConnector.getResource();
-		Set<String> whitelist = jedis.smembers("proxys");
-		jedis.close();
+    public void run()
+    {
+        Jedis jedis = databaseConnector.getResource();
+        Set<String> whiteList = jedis.smembers("proxys");
+        jedis.close();
 
-		plugin.refreshIps(whitelist);
-	}
+        plugin.refreshIps(whiteList);
+    }
 
 }
 

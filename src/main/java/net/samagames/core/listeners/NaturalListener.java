@@ -5,48 +5,56 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.world.StructureGrowEvent;
 
-public class NaturalListener implements Listener {
+public class NaturalListener implements Listener
+{
 
     @EventHandler
-    public void onBlockGrowEvent(BlockGrowEvent event) {
+    public void onBlockGrowEvent(BlockGrowEvent event)
+    {
         event.setCancelled(true);
     }
 
     @EventHandler
-    public void onLeavesDecayEvent(LeavesDecayEvent event) {
+    public void onLeavesDecayEvent(LeavesDecayEvent event)
+    {
         event.setCancelled(true);
     }
 
     @EventHandler
-    public void onBlockFadeEvent(BlockFadeEvent event) {
-		event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onBlockPhysicsEvent(BlockPhysicsEvent event) {
+    public void onBlockFadeEvent(BlockFadeEvent event)
+    {
         event.setCancelled(true);
     }
 
     @EventHandler
-    public void onBlockRedstoneEvent(BlockRedstoneEvent event) {
-            event.setNewCurrent(event.getOldCurrent());
+    public void onBlockPhysicsEvent(BlockPhysicsEvent event)
+    {
+        event.setCancelled(true);
     }
 
     @EventHandler
-    public void onBlockSpreadEvent(BlockSpreadEvent event) {
-            event.setCancelled(true);
+    public void onBlockRedstoneEvent(BlockRedstoneEvent event)
+    {
+        event.setNewCurrent(event.getOldCurrent());
     }
 
     @EventHandler
-    public void onBlockFormEvent(BlockFormEvent event) {
-            event.setCancelled(true);
+    public void onBlockSpreadEvent(BlockSpreadEvent event)
+    {
+        event.setCancelled(true);
     }
 
     @EventHandler
-    public void onStructureGrowEvent(StructureGrowEvent event) {
-            event.setCancelled(true);
+    public void onBlockFormEvent(BlockFormEvent event)
+    {
+        event.setCancelled(true);
     }
 
+    @EventHandler
+    public void onStructureGrowEvent(StructureGrowEvent event)
+    {
+        event.setCancelled(true);
+    }
 
 
 }

@@ -10,21 +10,25 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.UUID;
 
-public class PlayerListeners implements Listener {
+public class PlayerListeners implements Listener
+{
 
-    protected BasicPermissionManager plugin;
+    protected final BasicPermissionManager plugin;
 
-    public PlayerListeners(BasicPermissionManager plugin) {
+    public PlayerListeners(BasicPermissionManager plugin)
+    {
         this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onLogin(final AsyncPlayerPreLoginEvent ev) {
+    public void onLogin(final AsyncPlayerPreLoginEvent ev)
+    {
         plugin.getApi().getManager().getUser(ev.getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onJoin(final PlayerJoinEvent ev) {
+    public void onJoin(final PlayerJoinEvent ev)
+    {
         if (!plugin.isLobby())
             plugin.api.getManager().refreshPerms(ev.getPlayer().getUniqueId());
         else
@@ -32,16 +36,19 @@ public class PlayerListeners implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    public void onLeave(PlayerQuitEvent ev) {
+    public void onLeave(PlayerQuitEvent ev)
+    {
         disconnect(ev.getPlayer().getUniqueId());
     }
 
-    public void disconnect(UUID player) {
+    public void disconnect(UUID player)
+    {
         plugin.removePlayer(player);
     }
 
     @EventHandler
-    public void onKick(PlayerKickEvent ev) {
+    public void onKick(PlayerKickEvent ev)
+    {
         disconnect(ev.getPlayer().getUniqueId());
     }
 

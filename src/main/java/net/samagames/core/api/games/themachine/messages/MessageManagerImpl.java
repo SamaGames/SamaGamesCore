@@ -18,7 +18,7 @@ public class MessageManagerImpl implements IMessageManager
     @Override
     public Message writeCustomMessage(String text, boolean gameTag)
     {
-        if(gameTag)
+        if (gameTag)
             return new Message(text, this.machine.getGameTag()).displayToAll();
         else
             return new Message(text).displayToAll();

@@ -45,35 +45,35 @@ import redis.clients.jedis.Jedis;
  */
 public class ApiImplementation extends SamaGamesAPI
 {
-	protected APIPlugin plugin;
-	protected IGuiManager guiManager;
-	protected ISettingsManager settingsManager;
-	protected IPlayerDataManager playerDataManager;
-    protected IAchievementManager achievementManager;
-	protected IPubSubAPI pubSub;
-	protected IUUIDTranslator uuidTranslator;
-	protected IJoinManager joinManager;
-	protected IGameManager gameApi;
-	protected IProxyDataManager proxyDataManager;
-	protected IPartiesManager partiesManager;
-	protected IResourcePacksManager resourcePacksManager;
-	protected BasicPermissionManager permissionsManager;
-    protected IFriendsManager friendsManager;
+    protected final APIPlugin plugin;
+    protected final IGuiManager guiManager;
+    protected final ISettingsManager settingsManager;
+    protected final IPlayerDataManager playerDataManager;
+    protected final IAchievementManager achievementManager;
+    protected final IPubSubAPI pubSub;
+    protected final IUUIDTranslator uuidTranslator;
+    protected final IJoinManager joinManager;
+    protected final IProxyDataManager proxyDataManager;
+    protected final IPartiesManager partiesManager;
+    protected final IResourcePacksManager resourcePacksManager;
+    protected final BasicPermissionManager permissionsManager;
+    protected final IFriendsManager friendsManager;
+    protected final BarAPI barAPI;
+    protected IGameManager gameApi;
 
-	protected BarAPI barAPI;
-
-	public ApiImplementation(APIPlugin plugin) {
+    public ApiImplementation(APIPlugin plugin)
+    {
         super(plugin);
 
-		this.plugin = plugin;
+        this.plugin = plugin;
 
-		JoinManagerImplement implement = new JoinManagerImplement();
-		Bukkit.getServer().getPluginManager().registerEvents(implement, plugin);
-		this.joinManager = implement;
+        JoinManagerImplement implement = new JoinManagerImplement();
+        Bukkit.getServer().getPluginManager().registerEvents(implement, plugin);
+        this.joinManager = implement;
 
-		barAPI = new BarAPI(plugin);
+        barAPI = new BarAPI(plugin);
 
-		guiManager = new GuiManager(plugin);
+        guiManager = new GuiManager(plugin);
 
         resourcePacksManager = new ResourcePacksManagerImpl(this);
         settingsManager = new SettingsManager(this);
@@ -87,7 +87,7 @@ public class ApiImplementation extends SamaGamesAPI
         pubSub.subscribe("commands.servers.all", new RemoteCommandsHandler());
 
         ModerationJoinHandler moderationJoinHandler = new ModerationJoinHandler(this);
-        implement.registerHandler(moderationJoinHandler, - 1);
+        implement.registerHandler(moderationJoinHandler, -1);
 
         pubSub.subscribe(plugin.getServerName(), moderationJoinHandler);
         pubSub.subscribe("partyjoin." + getServerName(), new PartiesPubSub(implement));
@@ -98,76 +98,91 @@ public class ApiImplementation extends SamaGamesAPI
         partiesManager = new PartiesManager(this);
         permissionsManager = new PermissionsManager();
         friendsManager = new FriendsManagement(this);
-	}
-
-	@Override
-	public IPermissionsManager getPermissionsManager() {
-		return permissionsManager;
-	}
-
-	@Override
-	public IResourcePacksManager getResourcePacksManager() {
-		return resourcePacksManager;
-	}
+    }
 
     @Override
-    public IFriendsManager getFriendsManager() {
+    public IPermissionsManager getPermissionsManager()
+    {
+        return permissionsManager;
+    }
+
+    @Override
+    public IResourcePacksManager getResourcePacksManager()
+    {
+        return resourcePacksManager;
+    }
+
+    @Override
+    public IFriendsManager getFriendsManager()
+    {
         return friendsManager;
     }
 
-	public APIPlugin getPlugin() {
-		return plugin;
-	}
+    public APIPlugin getPlugin()
+    {
+        return plugin;
+    }
 
-	public IProxyDataManager getProxyDataManager() {
-		return proxyDataManager;
-	}
+    public IProxyDataManager getProxyDataManager()
+    {
+        return proxyDataManager;
+    }
 
-	public IGameManager getGameManager() {
-		return (gameApi == null) ? (this.gameApi = new GameManagerImpl(this)) : this.gameApi;
-	}
-
-	@Override
-	public IPartiesManager getPartiesManager() {
-		return partiesManager;
-	}
-
-	@Override
-	public BarAPI getBarAPI() {
-		return barAPI;
-	}
-
-	public IJoinManager getJoinManager() {
-		return joinManager;
-	}
-
-	public Jedis getResource() {
-		return plugin.databaseConnector.getResource();
-	}
-
-	public AbstractStatsManager getStatsManager(String game) {
-		return new StatsManager(game);
-	}
-
-	@Override
-	public AbstractShopsManager getShopsManager(String game) {
-		return new ShopsManager(game, this);
-	}
+    public IGameManager getGameManager()
+    {
+        return (gameApi == null) ? (this.gameApi = new GameManagerImpl(this)) : this.gameApi;
+    }
 
     @Override
-    public IGuiManager getGuiManager() {
+    public IPartiesManager getPartiesManager()
+    {
+        return partiesManager;
+    }
+
+    @Override
+    public BarAPI getBarAPI()
+    {
+        return barAPI;
+    }
+
+    public IJoinManager getJoinManager()
+    {
+        return joinManager;
+    }
+
+    public Jedis getResource()
+    {
+        return plugin.databaseConnector.getResource();
+    }
+
+    public AbstractStatsManager getStatsManager(String game)
+    {
+        return new StatsManager(game);
+    }
+
+    @Override
+    public AbstractShopsManager getShopsManager(String game)
+    {
+        return new ShopsManager(game, this);
+    }
+
+    @Override
+    public IGuiManager getGuiManager()
+    {
         return guiManager;
     }
 
     @Override
-	public ISettingsManager getSettingsManager() {
-		return settingsManager;
-	}
+    public ISettingsManager getSettingsManager()
+    {
+        return settingsManager;
+    }
 
-	@Override
-	public IPlayerDataManager getPlayerManager() {
-		return playerDataManager;
-	}
+    @Override
+    public IPlayerDataManager getPlayerManager()
+    {
+        return playerDataManager;
+    }
 
     @Override
     public IAchievementManager getAchievementManager()
@@ -175,21 +190,25 @@ public class ApiImplementation extends SamaGamesAPI
         return achievementManager;
     }
 
-	public IPubSubAPI getPubSub() {
-		return pubSub;
-	}
+    public IPubSubAPI getPubSub()
+    {
+        return pubSub;
+    }
 
-	@Override
-	public IUUIDTranslator getUUIDTranslator() {
-		return uuidTranslator;
-	}
+    @Override
+    public IUUIDTranslator getUUIDTranslator()
+    {
+        return uuidTranslator;
+    }
 
-	public Jedis getBungeeResource() {
-		return plugin.databaseConnector.getBungeeResource();
-	}
+    public Jedis getBungeeResource()
+    {
+        return plugin.databaseConnector.getBungeeResource();
+    }
 
-	@Override
-	public String getServerName() {
-		return plugin.getServerName();
-	}
+    @Override
+    public String getServerName()
+    {
+        return plugin.getServerName();
+    }
 }

@@ -18,41 +18,48 @@ import java.util.UUID;
 /*
 TODO use playerdata instead
  */
-public class ShopsManager extends AbstractShopsManager {
+public class ShopsManager extends AbstractShopsManager
+{
 
-	public ShopsManager(String gameType, SamaGamesAPI api) {
-		super(gameType, api);
-	}
+    public ShopsManager(String gameType, SamaGamesAPI api)
+    {
+        super(gameType, api);
+    }
 
-	@Override
-	public String getItemLevelForPlayer(UUID player, String itemCategory) {
-		return api.getPlayerManager().getPlayerData(player).get("shops:"+gameType+":"+itemCategory+":current");
-	}
+    @Override
+    public String getItemLevelForPlayer(UUID player, String itemCategory)
+    {
+        return api.getPlayerManager().getPlayerData(player).get("shops:" + gameType + ":" + itemCategory + ":current");
+    }
 
-	@Override
-	public List<String> getOwnedLevels(UUID player, String itemCategory) {
-		String value = api.getPlayerManager().getPlayerData(player).get("shops:" + gameType + ":" + itemCategory + ":owned");
-		if (value == null)
-			return null;
-		return Arrays.asList(value.split(":"));
-	}
+    @Override
+    public List<String> getOwnedLevels(UUID player, String itemCategory)
+    {
+        String value = api.getPlayerManager().getPlayerData(player).get("shops:" + gameType + ":" + itemCategory + ":owned");
+        if (value == null)
+            return null;
+        return Arrays.asList(value.split(":"));
+    }
 
-	@Override
-	public void addOwnedLevel(UUID player, String itemCategory, String itemName) {
-		String current = api.getPlayerManager().getPlayerData(player).get("shops:" + gameType + ":" + itemCategory + ":owned");
-		if (current == null)
-			current = itemName;
-		else {
-			if (current.contains(itemName))
-				return;
-			current += ":" + itemName;
-		}
+    @Override
+    public void addOwnedLevel(UUID player, String itemCategory, String itemName)
+    {
+        String current = api.getPlayerManager().getPlayerData(player).get("shops:" + gameType + ":" + itemCategory + ":owned");
+        if (current == null)
+            current = itemName;
+        else
+        {
+            if (current.contains(itemName))
+                return;
+            current += ":" + itemName;
+        }
 
-		api.getPlayerManager().getPlayerData(player).set("shops:" + gameType + ":" + itemCategory + ":owned", current);
-	}
+        api.getPlayerManager().getPlayerData(player).set("shops:" + gameType + ":" + itemCategory + ":owned", current);
+    }
 
-	@Override
-	public void setCurrentLevel(UUID player, String itemCategory, String itemName) {
-		api.getPlayerManager().getPlayerData(player).set("shops:"+gameType+":"+itemCategory+":current", itemName);
-	}
+    @Override
+    public void setCurrentLevel(UUID player, String itemCategory, String itemName)
+    {
+        api.getPlayerManager().getPlayerData(player).set("shops:" + gameType + ":" + itemCategory + ":current", itemName);
+    }
 }

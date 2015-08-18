@@ -13,26 +13,29 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-public class TeamManager {
+public class TeamManager
+{
 
     /**
      * The escape sequence for minecraft special chat codes
      */
     public static final char ESCAPE = '\u00A7';
     public final IPermissionsManager manager;
-    public List<PermissionGroup> groups = new ArrayList<>();
-    public TeamHandler teamHandler;
-    public ExecutorService executor = Executors.newSingleThreadExecutor();
+    public final List<PermissionGroup> groups = new ArrayList<>();
+    public final TeamHandler teamHandler;
+    public final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    public TeamManager(APIPlugin pl) {
+    public TeamManager(APIPlugin pl)
+    {
         manager = pl.getAPI().getPermissionsManager();
 
         teamHandler = new TeamHandler();
 
         groups.addAll(manager.getApi().getManager().getGroupsCache().values().stream().collect(Collectors.toList()));
 
-        for (PermissionGroup pg : groups) {
-            if(pg == null)
+        for (PermissionGroup pg : groups)
+        {
+            if (pg == null)
                 continue;
 
             //String teamName = pg.getProperty("team-name");
@@ -43,7 +46,7 @@ public class TeamManager {
 
             TeamHandler.VTeam vt = teamHandler.createNewTeam(teamName, "");
 
-                vt.setRealName(getTeamName(pg));
+            vt.setRealName(getTeamName(pg));
             if (manager.getDisplay(pg) != null)
                 vt.setPrefix(manager.getDisplay(pg));
             if (manager.getDisplay(pg) != null)
@@ -52,7 +55,7 @@ public class TeamManager {
                 vt.setSuffix(manager.getSuffix(pg));
 
             teamHandler.addTeam(vt);
-            APIPlugin.log("[TeamRegister] Team " + teamName + " ajoutée  --> " +  vt.getPrefix() + " / " + vt);
+            APIPlugin.log("[TeamRegister] Team " + teamName + " ajoutée  --> " + vt.getPrefix() + " / " + vt);
         }
     }
 
@@ -66,11 +69,13 @@ public class TeamManager {
      * Takes a string and replaces &# color codes with ChatColors
      */
 
-    public void playerLeave(final Player p) {
+    public void playerLeave(final Player p)
+    {
         executor.execute(() -> teamHandler.removeReceiver(p));
     }
 
-    public void playerJoin(final Player p) {
+    public void playerJoin(final Player p)
+    {
         executor.execute(() -> {
             teamHandler.addReceiver(p);
 
@@ -78,7 +83,8 @@ public class TeamManager {
             final String prefix = user.getParents().last().getGroupName();
 
             TeamHandler.VTeam vtt = teamHandler.getTeamByName(prefix);
-            if (vtt == null) {
+            if (vtt == null)
+            {
                 vtt = teamHandler.getTeamByName("joueur");
             }
 

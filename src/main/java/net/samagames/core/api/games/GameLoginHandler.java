@@ -26,7 +26,7 @@ public class GameLoginHandler implements IJoinHandler
     {
         if (this.api.getGame() != null)
         {
-            if(!this.api.isWaited(player.getUniqueId()))
+            if (!this.api.isWaited(player.getUniqueId()))
                 this.api.getGame().handleLogin(player);
             else
                 this.api.getGame().handleReconnect(player);
@@ -44,11 +44,10 @@ public class GameLoginHandler implements IJoinHandler
 
             Pair<Boolean, String> gameResponse = game.canJoinGame(player, false);
 
-            if(gameResponse.getKey())
+            if (gameResponse.getKey())
             {
                 response.allow();
-            }
-            else
+            } else
             {
                 response.disallow(gameResponse.getValue());
                 return response;
@@ -61,7 +60,7 @@ public class GameLoginHandler implements IJoinHandler
             else if (game.getConnectedPlayers() >= this.api.getGameProperties().getMaxSlots())
                 response.disallow(ResponseType.DENY_FULL);
 
-            if(this.api.isReconnectAllowed() && this.api.isWaited(player))
+            if (this.api.isReconnectAllowed() && this.api.isWaited(player))
             {
                 response.allow();
                 return response;
@@ -80,11 +79,10 @@ public class GameLoginHandler implements IJoinHandler
 
             Pair<Boolean, String> gameResponse = game.canPartyJoinGame(partyMembers);
 
-            if(gameResponse.getKey())
+            if (gameResponse.getKey())
             {
                 response.allow();
-            }
-            else
+            } else
             {
                 response.disallow(gameResponse.getValue());
                 return response;

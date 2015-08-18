@@ -12,57 +12,65 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class PermissionsManager extends BasicPermissionManager {
+public class PermissionsManager extends BasicPermissionManager
+{
 
-	@Override
-	public String getPrefix(PermissionEntity entity) {
-		String prefix = entity.getProperty("prefix");
-		if (prefix == null)
-			return null;
-		prefix = prefix.replaceAll("&s", " ");
-		prefix = ChatColor.translateAlternateColorCodes('&', prefix);
-		return prefix;
-	}
+    @Override
+    public String getPrefix(PermissionEntity entity)
+    {
+        String prefix = entity.getProperty("prefix");
+        if (prefix == null)
+            return null;
+        prefix = prefix.replaceAll("&s", " ");
+        prefix = ChatColor.translateAlternateColorCodes('&', prefix);
+        return prefix;
+    }
 
-	@Override
-	public String getSuffix(PermissionEntity entity) {
-		String suffix = entity.getProperty("suffix");
-		if (suffix == null)
-			return null;
-		suffix = suffix.replaceAll("&s", " ");
-		suffix = ChatColor.translateAlternateColorCodes('&', suffix);
-		return suffix;
-	}
+    @Override
+    public String getSuffix(PermissionEntity entity)
+    {
+        String suffix = entity.getProperty("suffix");
+        if (suffix == null)
+            return null;
+        suffix = suffix.replaceAll("&s", " ");
+        suffix = ChatColor.translateAlternateColorCodes('&', suffix);
+        return suffix;
+    }
 
-	@Override
-	public String getDisplay(PermissionEntity entity) {
-		String display = entity.getProperty("display");
-		if (display == null)
-			return null;
-		display = display.replaceAll("&s", " ");
-		display = ChatColor.translateAlternateColorCodes('&', display);
-		return display;
-	}
+    @Override
+    public String getDisplay(PermissionEntity entity)
+    {
+        String display = entity.getProperty("display");
+        if (display == null)
+            return null;
+        display = display.replaceAll("&s", " ");
+        display = ChatColor.translateAlternateColorCodes('&', display);
+        return display;
+    }
 
-	@Override
-	public boolean hasPermission(PermissionEntity entity, String permission) {
-		return entity.hasPermission(permission);
-	}
+    @Override
+    public boolean hasPermission(PermissionEntity entity, String permission)
+    {
+        return entity.hasPermission(permission);
+    }
 
-	/**
-	 * Only works for onlineplayers.
-	 * @param player UUID for the player. Must be online
-	 * @param permission The permission to check
-	 */
-	@Override
-	public boolean hasPermission(UUID player, String permission) {
-		PermissionEntity entity = api.getManager().getUserFromCache(player);
-		if (entity == null) {
-			Bukkit.getLogger().warning("Entity "+player+" is not found in cache.");
-			return false;
-		}
-		return entity.hasPermission(permission);
-	}
+    /**
+     * Only works for onlineplayers.
+     *
+     * @param player     UUID for the player. Must be online
+     * @param permission The permission to check
+     */
+    @Override
+    public boolean hasPermission(UUID player, String permission)
+    {
+        PermissionEntity entity = api.getManager().getUserFromCache(player);
+        if (entity == null)
+        {
+            Bukkit.getLogger().warning("Entity " + player + " is not found in cache.");
+            return false;
+        }
+        return entity.hasPermission(permission);
+    }
 
 
 }

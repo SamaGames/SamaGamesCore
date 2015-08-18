@@ -7,15 +7,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class SettingsManager implements ISettingsManager {
+public class SettingsManager implements ISettingsManager
+{
 
-	protected SamaGamesAPI api;
+    protected final SamaGamesAPI api;
 
-	public SettingsManager(SamaGamesAPI api) {
-		this.api = api;
-	}
+    public SettingsManager(SamaGamesAPI api)
+    {
+        this.api = api;
+    }
 
-    public Map<String, String> getSettings(UUID player) {
+    public Map<String, String> getSettings(UUID player)
+    {
         Map<String, String> data = api.getPlayerManager().getPlayerData(player).getValues();
         HashMap<String, String> settings = new HashMap<>();
         data.entrySet().stream().filter(line -> line.getKey().startsWith("settings.")).forEach(line -> {
@@ -26,11 +29,13 @@ public class SettingsManager implements ISettingsManager {
         return settings;
     }
 
-    public String getSetting(UUID player, String setting) {
-		return api.getPlayerManager().getPlayerData(player).get("settings." + setting);
+    public String getSetting(UUID player, String setting)
+    {
+        return api.getPlayerManager().getPlayerData(player).get("settings." + setting);
     }
 
-    public void setSetting(UUID player, String setting, String value) {
-		api.getPlayerManager().getPlayerData(player).set("settings." + setting, value);
+    public void setSetting(UUID player, String setting, String value)
+    {
+        api.getPlayerManager().getPlayerData(player).set("settings." + setting, value);
     }
 }

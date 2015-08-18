@@ -26,10 +26,10 @@ public class GameManagerImpl implements IGameManager
 {
     private final ApiImplementation api;
 
-    private ArrayList<UUID> playersDisconnected;
-    private HashMap<UUID, Integer> playerDisconnectTime;
-    private HashMap<UUID, BukkitTask> playerReconnectedTimers;
-    private IGameProperties gameProperties;
+    private final ArrayList<UUID> playersDisconnected;
+    private final HashMap<UUID, Integer> playerDisconnectTime;
+    private final HashMap<UUID, BukkitTask> playerReconnectedTimers;
+    private final IGameProperties gameProperties;
     private Game game;
 
     private int maxReconnectTime;
@@ -50,7 +50,7 @@ public class GameManagerImpl implements IGameManager
     @Override
     public void registerGame(Game game)
     {
-        if(this.game != null)
+        if (this.game != null)
             throw new IllegalStateException("A game is already registered!");
 
         this.game = game;
@@ -79,23 +79,25 @@ public class GameManagerImpl implements IGameManager
     @Override
     public void kickPlayer(Player p, String msg)
     {
-        if(!api.getPlugin().isEnabled())
+        if (!api.getPlugin().isEnabled())
         {
             p.kickPlayer(msg);
             return;
         }
 
-        if(!p.isOnline())
+        if (!p.isOnline())
             return;
 
         //kickPlayer(p, "");
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(b);
-        try {
+        try
+        {
             out.writeUTF("Connect");
             out.writeUTF("lobby");
 
-        } catch (IOException eee) {
+        } catch (IOException eee)
+        {
             Bukkit.getLogger().info("You'll never see me!");
         }
         p.sendPluginMessage(api.getPlugin(), "BungeeCord", b.toByteArray());
@@ -107,10 +109,10 @@ public class GameManagerImpl implements IGameManager
     {
         this.game.handleLogout(player);
 
-        if(!this.isReconnectAllowed())
+        if (!this.isReconnectAllowed())
             return;
 
-        if(this.game.getStatus() != Status.IN_GAME)
+        if (this.game.getStatus() != Status.IN_GAME)
             return;
 
         this.playersDisconnected.add(player.getUniqueId());
@@ -151,11 +153,11 @@ public class GameManagerImpl implements IGameManager
     @Override
     public void onPlayerReconnect(Player player)
     {
-        if(this.playerReconnectedTimers.containsKey(player.getUniqueId()))
+        if (this.playerReconnectedTimers.containsKey(player.getUniqueId()))
         {
             BukkitTask task = this.playerReconnectedTimers.get(player.getUniqueId());
 
-            if(task != null)
+            if (task != null)
                 task.cancel();
 
             this.playerReconnectedTimers.remove(player.getUniqueId());
@@ -168,11 +170,11 @@ public class GameManagerImpl implements IGameManager
     @Override
     public void onPlayerReconnectTimeOut(Player player)
     {
-        if(this.playerReconnectedTimers.containsKey(player.getUniqueId()))
+        if (this.playerReconnectedTimers.containsKey(player.getUniqueId()))
         {
             BukkitTask task = this.playerReconnectedTimers.get(player.getUniqueId());
 
-            if(task != null)
+            if (task != null)
                 task.cancel();
 
             this.playerReconnectedTimers.remove(player.getUniqueId());
@@ -183,19 +185,10 @@ public class GameManagerImpl implements IGameManager
 
     public void refreshArena()
     {
-        if(this.game == null)
+        if (this.game == null)
             throw new IllegalStateException("Can't refresh arena because the arena is null!");
 
         new ServerStatus(SamaGamesAPI.get().getServerName(), this.game.getGameName(), this.gameProperties.getMapName(), this.game.getStatus(), this.game.getConnectedPlayers(), this.gameProperties.getMaxSlots()).sendToHubs();
-    }
-
-    public void setStatus(Status gameStatus)
-    {
-        if(this.game == null)
-            throw new IllegalStateException("Can't set status of the game because the arena is null!");
-
-        this.game.setStatus(gameStatus);
-        this.refreshArena();
     }
 
     @Override
@@ -207,7 +200,7 @@ public class GameManagerImpl implements IGameManager
     @Override
     public Status getGameStatus()
     {
-        if(this.game == null)
+        if (this.game == null)
             return null;
 
         return this.getGame().getStatus();
@@ -216,7 +209,7 @@ public class GameManagerImpl implements IGameManager
     @Override
     public ICoherenceMachine getCoherenceMachine()
     {
-        if(this.game == null)
+        if (this.game == null)
             throw new NullPointerException("Can't get CoherenceMachine because game is null!");
 
         return new CoherenceMachineImpl(this.game, this.gameProperties);

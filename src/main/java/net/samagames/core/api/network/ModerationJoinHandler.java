@@ -13,22 +13,26 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver {
+public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver
+{
 
+    protected final HashMap<UUID, UUID> teleportTargets = new HashMap<>();
+    protected final JoinManagerImplement manager;
     private final ApiImplementation api;
-    protected HashMap<UUID, UUID> teleportTargets = new HashMap<>();
-    protected JoinManagerImplement manager;
 
-    public ModerationJoinHandler(ApiImplementation api) {
+    public ModerationJoinHandler(ApiImplementation api)
+    {
         this.api = api;
         this.manager = (JoinManagerImplement) api.getJoinManager();
     }
 
     @Override
-    public void onModerationJoin(Player player) {
+    public void onModerationJoin(Player player)
+    {
         player.sendMessage(ChatColor.GOLD + "Vous avez rejoint cette arène en mode modération.");
         player.setGameMode(GameMode.SPECTATOR);
-        if (teleportTargets.containsKey(player.getUniqueId())) {
+        if (teleportTargets.containsKey(player.getUniqueId()))
+        {
             UUID target = teleportTargets.get(player.getUniqueId());
             Player tar = Bukkit.getPlayer(target);
             if (tar != null)
@@ -38,7 +42,8 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver {
     }
 
     @Override
-    public void receive(String channel, String packet) {
+    public void receive(String channel, String packet)
+    {
         String[] args = StringUtils.split(packet, " ");
         String id = args[1];
         UUID uuid = UUID.fromString(id);
@@ -46,13 +51,17 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver {
         if (SamaGamesAPI.get().getPermissionsManager().hasPermission(uuid, "games.modjoin"))
             manager.addModerator(uuid);
 
-        if (packet.startsWith("teleport")) {
-            try  {
+        if (packet.startsWith("teleport"))
+        {
+            try
+            {
                 UUID target = UUID.fromString(args[2]);
-                if (SamaGamesAPI.get().getPermissionsManager().hasPermission(uuid, "games.modjoin")) {
+                if (SamaGamesAPI.get().getPermissionsManager().hasPermission(uuid, "games.modjoin"))
+                {
                     teleportTargets.put(uuid, target);
                 }
-            } catch (Exception ignored) {
+            } catch (Exception ignored)
+            {
             }
         }
 

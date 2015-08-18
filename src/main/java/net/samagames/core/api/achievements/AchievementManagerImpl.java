@@ -18,8 +18,8 @@ public class AchievementManagerImpl implements IAchievementManager
 {
     private final ApiImplementation api;
 
-    private ArrayList<Achievement> achievements;
-    private ArrayList<AchievementCategory> achievementCategories;
+    private final ArrayList<Achievement> achievements;
+    private final ArrayList<AchievementCategory> achievementCategories;
 
     public AchievementManagerImpl(ApiImplementation api)
     {
@@ -41,7 +41,7 @@ public class AchievementManagerImpl implements IAchievementManager
         this.achievements.clear();
         this.achievementCategories.clear();
 
-        if(!this.api.getResource().exists("achievements:list"))
+        if (!this.api.getResource().exists("achievements:list"))
             this.api.getResource().set("achievements:list", "{\"categories\":[],\"achievements\":[]}");
 
         String json = this.api.getResource().get("achievements:list");
@@ -49,7 +49,7 @@ public class AchievementManagerImpl implements IAchievementManager
 
         JsonArray jsonCategories = jsonObject.get("categories").getAsJsonArray();
 
-        for(int i = 0; i < jsonCategories.size(); i++)
+        for (int i = 0; i < jsonCategories.size(); i++)
         {
             JsonObject jsonCategory = jsonCategories.get(i).getAsJsonObject();
             String categoryID = jsonCategory.get("uuid").getAsString();
@@ -63,7 +63,7 @@ public class AchievementManagerImpl implements IAchievementManager
 
         JsonArray jsonAchievements = jsonObject.get("achievements").getAsJsonArray();
 
-        for(int i = 0; i < jsonAchievements.size(); i++)
+        for (int i = 0; i < jsonAchievements.size(); i++)
         {
             JsonObject jsonAchievement = jsonAchievements.get(i).getAsJsonObject();
             String achievementID = jsonAchievement.get("id").getAsString();
@@ -90,8 +90,8 @@ public class AchievementManagerImpl implements IAchievementManager
     @Override
     public Achievement getAchievementByName(String name)
     {
-        for(Achievement achievement : this.achievements)
-            if(achievement.getID().equals(name))
+        for (Achievement achievement : this.achievements)
+            if (achievement.getID().equals(name))
                 return achievement;
 
         return null;
@@ -100,8 +100,8 @@ public class AchievementManagerImpl implements IAchievementManager
     @Override
     public AchievementCategory getAchievementCategoryByName(String name)
     {
-        for(AchievementCategory category : this.achievementCategories)
-            if(category.getID().equals(name))
+        for (AchievementCategory category : this.achievementCategories)
+            if (category.getID().equals(name))
                 return category;
 
         return null;
@@ -127,7 +127,7 @@ public class AchievementManagerImpl implements IAchievementManager
     @Override
     public boolean isUnlocked(Player player, String achievement)
     {
-        if(this.getAchievementByName(achievement) == null)
+        if (this.getAchievementByName(achievement) == null)
             return false;
 
         return this.isUnlocked(player, this.getAchievementByName(achievement));

@@ -15,58 +15,73 @@ import java.util.concurrent.LinkedBlockingQueue;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class Sender implements Runnable, ISender {
+public class Sender implements Runnable, ISender
+{
 
-	private LinkedBlockingQueue<PendingMessage> pendingMessages = new LinkedBlockingQueue<>();
-	private final ApiImplementation connector;
-	private Jedis jedis;
+    private final LinkedBlockingQueue<PendingMessage> pendingMessages = new LinkedBlockingQueue<>();
+    private final ApiImplementation connector;
+    private Jedis jedis;
 
-	public Sender(ApiImplementation connector) {
-		this.connector = connector;
-	}
+    public Sender(ApiImplementation connector)
+    {
+        this.connector = connector;
+    }
 
-	public void publish(PendingMessage message) {
-		pendingMessages.add(message);
-	}
+    public void publish(PendingMessage message)
+    {
+        pendingMessages.add(message);
+    }
 
-	@Override
-	public void run() {
-		fixDatabase();
-		while (true) {
+    @Override
+    public void run()
+    {
+        fixDatabase();
+        while (true)
+        {
 
-			PendingMessage message;
-			try {
-				message = pendingMessages.take();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				jedis.close();
-				return;
-			}
+            PendingMessage message;
+            try
+            {
+                message = pendingMessages.take();
+            } catch (InterruptedException e)
+            {
+                e.printStackTrace();
+                jedis.close();
+                return;
+            }
 
-			boolean published = false;
-			while (!published) {
-				try {
-					jedis.publish(message.getChannel(), message.getMessage());
-					message.runAfter();
-					published = true;
-				} catch (Exception e) {
-					fixDatabase();
-				}
-			}
-		}
-	}
+            boolean published = false;
+            while (!published)
+            {
+                try
+                {
+                    jedis.publish(message.getChannel(), message.getMessage());
+                    message.runAfter();
+                    published = true;
+                } catch (Exception e)
+                {
+                    fixDatabase();
+                }
+            }
+        }
+    }
 
-	private void fixDatabase() {
-		try {
-			jedis = connector.getResource();
-		} catch (Exception e) {
-			APIPlugin.getInstance().getLogger().severe("[Publisher] Cannot connect to redis server : " + e.getMessage() + ". Retrying in 5 seconds.");
-			try {
-				Thread.sleep(5000);
-				fixDatabase();
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-		}
-	}
+    private void fixDatabase()
+    {
+        try
+        {
+            jedis = connector.getResource();
+        } catch (Exception e)
+        {
+            APIPlugin.getInstance().getLogger().severe("[Publisher] Cannot connect to redis server : " + e.getMessage() + ". Retrying in 5 seconds.");
+            try
+            {
+                Thread.sleep(5000);
+                fixDatabase();
+            } catch (InterruptedException e1)
+            {
+                e1.printStackTrace();
+            }
+        }
+    }
 }

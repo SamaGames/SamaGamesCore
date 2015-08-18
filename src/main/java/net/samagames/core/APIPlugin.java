@@ -6,7 +6,6 @@ import net.samagames.core.listeners.*;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -31,78 +30,86 @@ import java.util.logging.Level;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class APIPlugin extends JavaPlugin implements Listener {
+public class APIPlugin extends JavaPlugin implements Listener
+{
 
-	protected ApiImplementation api;
-	protected static APIPlugin instance;
-	protected DatabaseConnector databaseConnector;
-	protected String serverName;
-	protected FileConfiguration configuration;
-	protected CopyOnWriteArraySet<String> ipWhitelist = new CopyOnWriteArraySet<>();
-	protected boolean allowJoin;
-	protected String denyJoinReason = ChatColor.RED + "Serveur non initialisé.";
-	protected boolean serverRegistered;
+    protected static APIPlugin instance;
+    protected final CopyOnWriteArraySet<String> ipWhiteList = new CopyOnWriteArraySet<>();
+    protected ApiImplementation api;
+    protected DatabaseConnector databaseConnector;
+    protected String serverName;
+    protected FileConfiguration configuration;
+    protected boolean allowJoin;
+    protected final String denyJoinReason = ChatColor.RED + "Serveur non initialisé.";
+    protected boolean serverRegistered;
     protected boolean gameServer;
-	protected String joinPermission = null;
-	protected ScheduledExecutorService executor;
-	protected DebugListener debugListener;
+    protected String joinPermission = null;
+    protected ScheduledExecutorService executor;
+    protected DebugListener debugListener;
 
-	protected NicknamePacketListener nicknamePacketListener;
+    protected NicknamePacketListener nicknamePacketListener;
 
 
+    public static APIPlugin getInstance()
+    {
+        return instance;
+    }
 
-	public static APIPlugin getInstance() {
-		return instance;
-	}
+    public static void log(String message)
+    {
+        instance.getLogger().info(message);
+    }
 
-	public ApiImplementation getAPI() {
-		return api;
-	}
+    public static void log(Level level, String message)
+    {
+        instance.getLogger().log(level, message);
+    }
 
-	public static void log(String message) {
-		instance.getLogger().info(message);
-	}
+    public ApiImplementation getAPI()
+    {
+        return api;
+    }
 
-	public static void log(Level level, String message) {
-		instance.getLogger().log(level, message);
-	}
+    public void onEnable()
+    {
+        instance = this;
 
-	public void onEnable() {
-		instance = this;
+        log("#==========[WELCOME TO SAMAGAMES API]==========#");
+        log("# SamaGamesAPI is now loading. Please read     #");
+        log("# carefully all outputs coming from it.        #");
+        log("#==============================================#");
 
-		log("#==========[WELCOME TO SAMAGAMES API]==========#");
-		log("# SamaGamesAPI is now loading. Please read     #");
-		log("# carefully all outputs coming from it.        #");
-		log("#==============================================#");
+        executor = Executors.newScheduledThreadPool(16);
 
-		executor = Executors.newScheduledThreadPool(16);
+        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-
-		log("Loading main configuration...");
-		this.saveDefaultConfig();
-		configuration = this.getConfig();
+        log("Loading main configuration...");
+        this.saveDefaultConfig();
+        configuration = this.getConfig();
         gameServer = configuration.getBoolean("game-server", true);
 
-		// Chargement de l'IPWhitelist le plus tot possible
-		Bukkit.getPluginManager().registerEvents(this, this);
+        // Chargement de l'IPWhitelist le plus tot possible
+        Bukkit.getPluginManager().registerEvents(this, this);
 
-		serverName = configuration.getString("bungeename");
-		if (serverName == null) {
-			log(Level.SEVERE, "Plugin cannot load : ServerName is empty.");
-			Bukkit.getServer().shutdown();
-			return;
-		}
+        serverName = configuration.getString("bungeename");
+        if (serverName == null)
+        {
+            log(Level.SEVERE, "Plugin cannot load : ServerName is empty.");
+            Bukkit.getServer().shutdown();
+            return;
+        }
 
-		joinPermission = getConfig().getString("join-permission");
+        joinPermission = getConfig().getString("join-permission");
 
-		File conf = new File(getDataFolder().getAbsoluteFile().getParentFile().getParentFile(), "data.yml");
+        File conf = new File(getDataFolder().getAbsoluteFile().getParentFile().getParentFile(), "data.yml");
         this.getLogger().info("Searching data.yml in " + conf.getAbsolutePath());
-        if (!conf.exists()) {
+        if (!conf.exists())
+        {
             log(Level.SEVERE, "Cannot find database configuration. Disabling database mode.");
             log(Level.WARNING, "Database is disabled for this session. API will work perfectly, but some plugins might have issues during run.");
             databaseConnector = new DatabaseConnector(this);
-        } else {
+        } else
+        {
             YamlConfiguration dataYML = YamlConfiguration.loadConfiguration(conf);
 
             String mainIp = dataYML.getString("redis-ip", "127.0.0.1");
@@ -119,203 +126,220 @@ public class APIPlugin extends JavaPlugin implements Listener {
 
         }
 
-		api = new ApiImplementation(this);
+        api = new ApiImplementation(this);
 
 		/*
-		Loading listeners
+        Loading listeners
 		 */
 
-		debugListener = new DebugListener();
-		api.getJoinManager().registerHandler(debugListener, 0);
-		api.getPubSub().subscribe("*", debugListener);
+        debugListener = new DebugListener();
+        api.getJoinManager().registerHandler(debugListener, 0);
+        api.getPubSub().subscribe("*", debugListener);
 
-		//Nickname
+        //Nickname
 
-		nicknamePacketListener = new NicknamePacketListener(this);
+        nicknamePacketListener = new NicknamePacketListener(this);
 
-		Bukkit.getPluginManager().registerEvents(new PlayerDataListener(this), this);
-		Bukkit.getPluginManager().registerEvents(new ChatFormatter(this), this);
-		if (configuration.getBoolean("disable-nature", false))
-			Bukkit.getPluginManager().registerEvents(new NaturalListener(), this);
-		if (configuration.getBoolean("tab-colors", true))
-			Bukkit.getPluginManager().registerEvents(new TabsColorsListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerDataListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new ChatFormatter(this), this);
+        if (configuration.getBoolean("disable-nature", false))
+            Bukkit.getPluginManager().registerEvents(new NaturalListener(), this);
+        if (configuration.getBoolean("tab-colors", true))
+            Bukkit.getPluginManager().registerEvents(new TabsColorsListener(this), this);
 
 		/*
 		Loading commands
 		 */
 
-		for (String command : this.getDescription().getCommands().keySet()) {
-			try {
-				Class clazz = Class.forName("net.samagames.core.commands.Command" + StringUtils.capitalize(command));
-				Constructor<APIPlugin> ctor = clazz.getConstructor(APIPlugin.class);
-				getCommand(command).setExecutor(ctor.newInstance(this));
-				log("Loaded command " + command + " successfully. ");
-			} catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
-				e.printStackTrace();
-			}
-		}
+        for (String command : this.getDescription().getCommands().keySet())
+        {
+            try
+            {
+                Class clazz = Class.forName("net.samagames.core.commands.Command" + StringUtils.capitalize(command));
+                Constructor<APIPlugin> ctor = clazz.getConstructor(APIPlugin.class);
+                getCommand(command).setExecutor(ctor.newInstance(this));
+                log("Loaded command " + command + " successfully. ");
+            } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e)
+            {
+                e.printStackTrace();
+            }
+        }
 
-		try {
-			Calendar calendar = new GregorianCalendar();
-			calendar.setTime(new Date());
-			if (calendar.get(Calendar.HOUR_OF_DAY) > 3 || (calendar.get(Calendar.HOUR_OF_DAY) == 3 && calendar.get(Calendar.MINUTE) >= 45))
-				calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + 1);
-			calendar.set(Calendar.HOUR_OF_DAY, 3);
-			calendar.set(Calendar.MINUTE, 45);
-			Date sched = calendar.getTime();
+        try
+        {
+            Calendar calendar = new GregorianCalendar();
+            calendar.setTime(new Date());
+            if (calendar.get(Calendar.HOUR_OF_DAY) > 3 || (calendar.get(Calendar.HOUR_OF_DAY) == 3 && calendar.get(Calendar.MINUTE) >= 45))
+                calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + 1);
+            calendar.set(Calendar.HOUR_OF_DAY, 3);
+            calendar.set(Calendar.MINUTE, 45);
+            Date sched = calendar.getTime();
 
-			Timer timer = new Timer();
-			timer.schedule(new TimerTask() {
-				@Override
-				public void run() {
-					Bukkit.getScheduler().runTaskTimer(instance, new Runnable() {
-						int minutes = 15;
-						int seconds = 1;
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask()
+            {
+                @Override
+                public void run()
+                {
+                    Bukkit.getScheduler().runTaskTimer(instance, new Runnable()
+                    {
+                        int minutes = 15;
+                        int seconds = 1;
 
-						@Override
-						public void run() {
-							seconds --;
-							if (seconds < 0) {
-								seconds = 59;
-								minutes --;
-							}
+                        @Override
+                        public void run()
+                        {
+                            seconds--;
+                            if (seconds < 0)
+                            {
+                                seconds = 59;
+                                minutes--;
+                            }
 
-							if (minutes < 0) {
-								Bukkit.getServer().shutdown();
+                            if (minutes < 0)
+                            {
+                                Bukkit.getServer().shutdown();
 
-								return;
-							}
+                                return;
+                            }
 
-							if ((seconds == 0 && (minutes % 5 == 0 || minutes >= 3)) || (minutes == 0 && seconds % 10 == 0))
-								Bukkit.broadcastMessage(ChatColor.RED + "[REBOOT] Le serveur redémarre dans " + ((minutes > 0) ? minutes + "minute" + ((minutes > 1) ? "s " : " ") : "") + ((seconds > 0) ? seconds + "seconde" + ((seconds > 1) ? "s " : " ") : ""));
-						}
-					}, 20L, 20L);
-				}
-			}, sched);
-			this.getLogger().info("Scheduled automatic reboot at : " + calendar.toString());
-		} catch (Exception e) {
-			this.getLogger().severe("CANNOT SCHEDULE AUTOMATIC SHUTDOWN.");
-			e.printStackTrace();
-		}
+                            if ((seconds == 0 && (minutes % 5 == 0 || minutes >= 3)) || (minutes == 0 && seconds % 10 == 0))
+                                Bukkit.broadcastMessage(ChatColor.RED + "[REBOOT] Le serveur redémarre dans " + ((minutes > 0) ? minutes + "minute" + ((minutes > 1) ? "s " : " ") : "") + ((seconds > 0) ? seconds + "seconde" + ((seconds > 1) ? "s " : " ") : ""));
+                        }
+                    }, 20L, 20L);
+                }
+            }, sched);
+            this.getLogger().info("Scheduled automatic reboot at : " + calendar.toString());
+        } catch (Exception e)
+        {
+            this.getLogger().severe("CANNOT SCHEDULE AUTOMATIC SHUTDOWN.");
+            e.printStackTrace();
+        }
 
-		registerServer();
-		allowJoin();
-	}
-
-	public DebugListener getDebugListener() {
-		return debugListener;
-	}
-
-	public ScheduledExecutorService getExecutor() {
-		return executor;
-	}
-
-	public void onDisable() {
-		String bungeename = getServerName();
-		Jedis rb_jedis = databaseConnector.getBungeeResource();
-		rb_jedis.hdel("servers", bungeename);
-		api.pubSub.send("servers", "stop " + bungeename);
-		rb_jedis.close();
-		nicknamePacketListener.close();
-	}
-
-	public boolean canConnect(String ip) {
-		return containsIp(ip);
-	}
-
-	public void refreshIps(Set<String> ips) {
-		ipWhitelist.stream().filter(ip -> !ips.contains(ip)).forEach(ipWhitelist::remove);
-
-		ips.stream().filter(ip -> !ipWhitelist.contains(ip)).forEach(ipWhitelist::add);
-	}
-
-	public boolean containsIp(String ip) {
-		return ipWhitelist.contains(ip);
-	}
-
-    public boolean isGameServer() {
-        return gameServer;
+        registerServer();
+        allowJoin();
     }
 
-	public void denyJoin(String reason) {
-		allowJoin = false;
-		denyJoinReason = reason;
-	}
+    public DebugListener getDebugListener()
+    {
+        return debugListener;
+    }
 
-	public void allowJoin() {
-		allowJoin = true;
-	}
+    public ScheduledExecutorService getExecutor()
+    {
+        return executor;
+    }
 
-	public String getServerName() {
-		return serverName;
-	}
+    public void onDisable()
+    {
+        String bungeename = getServerName();
+        Jedis rb_jedis = databaseConnector.getBungeeResource();
+        rb_jedis.hdel("servers", bungeename);
+        api.pubSub.send("servers", "stop " + bungeename);
+        rb_jedis.close();
+        nicknamePacketListener.close();
+    }
 
-	public boolean doesAllowJoin() {
-		return allowJoin;
-	}
+    public boolean canConnect(String ip)
+    {
+        return containsIp(ip);
+    }
 
-	public void registerServer() {
-		if (serverRegistered)
-			return;
+    public void refreshIps(Set<String> ips)
+    {
+        ipWhiteList.stream().filter(ip -> !ips.contains(ip)).forEach(ipWhiteList::remove);
 
-		log("Trying to register server to the proxy");
-		try {
-			String bungeename = getServerName();
-			Jedis rb_jedis = databaseConnector.getBungeeResource();
-			rb_jedis.hset("servers", bungeename, this.getServer().getIp() + ":" + this.getServer().getPort());
-			rb_jedis.close();
+        ips.stream().filter(ip -> !ipWhiteList.contains(ip)).forEach(ipWhiteList::add);
+    }
+
+    public boolean containsIp(String ip)
+    {
+        return ipWhiteList.contains(ip);
+    }
+
+    public void allowJoin()
+    {
+        allowJoin = true;
+    }
+
+    public String getServerName()
+    {
+        return serverName;
+    }
+
+    public void registerServer()
+    {
+        if (serverRegistered)
+            return;
+
+        log("Trying to register server to the proxy");
+        try
+        {
+            String bungeename = getServerName();
+            Jedis rb_jedis = databaseConnector.getBungeeResource();
+            rb_jedis.hset("servers", bungeename, this.getServer().getIp() + ":" + this.getServer().getPort());
+            rb_jedis.close();
 
 
-			api.pubSub.send("servers", "heartbeat " + bungeename + " " + this.getServer().getIp() + " " + this.getServer().getPort());
+            api.pubSub.send("servers", "heartbeat " + bungeename + " " + this.getServer().getIp() + " " + this.getServer().getPort());
 
 
-			Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
-				Jedis jedis = databaseConnector.getBungeeResource();
-				jedis.hset("servers", bungeename, this.getServer().getIp() + ":" + this.getServer().getPort());
-				jedis.close();
+            Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
+                Jedis jedis = databaseConnector.getBungeeResource();
+                jedis.hset("servers", bungeename, this.getServer().getIp() + ":" + this.getServer().getPort());
+                jedis.close();
 
-				try {
-					for (Player player : Bukkit.getOnlinePlayers()) {
-						 jedis.sadd("connectedonserv:" + bungeename, player.getUniqueId().toString());
-				}
-				} catch (Exception ignored) {}
+                try
+                {
+                    for (Player player : Bukkit.getOnlinePlayers())
+                    {
+                        jedis.sadd("connectedonserv:" + bungeename, player.getUniqueId().toString());
+                    }
+                } catch (Exception ignored)
+                {
+                }
 
-				api.pubSub.send("servers", "heartbeat " + bungeename + " " + this.getServer().getIp() + " " + this.getServer().getPort());
+                api.pubSub.send("servers", "heartbeat " + bungeename + " " + this.getServer().getIp() + " " + this.getServer().getPort());
 
-			}, 30*20, 30*20);
-		} catch (Exception ignore) {
-			ignore.printStackTrace();
-			return;
-		}
+            }, 30 * 20, 30 * 20);
+        } catch (Exception ignore)
+        {
+            ignore.printStackTrace();
+            return;
+        }
 
-		serverRegistered = true;
-	}
+        serverRegistered = true;
+    }
 
 
 	/*
 	Listen for join
 	 */
 
-	@EventHandler
-	public void onLogin(PlayerLoginEvent event) {
-		if (!allowJoin) {
-			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ChatColor.RED + denyJoinReason);
-			event.setResult(PlayerLoginEvent.Result.KICK_WHITELIST);
-			event.setKickMessage(ChatColor.RED + denyJoinReason);
+    @EventHandler
+    public void onLogin(PlayerLoginEvent event)
+    {
+        if (!allowJoin)
+        {
+            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ChatColor.RED + denyJoinReason);
+            event.setResult(PlayerLoginEvent.Result.KICK_WHITELIST);
+            event.setKickMessage(ChatColor.RED + denyJoinReason);
 
-			return;
-		}
+            return;
+        }
 
-		String ip = event.getRealAddress().getHostAddress();
+        String ip = event.getRealAddress().getHostAddress();
 
-		if (joinPermission != null && ! api.getPermissionsManager().hasPermission(event.getPlayer(), joinPermission)) {
-			event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, "Vous n'avez pas la permission de rejoindre ce serveur.");
-		}
+        if (joinPermission != null && !api.getPermissionsManager().hasPermission(event.getPlayer(), joinPermission))
+        {
+            event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, "Vous n'avez pas la permission de rejoindre ce serveur.");
+        }
 
-		if (!ipWhitelist.contains(ip)) {
-			event.setResult(PlayerLoginEvent.Result.KICK_WHITELIST);
-			event.setKickMessage(ChatColor.RED + "Erreur de connexion vers le serveur... Merci de bien vouloir ré-essayer plus tard.");
-			Bukkit.getLogger().info("[WARNING] An user tried to connect from IP " + event.getRealAddress().getHostAddress());
-		}
-	}
+        if (!ipWhiteList.contains(ip))
+        {
+            event.setResult(PlayerLoginEvent.Result.KICK_WHITELIST);
+            event.setKickMessage(ChatColor.RED + "Erreur de connexion vers le serveur... Merci de bien vouloir ré-essayer plus tard.");
+            Bukkit.getLogger().info("[WARNING] An user tried to connect from IP " + event.getRealAddress().getHostAddress());
+        }
+    }
 }

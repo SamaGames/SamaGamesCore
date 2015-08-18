@@ -12,19 +12,23 @@ import org.bukkit.event.player.PlayerQuitEvent;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class PlayerDataListener extends APIListener {
+public class PlayerDataListener extends APIListener
+{
 
-	public PlayerDataListener(APIPlugin plugin) {
-		super(plugin);
-	}
+    public PlayerDataListener(APIPlugin plugin)
+    {
+        super(plugin);
+    }
 
-	@EventHandler
-	public void onLogout(PlayerQuitEvent event) {
-		api.getPlayerManager().unload(event.getPlayer().getUniqueId());
-	}
+    @EventHandler
+    public void onLogout(PlayerQuitEvent event)
+    {
+        api.getPlayerManager().unload(event.getPlayer().getUniqueId());
+    }
 
-	@EventHandler
-	public void onLogout(PlayerKickEvent event) {
-		api.getPlayerManager().unload(event.getPlayer().getUniqueId());
-	}
+    @EventHandler
+    public void onLogout(PlayerKickEvent event)
+    {
+        api.getPlayerManager().unload(event.getPlayer().getUniqueId());
+    }
 }
