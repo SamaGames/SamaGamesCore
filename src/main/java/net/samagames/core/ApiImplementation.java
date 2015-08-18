@@ -86,7 +86,7 @@ public class ApiImplementation extends SamaGamesAPI
         pubSub.subscribe("commands.servers." + getServerName(), new RemoteCommandsHandler());
         pubSub.subscribe("commands.servers.all", new RemoteCommandsHandler());
 
-        ModerationJoinHandler moderationJoinHandler = new ModerationJoinHandler(implement);
+        ModerationJoinHandler moderationJoinHandler = new ModerationJoinHandler(this);
         implement.registerHandler(moderationJoinHandler, - 1);
 
         pubSub.subscribe(plugin.getServerName(), moderationJoinHandler);

@@ -42,7 +42,7 @@ public class PlayerData extends AbstractPlayerData {
 	}
 
 	protected void refreshIfNeeded() {
-		if ((lastRefresh.getTime() + (1000 * 60 * 1)) < System.currentTimeMillis()) {
+		if ((lastRefresh.getTime() + (1000 * 60)) < System.currentTimeMillis()) {
 			updateData();
 		}
 	}

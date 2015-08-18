@@ -38,10 +38,10 @@ import java.util.UUID;
 
 public class JoinManagerImplement implements IJoinManager, Listener {
 
-    protected TreeMap<Integer, IJoinHandler> handlerTreeMap = new TreeMap<>();
-    protected HashSet<UUID> moderatorsExpected = new HashSet<>();
-    protected HashSet<UUID> playersExpected = new HashSet<>();
-    protected boolean isPartyLimited;
+    private TreeMap<Integer, IJoinHandler> handlerTreeMap = new TreeMap<>();
+    private HashSet<UUID> moderatorsExpected = new HashSet<>();
+    private HashSet<UUID> playersExpected = new HashSet<>();
+    private boolean isPartyLimited;
 
     public JoinManagerImplement() {
         isPartyLimited = !SamaGamesAPI.get().getServerName().startsWith("Hub");

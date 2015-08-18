@@ -3,6 +3,7 @@ package net.samagames.core.api.network;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.network.IJoinHandler;
 import net.samagames.api.pubsub.IPacketsReceiver;
+import net.samagames.core.ApiImplementation;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,16 +13,15 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.UUID;
 
-/**
- * Created by LeadDev on 09/03/2015.
- */
 public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver {
 
+    private final ApiImplementation api;
     protected HashMap<UUID, UUID> teleportTargets = new HashMap<>();
     protected JoinManagerImplement manager;
 
-    public ModerationJoinHandler(JoinManagerImplement manager) {
-        this.manager = manager;
+    public ModerationJoinHandler(ApiImplementation api) {
+        this.api = api;
+        this.manager = (JoinManagerImplement) api.getJoinManager();
     }
 
     @Override
@@ -44,7 +44,7 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver {
         UUID uuid = UUID.fromString(id);
 
         if (SamaGamesAPI.get().getPermissionsManager().hasPermission(uuid, "games.modjoin"))
-            manager.moderatorsExpected.add(uuid);
+            manager.addModerator(uuid);
 
         if (packet.startsWith("teleport")) {
             try  {
@@ -56,6 +56,6 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver {
             }
         }
 
-        SamaGamesAPI.get().getProxyDataManager().getProxiedPlayer(uuid).connect(SamaGamesAPI.get().getServerName());
+        api.getProxyDataManager().getProxiedPlayer(uuid).connect(SamaGamesAPI.get().getServerName());
     }
 }

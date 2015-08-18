@@ -53,7 +53,6 @@ public class PermissionsManager extends BasicPermissionManager {
 	 * Only works for onlineplayers.
 	 * @param player UUID for the player. Must be online
 	 * @param permission The permission to check
-	 * @return
 	 */
 	@Override
 	public boolean hasPermission(UUID player, String permission) {

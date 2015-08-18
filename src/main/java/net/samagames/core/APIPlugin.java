@@ -33,7 +33,7 @@ import java.util.logging.Level;
  */
 public class APIPlugin extends JavaPlugin implements Listener {
 
-	protected static ApiImplementation api;
+	protected ApiImplementation api;
 	protected static APIPlugin instance;
 	protected DatabaseConnector databaseConnector;
 	protected String serverName;
@@ -55,7 +55,7 @@ public class APIPlugin extends JavaPlugin implements Listener {
 		return instance;
 	}
 
-	public static ApiImplementation getApi() {
+	public ApiImplementation getAPI() {
 		return api;
 	}
 
@@ -147,8 +147,8 @@ public class APIPlugin extends JavaPlugin implements Listener {
 		for (String command : this.getDescription().getCommands().keySet()) {
 			try {
 				Class clazz = Class.forName("net.samagames.core.commands.Command" + StringUtils.capitalize(command));
-				Constructor ctor = clazz.getConstructor(APIPlugin.class);
-				getCommand(command).setExecutor((CommandExecutor) ctor.newInstance(this));
+				Constructor<APIPlugin> ctor = clazz.getConstructor(APIPlugin.class);
+				getCommand(command).setExecutor(ctor.newInstance(this));
 				log("Loaded command " + command + " successfully. ");
 			} catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
 				e.printStackTrace();
@@ -170,7 +170,7 @@ public class APIPlugin extends JavaPlugin implements Listener {
 				public void run() {
 					Bukkit.getScheduler().runTaskTimer(instance, new Runnable() {
 						int minutes = 15;
-						int seconds = 01;
+						int seconds = 1;
 
 						@Override
 						public void run() {
@@ -224,15 +224,9 @@ public class APIPlugin extends JavaPlugin implements Listener {
 	}
 
 	public void refreshIps(Set<String> ips) {
-		for (String ip : ipWhitelist) {
-			if (!ips.contains(ip))
-				ipWhitelist.remove(ip);
-		}
+		ipWhitelist.stream().filter(ip -> !ips.contains(ip)).forEach(ipWhitelist::remove);
 
-		for (String ip : ips) {
-			if (!ipWhitelist.contains(ip))
-				ipWhitelist.add(ip);
-		}
+		ips.stream().filter(ip -> !ipWhitelist.contains(ip)).forEach(ipWhitelist::add);
 	}
 
 	public boolean containsIp(String ip) {

@@ -10,9 +10,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.UUID;
 
-/**
- * Created by LeadDev on 27/08/14.
- */
 public class PlayerListeners implements Listener {
 
     protected BasicPermissionManager plugin;
@@ -23,7 +20,7 @@ public class PlayerListeners implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onLogin(final AsyncPlayerPreLoginEvent ev) {
-        plugin.api.getManager().getUser(ev.getUniqueId());
+        plugin.getApi().getManager().getUser(ev.getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -31,7 +28,7 @@ public class PlayerListeners implements Listener {
         if (!plugin.isLobby())
             plugin.api.getManager().refreshPerms(ev.getPlayer().getUniqueId());
         else
-            plugin.runAsync(() -> plugin.api.getManager().refreshPerms(ev.getPlayer().getUniqueId()));
+            plugin.runAsync(() -> plugin.getApi().getManager().refreshPerms(ev.getPlayer().getUniqueId()));
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -40,7 +37,7 @@ public class PlayerListeners implements Listener {
     }
 
     public void disconnect(UUID player) {
-        plugin.players.remove(player);
+        plugin.removePlayer(player);
     }
 
     @EventHandler

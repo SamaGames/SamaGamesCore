@@ -15,13 +15,11 @@ import redis.clients.jedis.Jedis;
  */
 public class PubSubAPI implements IPubSubAPI {
 
-	private ApiImplementation api;
 	private Subscriber subscriber;
 	private Sender sender;
 	private boolean continueSub = true;
 
 	public PubSubAPI(ApiImplementation api) {
-		this.api = api;
 		subscriber = new Subscriber();
 		new Thread(() -> {
 			while (continueSub) {

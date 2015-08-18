@@ -27,16 +27,7 @@ public class MessageManagerImpl implements IMessageManager
     @Override
     public Message writePlayerJoinToAll(Player player)
     {
-        StringBuilder builder = new StringBuilder();
-        builder.append(ChatColor.YELLOW).append(player.getName());
-        builder.append(" a rejoint la partie ! ");
-        builder.append(ChatColor.DARK_GRAY).append("[");
-        builder.append(ChatColor.RED).append(this.machine.getGame().getConnectedPlayers());
-        builder.append(ChatColor.DARK_GRAY).append("/");
-        builder.append(ChatColor.RED).append(this.machine.getGameProperties().getMaxSlots());
-        builder.append(ChatColor.DARK_GRAY).append("]");
-
-        return new Message(builder.toString(), this.machine.getGameTag()).displayToAll();
+        return new Message(String.valueOf(ChatColor.YELLOW) + player.getName() + " a rejoint la partie ! " + ChatColor.DARK_GRAY + "[" + ChatColor.RED + this.machine.getGame().getConnectedPlayers() + ChatColor.DARK_GRAY + "/" + ChatColor.RED + this.machine.getGameProperties().getMaxSlots() + ChatColor.DARK_GRAY + "]", this.machine.getGameTag()).displayToAll();
     }
 
     @Override

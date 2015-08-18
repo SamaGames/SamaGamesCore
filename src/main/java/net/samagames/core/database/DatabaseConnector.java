@@ -2,7 +2,6 @@ package net.samagames.core.database;
 
 import net.samagames.core.APIPlugin;
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitTask;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -21,7 +20,6 @@ public class DatabaseConnector {
 	private RedisServer main;
 	private RedisServer bungee;
 	private WhitelistRefresher keeper;
-	private BukkitTask keepTask;
 
 	public DatabaseConnector(APIPlugin plugin) {
 		mainPool = null;
@@ -38,11 +36,11 @@ public class DatabaseConnector {
 	}
 
 	public Jedis getResource() {
-		return (mainPool == null) ? new FakeJedis() : mainPool.getResource();
+		return mainPool.getResource();
 	}
 
 	public Jedis getBungeeResource() {
-		return (cachePool == null) ? new FakeJedis() : cachePool.getResource();
+		return cachePool.getResource();
 	}
 
 	public void killConnections() {
@@ -63,7 +61,7 @@ public class DatabaseConnector {
 
 		if (keeper == null) {
 			keeper = new WhitelistRefresher(plugin, this);
-			keepTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, keeper, 0, 30*20);
+			Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, keeper, 0, 30*20);
 		}
 	}
 

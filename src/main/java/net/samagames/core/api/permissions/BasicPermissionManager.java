@@ -28,7 +28,7 @@ public abstract class BasicPermissionManager implements RawPlugin, IPermissionsM
 
 	private final boolean isLobby;
 	protected PermissionsAPI api = null;
-	protected HashMap<UUID, VirtualPlayer> players = new HashMap<>();
+	private HashMap<UUID, VirtualPlayer> players = new HashMap<>();
 	protected ArrayList<BukkitTask> tasks = new ArrayList<>();
 
 	public BasicPermissionManager() {
@@ -114,8 +114,13 @@ public abstract class BasicPermissionManager implements RawPlugin, IPermissionsM
 	public boolean hasPermission(CommandSender sender, String permission) {
 		if (sender instanceof ConsoleCommandSender)
 			return true;
-		if (sender instanceof Player)
+		else if (sender instanceof Player)
 			return hasPermission((Player) sender, permission);
 		return false;
+	}
+
+	public void removePlayer(UUID uuid)
+	{
+		this.players.remove(uuid);
 	}
 }

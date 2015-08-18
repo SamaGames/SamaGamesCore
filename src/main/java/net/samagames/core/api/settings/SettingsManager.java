@@ -18,12 +18,10 @@ public class SettingsManager implements ISettingsManager {
     public Map<String, String> getSettings(UUID player) {
         Map<String, String> data = api.getPlayerManager().getPlayerData(player).getValues();
         HashMap<String, String> settings = new HashMap<>();
-        for (Map.Entry<String, String> line : data.entrySet()) {
-            if (line.getKey().startsWith("settings.")) {
-                String setting = line.getKey().split(".")[0];
-                settings.put(setting, line.getValue());
-            }
-        }
+        data.entrySet().stream().filter(line -> line.getKey().startsWith("settings.")).forEach(line -> {
+            String setting = line.getKey().split(".")[0];
+            settings.put(setting, line.getValue());
+        });
 
         return settings;
     }

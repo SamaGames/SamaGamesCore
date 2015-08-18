@@ -31,7 +31,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
 	private final String resetUrl;
 	protected HashSet<UUID> currentlyDownloading = new HashSet<>();
 	protected HashMap<UUID, KillerTask> killers = new HashMap<>();
-	private ProtocolHandler handler = null;
+	private ProtocolHandler handler;
 	private String forceUrl;
 	private String forceHash;
 	private IResourceCallback callback;
@@ -39,7 +39,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
 	public ResourcePacksManagerImpl(SamaGamesAPI api) {
 		Bukkit.getPluginManager().registerEvents(this, APIPlugin.getInstance());
 
-		handler = new ProtocolHandler(APIPlugin.getInstance(), this);
+		this.handler = new ProtocolHandler(APIPlugin.getInstance(), this);
         this.api = api;
 
 		Jedis jedis = api.getResource();

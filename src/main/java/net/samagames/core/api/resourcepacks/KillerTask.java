@@ -25,11 +25,6 @@ class KillerTask extends BukkitRunnable {
 		this.impl = impl;
 	}
 
-	/**
-	 *
-	 * @param state
-	 * @return true if the  task can be removed
-	 */
 	public void changeState(PacketPlayInResourcePackStatus.EnumResourcePackStatus state) {
 		if (state == PacketPlayInResourcePackStatus.EnumResourcePackStatus.ACCEPTED) {
 			remaining = 60;
