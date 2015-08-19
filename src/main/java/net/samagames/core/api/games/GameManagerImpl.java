@@ -1,10 +1,7 @@
 package net.samagames.core.api.games;
 
 import net.samagames.api.SamaGamesAPI;
-import net.samagames.api.games.Game;
-import net.samagames.api.games.IGameManager;
-import net.samagames.api.games.IGameProperties;
-import net.samagames.api.games.Status;
+import net.samagames.api.games.*;
 import net.samagames.api.games.themachine.ICoherenceMachine;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
@@ -226,6 +223,12 @@ public class GameManagerImpl implements IGameManager
     public IGameProperties getGameProperties()
     {
         return this.gameProperties;
+    }
+
+    @Override
+    public GameGuiManager getGameGuiManager()
+    {
+        return new GameGuiManager();
     }
 
     @Override
