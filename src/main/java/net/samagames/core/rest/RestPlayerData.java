@@ -54,6 +54,8 @@ public class RestPlayerData extends PlayerData
     public void remove(String key)
     {
         playerData.remove(key);
+
+        // Waiting for Raesta to implement it
     }
 
     @Override
