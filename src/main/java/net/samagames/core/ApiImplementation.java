@@ -45,21 +45,21 @@ import redis.clients.jedis.Jedis;
  */
 public class ApiImplementation extends SamaGamesAPI
 {
-    protected final APIPlugin plugin;
-    protected final IGuiManager guiManager;
-    protected final ISettingsManager settingsManager;
-    protected final IPlayerDataManager playerDataManager;
-    protected final IAchievementManager achievementManager;
-    protected final IPubSubAPI pubSub;
-    protected final IUUIDTranslator uuidTranslator;
-    protected final IJoinManager joinManager;
-    protected final IProxyDataManager proxyDataManager;
-    protected final IPartiesManager partiesManager;
-    protected final IResourcePacksManager resourcePacksManager;
-    protected final BasicPermissionManager permissionsManager;
-    protected final IFriendsManager friendsManager;
-    protected final BarAPI barAPI;
-    protected IGameManager gameApi;
+    private final APIPlugin plugin;
+    private final IGuiManager guiManager;
+    private final ISettingsManager settingsManager;
+    private final IPlayerDataManager playerDataManager;
+    private final IAchievementManager achievementManager;
+    private final IPubSubAPI pubSub;
+    private final IUUIDTranslator uuidTranslator;
+    private final IJoinManager joinManager;
+    private final IProxyDataManager proxyDataManager;
+    private final IPartiesManager partiesManager;
+    private final IResourcePacksManager resourcePacksManager;
+    private final BasicPermissionManager permissionsManager;
+    private final IFriendsManager friendsManager;
+    private final BarAPI barAPI;
+    private IGameManager gameApi;
 
     public ApiImplementation(APIPlugin plugin)
     {
@@ -152,7 +152,7 @@ public class ApiImplementation extends SamaGamesAPI
 
     public Jedis getResource()
     {
-        return plugin.databaseConnector.getResource();
+        return plugin.getDatabaseConnector().getResource();
     }
 
     public AbstractStatsManager getStatsManager(String game)
@@ -203,7 +203,7 @@ public class ApiImplementation extends SamaGamesAPI
 
     public Jedis getBungeeResource()
     {
-        return plugin.databaseConnector.getBungeeResource();
+        return plugin.getDatabaseConnector().getBungeeResource();
     }
 
     @Override

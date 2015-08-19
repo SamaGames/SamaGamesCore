@@ -33,21 +33,21 @@ import java.util.logging.Level;
 public class APIPlugin extends JavaPlugin implements Listener
 {
 
-    protected static APIPlugin instance;
-    protected final CopyOnWriteArraySet<String> ipWhiteList = new CopyOnWriteArraySet<>();
-    protected ApiImplementation api;
-    protected DatabaseConnector databaseConnector;
-    protected String serverName;
-    protected FileConfiguration configuration;
-    protected boolean allowJoin;
-    protected final String denyJoinReason = ChatColor.RED + "Serveur non initialisé.";
-    protected boolean serverRegistered;
-    protected boolean gameServer;
-    protected String joinPermission = null;
-    protected ScheduledExecutorService executor;
-    protected DebugListener debugListener;
+    private static APIPlugin instance;
+    private final CopyOnWriteArraySet<String> ipWhiteList = new CopyOnWriteArraySet<>();
+    private ApiImplementation api;
+    private DatabaseConnector databaseConnector;
+    private String serverName;
+    private FileConfiguration configuration;
+    private boolean allowJoin;
+    private final String denyJoinReason = ChatColor.RED + "Serveur non initialisé.";
+    private boolean serverRegistered;
+    private boolean gameServer;
+    private String joinPermission = null;
+    private ScheduledExecutorService executor;
+    private DebugListener debugListener;
 
-    protected NicknamePacketListener nicknamePacketListener;
+    private NicknamePacketListener nicknamePacketListener;
 
 
     public static APIPlugin getInstance()
@@ -235,9 +235,12 @@ public class APIPlugin extends JavaPlugin implements Listener
         String bungeename = getServerName();
         Jedis rb_jedis = databaseConnector.getBungeeResource();
         rb_jedis.hdel("servers", bungeename);
-        api.pubSub.send("servers", "stop " + bungeename);
+        api.getPubSub().send("servers", "stop " + bungeename);
         rb_jedis.close();
         nicknamePacketListener.close();
+        databaseConnector.killConnections();
+        executor.shutdownNow();
+        Bukkit.getServer().shutdown();
     }
 
     public boolean canConnect(String ip)
@@ -281,7 +284,7 @@ public class APIPlugin extends JavaPlugin implements Listener
             rb_jedis.close();
 
 
-            api.pubSub.send("servers", "heartbeat " + bungeename + " " + this.getServer().getIp() + " " + this.getServer().getPort());
+            api.getPubSub().send("servers", "heartbeat " + bungeename + " " + this.getServer().getIp() + " " + this.getServer().getPort());
 
 
             Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
@@ -299,7 +302,7 @@ public class APIPlugin extends JavaPlugin implements Listener
                 {
                 }
 
-                api.pubSub.send("servers", "heartbeat " + bungeename + " " + this.getServer().getIp() + " " + this.getServer().getPort());
+                api.getPubSub().send("servers", "heartbeat " + bungeename + " " + this.getServer().getIp() + " " + this.getServer().getPort());
 
             }, 30 * 20, 30 * 20);
         } catch (Exception ignore)
@@ -328,18 +331,21 @@ public class APIPlugin extends JavaPlugin implements Listener
             return;
         }
 
-        String ip = event.getRealAddress().getHostAddress();
-
         if (joinPermission != null && !api.getPermissionsManager().hasPermission(event.getPlayer(), joinPermission))
         {
             event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, "Vous n'avez pas la permission de rejoindre ce serveur.");
         }
 
-        if (!ipWhiteList.contains(ip))
+        if (!ipWhiteList.contains(event.getRealAddress().getHostAddress()))
         {
             event.setResult(PlayerLoginEvent.Result.KICK_WHITELIST);
             event.setKickMessage(ChatColor.RED + "Erreur de connexion vers le serveur... Merci de bien vouloir ré-essayer plus tard.");
-            Bukkit.getLogger().info("[WARNING] An user tried to connect from IP " + event.getRealAddress().getHostAddress());
+            Bukkit.getLogger().log(Level.WARNING, "An user tried to connect from IP " + event.getRealAddress().getHostAddress());
         }
+    }
+
+    public DatabaseConnector getDatabaseConnector()
+    {
+        return databaseConnector;
     }
 }
