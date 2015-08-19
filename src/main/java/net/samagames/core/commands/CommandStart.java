@@ -6,6 +6,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+/**
+ * This file is a part of the SamaGames project
+ * This code is absolutely confidential.
+ * Created by Thog
+ * (C) Copyright Elydra Network 2015
+ * All rights reserved.
+ */
 public class CommandStart extends AbstractCommand
 {
     public CommandStart(APIPlugin plugin)

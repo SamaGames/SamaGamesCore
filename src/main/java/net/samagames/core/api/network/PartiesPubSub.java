@@ -14,30 +14,34 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class PartiesPubSub implements IPacketsReceiver {
+public class PartiesPubSub implements IPacketsReceiver
+{
 
-	private final JoinManagerImplement implement;
+    private final JoinManagerImplement implement;
 
-	public PartiesPubSub(JoinManagerImplement implement) {
-		this.implement = implement;
-	}
+    public PartiesPubSub(JoinManagerImplement implement)
+    {
+        this.implement = implement;
+    }
 
 	/*
-	Protocol data :
+    Protocol data :
 	partyjoin <uuid of the party>
 	 */
 
-	@Override
-	public void receive(String channel, String packet) {
-		UUID partyID = UUID.fromString(packet);
-		JoinResponse response = implement.requestPartyJoin(partyID);
+    @Override
+    public void receive(String channel, String packet)
+    {
+        UUID partyID = UUID.fromString(packet);
+        JoinResponse response = implement.requestPartyJoin(partyID);
 
-		if (!response.isAllowed()) {
-			TextComponent component = new TextComponent("Impossible de vous connecter : " + response.getReason());
-			component.setColor(net.md_5.bungee.api.ChatColor.RED);
-			SamaGamesAPI.get().getProxyDataManager()
-					.getProxiedPlayer(SamaGamesAPI.get().getPartiesManager().getLeader(partyID))
-					.sendMessage(component);
-		}
-	}
+        if (!response.isAllowed())
+        {
+            TextComponent component = new TextComponent("Impossible de vous connecter : " + response.getReason());
+            component.setColor(net.md_5.bungee.api.ChatColor.RED);
+            SamaGamesAPI.get().getProxyDataManager()
+                    .getProxiedPlayer(SamaGamesAPI.get().getPartiesManager().getLeader(partyID))
+                    .sendMessage(component);
+        }
+    }
 }

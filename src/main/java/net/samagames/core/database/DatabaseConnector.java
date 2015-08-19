@@ -2,7 +2,6 @@ package net.samagames.core.database;
 
 import net.samagames.core.APIPlugin;
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitTask;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -13,65 +12,72 @@ import redis.clients.jedis.JedisPoolConfig;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class DatabaseConnector {
+public class DatabaseConnector
+{
 
-	protected JedisPool mainPool;
-	protected JedisPool cachePool;
-	protected APIPlugin plugin;
-	private RedisServer main;
-	private RedisServer bungee;
-	private WhitelistRefresher keeper;
-	private BukkitTask keepTask;
+    protected final APIPlugin plugin;
+    protected JedisPool mainPool;
+    protected JedisPool cachePool;
+    private RedisServer main;
+    private RedisServer bungee;
+    private WhiteListRefreshTask keeper;
 
-	public DatabaseConnector(APIPlugin plugin) {
-		mainPool = null;
-		this.plugin = plugin;
-	}
+    public DatabaseConnector(APIPlugin plugin)
+    {
+        mainPool = null;
+        this.plugin = plugin;
+    }
 
-	public DatabaseConnector(APIPlugin plugin, RedisServer main, RedisServer bungee)
-	{
-		this.plugin = plugin;
-		this.main = main;
-		this.bungee = bungee;
+    public DatabaseConnector(APIPlugin plugin, RedisServer main, RedisServer bungee)
+    {
+        this.plugin = plugin;
+        this.main = main;
+        this.bungee = bungee;
 
-		initiateConnections();
-	}
+        initiateConnections();
+    }
 
-	public Jedis getResource() {
-		return (mainPool == null) ? new FakeJedis() : mainPool.getResource();
-	}
+    public Jedis getResource()
+    {
+        return mainPool.getResource();
+    }
 
-	public Jedis getBungeeResource() {
-		return (cachePool == null) ? new FakeJedis() : cachePool.getResource();
-	}
+    public Jedis getBungeeResource()
+    {
+        return cachePool.getResource();
+    }
 
-	public void killConnections() {
-		cachePool.destroy();
-		mainPool.destroy();
-	}
+    public void killConnections()
+    {
+        cachePool.destroy();
+        mainPool.destroy();
+    }
 
-	public void initiateConnections() {
-		// Préparation de la connexion
-		JedisPoolConfig config = new JedisPoolConfig();
-		config.setMaxTotal(1024);
-		config.setMaxWaitMillis(5000);
+    public void initiateConnections()
+    {
+        // Préparation de la connexion
+        JedisPoolConfig config = new JedisPoolConfig();
+        config.setMaxTotal(1024);
+        config.setMaxWaitMillis(5000);
 
-		this.mainPool = new JedisPool(config, this.main.getIp(), this.main.getPort(), 5000, this.main.getPassword());
-		this.cachePool = new JedisPool(config, this.bungee.getIp(), this.bungee.getPort(), 5000, this.bungee.getPassword());
+        this.mainPool = new JedisPool(config, this.main.getIp(), this.main.getPort(), 5000, this.main.getPassword());
+        this.cachePool = new JedisPool(config, this.bungee.getIp(), this.bungee.getPort(), 5000, this.bungee.getPassword());
 
-		// Init du thread
+        // Init du thread
 
-		if (keeper == null) {
-			keeper = new WhitelistRefresher(plugin, this);
-			keepTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, keeper, 0, 30*20);
-		}
-	}
+        if (keeper == null)
+        {
+            keeper = new WhiteListRefreshTask(plugin, this);
+            Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, keeper, 0, 30 * 20);
+        }
+    }
 
-	protected String fastGet(String key) {
-		Jedis jedis = getResource();
-		String val = jedis.get(key);
-		jedis.close();
-		return val;
-	}
+    protected String fastGet(String key)
+    {
+        Jedis jedis = getResource();
+        String val = jedis.get(key);
+        jedis.close();
+        return val;
+    }
 
 }

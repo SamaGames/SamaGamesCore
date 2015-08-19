@@ -10,41 +10,45 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.UUID;
 
-/**
- * Created by LeadDev on 27/08/14.
- */
-public class PlayerListeners implements Listener {
+public class PlayerListeners implements Listener
+{
 
-    protected BasicPermissionManager plugin;
+    protected final BasicPermissionManager plugin;
 
-    public PlayerListeners(BasicPermissionManager plugin) {
+    public PlayerListeners(BasicPermissionManager plugin)
+    {
         this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onLogin(final AsyncPlayerPreLoginEvent ev) {
-        plugin.api.getManager().getUser(ev.getUniqueId());
+    public void onLogin(final AsyncPlayerPreLoginEvent ev)
+    {
+        plugin.getApi().getManager().getUser(ev.getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onJoin(final PlayerJoinEvent ev) {
+    public void onJoin(final PlayerJoinEvent ev)
+    {
         if (!plugin.isLobby())
             plugin.api.getManager().refreshPerms(ev.getPlayer().getUniqueId());
         else
-            plugin.runAsync(() -> plugin.api.getManager().refreshPerms(ev.getPlayer().getUniqueId()));
+            plugin.runAsync(() -> plugin.getApi().getManager().refreshPerms(ev.getPlayer().getUniqueId()));
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    public void onLeave(PlayerQuitEvent ev) {
+    public void onLeave(PlayerQuitEvent ev)
+    {
         disconnect(ev.getPlayer().getUniqueId());
     }
 
-    public void disconnect(UUID player) {
-        plugin.players.remove(player);
+    public void disconnect(UUID player)
+    {
+        plugin.removePlayer(player);
     }
 
     @EventHandler
-    public void onKick(PlayerKickEvent ev) {
+    public void onKick(PlayerKickEvent ev)
+    {
         disconnect(ev.getPlayer().getUniqueId());
     }
 

@@ -3,6 +3,7 @@ package net.samagames.core.api.network;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.network.IJoinHandler;
 import net.samagames.api.pubsub.IPacketsReceiver;
+import net.samagames.core.ApiImplementation;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,23 +13,26 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.UUID;
 
-/**
- * Created by LeadDev on 09/03/2015.
- */
-public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver {
+public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver
+{
 
-    protected HashMap<UUID, UUID> teleportTargets = new HashMap<>();
-    protected JoinManagerImplement manager;
+    protected final HashMap<UUID, UUID> teleportTargets = new HashMap<>();
+    protected final JoinManagerImplement manager;
+    private final ApiImplementation api;
 
-    public ModerationJoinHandler(JoinManagerImplement manager) {
-        this.manager = manager;
+    public ModerationJoinHandler(ApiImplementation api)
+    {
+        this.api = api;
+        this.manager = (JoinManagerImplement) api.getJoinManager();
     }
 
     @Override
-    public void onModerationJoin(Player player) {
+    public void onModerationJoin(Player player)
+    {
         player.sendMessage(ChatColor.GOLD + "Vous avez rejoint cette arène en mode modération.");
         player.setGameMode(GameMode.SPECTATOR);
-        if (teleportTargets.containsKey(player.getUniqueId())) {
+        if (teleportTargets.containsKey(player.getUniqueId()))
+        {
             UUID target = teleportTargets.get(player.getUniqueId());
             Player tar = Bukkit.getPlayer(target);
             if (tar != null)
@@ -38,24 +42,29 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver {
     }
 
     @Override
-    public void receive(String channel, String packet) {
+    public void receive(String channel, String packet)
+    {
         String[] args = StringUtils.split(packet, " ");
         String id = args[1];
         UUID uuid = UUID.fromString(id);
 
         if (SamaGamesAPI.get().getPermissionsManager().hasPermission(uuid, "games.modjoin"))
-            manager.moderatorsExpected.add(uuid);
+            manager.addModerator(uuid);
 
-        if (packet.startsWith("teleport")) {
-            try  {
+        if (packet.startsWith("teleport"))
+        {
+            try
+            {
                 UUID target = UUID.fromString(args[2]);
-                if (SamaGamesAPI.get().getPermissionsManager().hasPermission(uuid, "games.modjoin")) {
+                if (SamaGamesAPI.get().getPermissionsManager().hasPermission(uuid, "games.modjoin"))
+                {
                     teleportTargets.put(uuid, target);
                 }
-            } catch (Exception ignored) {
+            } catch (Exception ignored)
+            {
             }
         }
 
-        SamaGamesAPI.get().getProxyDataManager().getProxiedPlayer(uuid).connect(SamaGamesAPI.get().getServerName());
+        api.getProxyDataManager().getProxiedPlayer(uuid).connect(SamaGamesAPI.get().getServerName());
     }
 }

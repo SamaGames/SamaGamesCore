@@ -18,18 +18,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * (C) Copyright Elydra Network 2014 & 2015
  * All rights reserved.
  */
-public class GuiManager implements IGuiManager {
+public class GuiManager implements IGuiManager
+{
 
-    protected APIPlugin plugin;
-
-    protected ConcurrentHashMap<UUID, AbstractGui> currentGUIs;
+    protected final ConcurrentHashMap<UUID, AbstractGui> currentGUIs;
 
     public GuiManager(APIPlugin plugin)
     {
-        this.plugin = plugin;
-
         this.currentGUIs = new ConcurrentHashMap<>();
-
         Bukkit.getPluginManager().registerEvents(new GuiListener(this), plugin);
     }
 

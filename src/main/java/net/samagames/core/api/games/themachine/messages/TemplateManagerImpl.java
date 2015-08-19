@@ -1,18 +1,10 @@
 package net.samagames.core.api.games.themachine.messages;
 
-import net.samagames.api.games.themachine.ICoherenceMachine;
 import net.samagames.api.games.themachine.messages.ITemplateManager;
 import net.samagames.api.games.themachine.messages.templates.*;
 
 public class TemplateManagerImpl implements ITemplateManager
 {
-    private final ICoherenceMachine machine;
-
-    public TemplateManagerImpl(ICoherenceMachine machine)
-    {
-        this.machine = machine;
-    }
-
     @Override
     public BasicMessageTemplate getBasicMessageTemplate()
     {

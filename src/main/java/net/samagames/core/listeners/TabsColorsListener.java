@@ -19,52 +19,58 @@ import org.bukkit.event.player.PlayerQuitEvent;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class TabsColorsListener extends APIListener {
+public class TabsColorsListener extends APIListener
+{
 
-	protected final TeamManager manager;
+    protected final TeamManager manager;
 
-	public TabsColorsListener(APIPlugin plugin) {
-		super(plugin);
+    public TabsColorsListener(APIPlugin plugin)
+    {
+        super(plugin);
 
-		manager = new TeamManager(plugin);
-	}
+        manager = new TeamManager(plugin);
+    }
 
-	String replaceColors(String message) {
-		String s = message;
-		for (ChatColor color : ChatColor.values()) {
-			s = s.replaceAll("(?i)&" + color.getChar(), "" + color);
-		}
-		return s;
-	}
+    String replaceColors(String message)
+    {
+        String s = message;
+        for (ChatColor color : ChatColor.values())
+        {
+            s = s.replaceAll("(?i)&" + color.getChar(), "" + color);
+        }
+        return s;
+    }
 
-	@EventHandler(priority = EventPriority.HIGH)
-	public void onPlayerJoin(final PlayerJoinEvent event) {
-		final Player p = event.getPlayer();
-		manager.playerJoin(p); // Passer ça en sync si crash //
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerJoin(final PlayerJoinEvent event)
+    {
+        final Player p = event.getPlayer();
+        manager.playerJoin(p); // Passer ça en sync si crash //
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             PermissionUser user = SamaGamesAPI.get().getPermissionsManager().getApi().getUser(p.getUniqueId());
             final String display = SamaGamesAPI.get().getPermissionsManager().getDisplay(user);
             String prefix = SamaGamesAPI.get().getPermissionsManager().getPrefix(user);
 
             final String displayn = replaceColors(display + "" + prefix) + p.getName();
             p.setDisplayName(displayn);
-		});
+        });
 
-		event.setJoinMessage("");
-	}
+        event.setJoinMessage("");
+    }
 
-	@EventHandler
-	public void playerQuit(final PlayerQuitEvent event) {
-		event.setQuitMessage("");
-		manager.playerLeave(event.getPlayer());
-		event.getPlayer().setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
-	}
+    @EventHandler
+    public void playerQuit(final PlayerQuitEvent event)
+    {
+        event.setQuitMessage("");
+        manager.playerLeave(event.getPlayer());
+        event.getPlayer().setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+    }
 
-	@EventHandler
-	public void playerKick(final PlayerKickEvent event)
-	{
-		event.setLeaveMessage("");
-		manager.playerLeave(event.getPlayer());
-		event.getPlayer().setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
-	}
+    @EventHandler
+    public void playerKick(final PlayerKickEvent event)
+    {
+        event.setLeaveMessage("");
+        manager.playerLeave(event.getPlayer());
+        event.getPlayer().setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+    }
 }

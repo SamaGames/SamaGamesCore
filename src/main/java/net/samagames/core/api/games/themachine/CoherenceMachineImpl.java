@@ -25,7 +25,7 @@ public class CoherenceMachineImpl implements ICoherenceMachine
         this.gameProperties = gameProperties;
 
         this.messageManager = new MessageManagerImpl(this);
-        this.templateManager = new TemplateManagerImpl(this);
+        this.templateManager = new TemplateManagerImpl();
     }
 
     @Override

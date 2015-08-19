@@ -7,6 +7,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
+/**
+ * This file is a part of the SamaGames project
+ * This code is absolutely confidential.
+ * Created by Thog
+ * (C) Copyright Elydra Network 2015
+ * All rights reserved.
+ */
 public class CommandInv extends AbstractCommand
 {
     public CommandInv(APIPlugin plugin)

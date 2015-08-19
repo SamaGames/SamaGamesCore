@@ -1,12 +1,7 @@
 package net.samagames.core.listeners;
 
-import io.netty.channel.Channel;
 import net.samagames.tools.TinyProtocol;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
 /**
  * This file is a part of the SamaGames Project CodeBase
@@ -15,34 +10,26 @@ import java.lang.reflect.Modifier;
  * (C) Copyright Elydra Network 2014 & 2015
  * All rights reserved.
  */
-public class NicknamePacketListener extends TinyProtocol{
+public class NicknamePacketListener extends TinyProtocol
+{
 
 
     /**
      * Construct a new instance of TinyProtocol, and start intercepting packets for all connected clients and future clients.
-     * <p/>
+     * <p>
      * You can construct multiple instances per plugin.
      *
      * @param plugin - the plugin.
      */
-    public NicknamePacketListener(Plugin plugin) {
+    public NicknamePacketListener(Plugin plugin)
+    {
         super(plugin);
     }
 
-    static void setFinalStatic(Field field,Object destination, Object newValue) throws Exception {
-        field.setAccessible(true);
-
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-
-        field.set(destination, newValue);
-    }
-
-    @Override
+    /*@Override
     public Object onPacketOutAsync(Player reciever, Channel channel, Object packet) {
 
-      /*  if(packet instanceof PacketPlayOutPlayerInfo)
+        if(packet instanceof PacketPlayOutPlayerInfo)
         {
             PacketPlayOutPlayerInfo p = (PacketPlayOutPlayerInfo)packet;
 
@@ -74,11 +61,11 @@ public class NicknamePacketListener extends TinyProtocol{
                         //list.remove(data);
                         Field gameProfile = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredField("d");
                         gameProfile.setAccessible(true);
-                        setFinalStatic(gameProfile,data, new GameProfile(UUID.fromString("c59220b1-662f-4aa8-b9d9-72660eb97c10"), "Aure_wesh"));
+                        Reflection.setFinalStatic(gameProfile,data, new GameProfile(UUID.fromString("c59220b1-662f-4aa8-b9d9-72660eb97c10"), "Aure_wesh"));
                         list.add(data);
                     }
                 }
-                setFinalStatic(b, p, list);
+                Reflection.setFinalStatic(b, p, list);
 
                 packet = p;
 
@@ -128,12 +115,10 @@ public class NicknamePacketListener extends TinyProtocol{
             }
 
             packet = p;
-        }*/
+        }
 
         return super.onPacketOutAsync(reciever, channel, packet);
-    }
-
-
+    }*/
 
 
 }

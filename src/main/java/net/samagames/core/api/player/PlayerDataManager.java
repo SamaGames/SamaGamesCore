@@ -14,64 +14,62 @@ import java.util.concurrent.ConcurrentHashMap;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class PlayerDataManager implements IPlayerDataManager {
+public class PlayerDataManager implements IPlayerDataManager
+{
 
-	protected ApiImplementation api;
-	protected ConcurrentHashMap<UUID, PlayerData> cachedData = new ConcurrentHashMap<>();
-	protected CoinsManager coinsManager;
-	protected StarsManager starsManager;
+    protected final ApiImplementation api;
+    protected final ConcurrentHashMap<UUID, PlayerData> cachedData = new ConcurrentHashMap<>();
+    protected final CoinsManager coinsManager;
+    protected final StarsManager starsManager;
 
-	public PlayerDataManager(ApiImplementation api) {
-		this.api = api;
-		coinsManager = new CoinsManager(api);
-		starsManager = new StarsManager(api);
-	}
+    public PlayerDataManager(ApiImplementation api)
+    {
+        this.api = api;
+        coinsManager = new CoinsManager(api);
+        starsManager = new StarsManager(api);
+    }
 
-	CoinsManager getCoinsManager() {
-		return coinsManager;
-	}
+    CoinsManager getCoinsManager()
+    {
+        return coinsManager;
+    }
 
-	StarsManager getStarsManager() {
-		return starsManager;
-	}
+    StarsManager getStarsManager()
+    {
+        return starsManager;
+    }
 
-	@Override
-	public AbstractPlayerData getPlayerData(UUID player) {
-		return getPlayerData(player, false);
-	}
+    @Override
+    public AbstractPlayerData getPlayerData(UUID player)
+    {
+        return getPlayerData(player, false);
+    }
 
-	@Override
-	public AbstractPlayerData getPlayerData(UUID player, boolean forceRefresh) {
-		if (!cachedData.containsKey(player)) {
-			PlayerData data = new PlayerData(player, api, this);
-			cachedData.put(player, data);
-			return data;
-		}
+    @Override
+    public AbstractPlayerData getPlayerData(UUID player, boolean forceRefresh)
+    {
+        if (!cachedData.containsKey(player))
+        {
+            PlayerData data = new PlayerData(player, api, this);
+            cachedData.put(player, data);
+            return data;
+        }
 
-		PlayerData data = cachedData.get(player);
+        PlayerData data = cachedData.get(player);
 
-		if (forceRefresh) {
-			data.updateData();
-			return data;
-		}
+        if (forceRefresh)
+        {
+            data.updateData();
+            return data;
+        }
 
-		data.refreshIfNeeded();
-		return data;
-	}
+        data.refreshIfNeeded();
+        return data;
+    }
 
-	public void update(UUID player) {
-		if (!cachedData.containsKey(player)) {
-			PlayerData data = new PlayerData(player, api, this);
-			cachedData.put(player, data);
-			return;
-		}
-
-		PlayerData data = cachedData.get(player);
-		data.updateData();
-	}
-
-	@Override
-	public void unload(UUID player) {
-		cachedData.remove(player);
-	}
+    @Override
+    public void unload(UUID player)
+    {
+        cachedData.remove(player);
+    }
 }

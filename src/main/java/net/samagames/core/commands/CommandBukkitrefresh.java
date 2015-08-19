@@ -8,7 +8,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 /**
- * Created by zyuiop on 27/08/14.
+ * This file is a part of the SamaGames project
+ * This code is absolutely confidential.
+ * Created by Thog
+ * (C) Copyright Elydra Network 2015
+ * All rights reserved.
  */
 public class CommandBukkitrefresh extends AbstractCommand {
 

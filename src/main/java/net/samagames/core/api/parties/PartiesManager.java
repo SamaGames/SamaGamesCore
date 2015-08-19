@@ -15,50 +15,56 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class PartiesManager implements IPartiesManager {
+public class PartiesManager implements IPartiesManager
+{
 
-	private final ApiImplementation api;
+    private final ApiImplementation api;
 
-	public PartiesManager(ApiImplementation api) {
-		this.api = api;
-	}
+    public PartiesManager(ApiImplementation api)
+    {
+        this.api = api;
+    }
 
-	@Override
-	public UUID getPlayerParty(UUID player) {
-		Jedis jedis = api.getBungeeResource();
-		String val = jedis.get("currentparty:" + player);
-		jedis.close();
-		return (val != null) ? UUID.fromString(val) : null;
-	}
+    @Override
+    public UUID getPlayerParty(UUID player)
+    {
+        Jedis jedis = api.getBungeeResource();
+        String val = jedis.get("currentparty:" + player);
+        jedis.close();
+        return (val != null) ? UUID.fromString(val) : null;
+    }
 
-	@Override
-	public HashMap<UUID, String> getPlayersInParty(UUID party) {
-		Jedis jedis = api.getBungeeResource();
-		Map<String, String> data = jedis.hgetAll("party:" + party + ":members");
-		jedis.close();
+    @Override
+    public HashMap<UUID, String> getPlayersInParty(UUID party)
+    {
+        Jedis jedis = api.getBungeeResource();
+        Map<String, String> data = jedis.hgetAll("party:" + party + ":members");
+        jedis.close();
 
-		if (data == null)
-			return new HashMap<>();
+        if (data == null)
+            return new HashMap<>();
 
-		HashMap<UUID, String> ret = new HashMap<>();
-		data.entrySet().forEach(entry -> ret.put(UUID.fromString(entry.getKey()), entry.getValue()));
+        HashMap<UUID, String> ret = new HashMap<>();
+        data.entrySet().forEach(entry -> ret.put(UUID.fromString(entry.getKey()), entry.getValue()));
 
-		return ret;
-	}
+        return ret;
+    }
 
-	@Override
-	public String getCurrentServer(UUID party) {
-		Jedis jedis = api.getBungeeResource();
-		String server = jedis.get("party:" + party + ":server");
-		jedis.close();
-		return server;
-	}
+    @Override
+    public String getCurrentServer(UUID party)
+    {
+        Jedis jedis = api.getBungeeResource();
+        String server = jedis.get("party:" + party + ":server");
+        jedis.close();
+        return server;
+    }
 
-	@Override
-	public UUID getLeader(UUID party) {
-		Jedis jedis = api.getBungeeResource();
-		String leader = jedis.get("party:" + party + ":lead");
-		jedis.close();
-		return UUID.fromString(leader);
-	}
+    @Override
+    public UUID getLeader(UUID party)
+    {
+        Jedis jedis = api.getBungeeResource();
+        String leader = jedis.get("party:" + party + ":lead");
+        jedis.close();
+        return UUID.fromString(leader);
+    }
 }

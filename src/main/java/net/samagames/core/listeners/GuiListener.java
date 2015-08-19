@@ -18,7 +18,7 @@ import org.bukkit.inventory.PlayerInventory;
  */
 public class GuiListener implements Listener
 {
-    protected GuiManager manager;
+    protected final GuiManager manager;
 
     public GuiListener(GuiManager manager)
     {
@@ -36,7 +36,7 @@ public class GuiListener implements Listener
 
             if (gui != null)
             {
-                if(event.getClickedInventory() instanceof PlayerInventory)
+                if (event.getClickedInventory() instanceof PlayerInventory)
                     return;
 
                 String action = gui.getAction(event.getSlot());

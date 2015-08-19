@@ -27,7 +27,7 @@ public class PlayerStat implements IPlayerStat
 
         this.value = jedis.zscore("gamestats:" + this.game + ":" + this.stat, this.playerUUID.toString());
 
-        if(this.value == null)
+        if (this.value == null)
         {
             jedis.close();
             return false;

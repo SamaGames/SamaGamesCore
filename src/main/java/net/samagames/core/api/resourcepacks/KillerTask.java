@@ -12,47 +12,50 @@ import org.bukkit.scheduler.BukkitRunnable;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-class KillerTask extends BukkitRunnable {
+class KillerTask extends BukkitRunnable
+{
 
-	private final Player player;
-	private final IResourceCallback callback;
-	private final ResourcePacksManagerImpl impl;
-	private int remaining;
+    private final Player player;
+    private final IResourceCallback callback;
+    private final ResourcePacksManagerImpl impl;
+    private int remaining;
 
-	public KillerTask(Player player, IResourceCallback callback, ResourcePacksManagerImpl impl) {
-		this.player = player;
-		this.callback = callback;
-		this.impl = impl;
-	}
+    public KillerTask(Player player, IResourceCallback callback, ResourcePacksManagerImpl impl)
+    {
+        this.player = player;
+        this.callback = callback;
+        this.impl = impl;
+    }
 
-	/**
-	 *
-	 * @param state
-	 * @return true if the  task can be removed
-	 */
-	public void changeState(PacketPlayInResourcePackStatus.EnumResourcePackStatus state) {
-		if (state == PacketPlayInResourcePackStatus.EnumResourcePackStatus.ACCEPTED) {
-			remaining = 60;
-		} else if (state == PacketPlayInResourcePackStatus.EnumResourcePackStatus.SUCCESSFULLY_LOADED) {
-			this.cancel();
-			impl.removeKillerFor(player.getUniqueId());
-		} else if (state == PacketPlayInResourcePackStatus.EnumResourcePackStatus.DECLINED || state == PacketPlayInResourcePackStatus.EnumResourcePackStatus.FAILED_DOWNLOAD) {
-			this.cancel();
-			if (callback == null || callback.automaticKick(player))
-				player.kickPlayer(ChatColor.RED + "Il est nécessaire d'accepter le ressource pack pour jouer.");
+    public void changeState(PacketPlayInResourcePackStatus.EnumResourcePackStatus state)
+    {
+        if (state == PacketPlayInResourcePackStatus.EnumResourcePackStatus.ACCEPTED)
+        {
+            remaining = 60;
+        } else if (state == PacketPlayInResourcePackStatus.EnumResourcePackStatus.SUCCESSFULLY_LOADED)
+        {
+            this.cancel();
+            impl.removeKillerFor(player.getUniqueId());
+        } else if (state == PacketPlayInResourcePackStatus.EnumResourcePackStatus.DECLINED || state == PacketPlayInResourcePackStatus.EnumResourcePackStatus.FAILED_DOWNLOAD)
+        {
+            this.cancel();
+            if (callback == null || callback.automaticKick(player))
+                player.kickPlayer(ChatColor.RED + "Il est nécessaire d'accepter le ressource pack pour jouer.");
 
-			impl.removeKillerFor(player.getUniqueId());
-		}
-	}
+            impl.removeKillerFor(player.getUniqueId());
+        }
+    }
 
-	@Override
-	public void run() {
-		remaining --;
-		if (remaining <= 0) {
-			if (callback == null || callback.automaticKick(player))
-				player.kickPlayer(ChatColor.RED + "Il est nécessaire d'accepter le ressource pack pour jouer.");
+    @Override
+    public void run()
+    {
+        remaining--;
+        if (remaining <= 0)
+        {
+            if (callback == null || callback.automaticKick(player))
+                player.kickPlayer(ChatColor.RED + "Il est nécessaire d'accepter le ressource pack pour jouer.");
 
-			impl.removeKillerFor(player.getUniqueId());
-		}
-	}
+            impl.removeKillerFor(player.getUniqueId());
+        }
+    }
 }

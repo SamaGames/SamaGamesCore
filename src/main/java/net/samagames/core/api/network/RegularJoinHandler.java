@@ -15,24 +15,29 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class RegularJoinHandler implements IPacketsReceiver {
+public class RegularJoinHandler implements IPacketsReceiver
+{
 
-	private final JoinManagerImplement manager;
+    private final JoinManagerImplement manager;
 
-	public RegularJoinHandler(JoinManagerImplement manager) {
-		this.manager = manager;
-	}
+    public RegularJoinHandler(JoinManagerImplement manager)
+    {
+        this.manager = manager;
+    }
 
-	@Override
-	public void receive(String channel, String packet) {
-		UUID player = UUID.fromString(packet);
-		JoinResponse response = manager.requestJoin(player);
-		if (!response.isAllowed()) {
-			TextComponent component = new TextComponent(response.getReason());
-			component.setColor(ChatColor.RED);
-			SamaGamesAPI.get().getProxyDataManager().getProxiedPlayer(player).sendMessage(component);
-		} else {
-			SamaGamesAPI.get().getProxyDataManager().getProxiedPlayer(player).connect(SamaGamesAPI.get().getServerName());
-		}
-	}
+    @Override
+    public void receive(String channel, String packet)
+    {
+        UUID player = UUID.fromString(packet);
+        JoinResponse response = manager.requestJoin(player);
+        if (!response.isAllowed())
+        {
+            TextComponent component = new TextComponent(response.getReason());
+            component.setColor(ChatColor.RED);
+            SamaGamesAPI.get().getProxyDataManager().getProxiedPlayer(player).sendMessage(component);
+        } else
+        {
+            SamaGamesAPI.get().getProxyDataManager().getProxiedPlayer(player).connect(SamaGamesAPI.get().getServerName());
+        }
+    }
 }

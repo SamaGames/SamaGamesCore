@@ -19,23 +19,26 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
-class NameFetcher {
-    private static JsonParser parser = new JsonParser();
+class NameFetcher
+{
+    private static final JsonParser parser = new JsonParser();
 
-    public static List<String> nameHistoryFromUuid(UUID uuid) {
+    public static List<String> nameHistoryFromUuid(UUID uuid)
+    {
         URLConnection connection;
-        try {
+        try
+        {
             connection = new URL("https://api.mojang.com/user/profiles/"
                     + uuid.toString().replace("-", "").toLowerCase() + "/names"
             ).openConnection();
             String text = new Scanner(connection.getInputStream()).useDelimiter("\\Z").next();
             JsonArray list = (JsonArray) parser.parse(text);
             List<String> names = new ArrayList<>();
-            for (int i = 0; i < list.size(); i++) {
+            for (int i = 0; i < list.size(); i++)
                 names.add(((JsonObject) list.get(i)).get("name").getAsString());
-            }
             return names;
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             e.printStackTrace();
         }
         return null;

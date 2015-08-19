@@ -18,55 +18,60 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class StatsManager extends AbstractStatsManager {
+public class StatsManager extends AbstractStatsManager
+{
 
-	public StatsManager(String game) {
-		super(game);
-	}
+    public StatsManager(String game)
+    {
+        super(game);
+    }
 
-	@Override
-	public void increase(final UUID player, final String stat, final int amount) {
-		Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
-			Jedis j = SamaGamesAPI.get().getResource();
-			j.zincrby("gamestats:" + game + ":" + stat, amount, player.toString());
-			j.close();
-		});
-	}
+    @Override
+    public void increase(final UUID player, final String stat, final int amount)
+    {
+        Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
+            Jedis j = SamaGamesAPI.get().getResource();
+            j.zincrby("gamestats:" + game + ":" + stat, amount, player.toString());
+            j.close();
+        });
+    }
 
-	@Override
-	public void setValue(UUID player, String stat, int value) {
-		Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
-			Jedis j = SamaGamesAPI.get().getResource();
-			j.zadd("gamestats:" + game + ":" + stat, value, player.toString());
-			j.close();
-		});
-	}
+    @Override
+    public void setValue(UUID player, String stat, int value)
+    {
+        Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
+            Jedis j = SamaGamesAPI.get().getResource();
+            j.zadd("gamestats:" + game + ":" + stat, value, player.toString());
+            j.close();
+        });
+    }
 
-	@Override
-	public double getStatValue(UUID player, String stat) {
-		Jedis j = SamaGamesAPI.get().getResource();
-		double value = j.zscore("gamestats:"+game+":"+stat, player.toString());
-		j.close();
+    @Override
+    public double getStatValue(UUID player, String stat)
+    {
+        Jedis j = SamaGamesAPI.get().getResource();
+        double value = j.zscore("gamestats:" + game + ":" + stat, player.toString());
+        j.close();
 
-		return value;
-	}
+        return value;
+    }
 
-	@Override
-	public Leaderboard getLeaderboard(String stat)
-	{
-		ArrayList<IPlayerStat> leaderboard = new ArrayList<>();
-		Jedis jedis = SamaGamesAPI.get().getResource();
-		Set<String> ids = jedis.zrevrange("gamestats:" + game + ":" + stat, 0, 2);
-		jedis.close();
+    @Override
+    public Leaderboard getLeaderboard(String stat)
+    {
+        ArrayList<IPlayerStat> leaderboard = new ArrayList<>();
+        Jedis jedis = SamaGamesAPI.get().getResource();
+        Set<String> ids = jedis.zrevrange("gamestats:" + game + ":" + stat, 0, 2);
+        jedis.close();
 
-		for (String id : ids)
-		{
+        for (String id : ids)
+        {
             IPlayerStat playerStat = new PlayerStat(UUID.fromString(id), this.game, stat);
-			playerStat.fill();
+            playerStat.fill();
 
-			leaderboard.add(playerStat);
-		}
+            leaderboard.add(playerStat);
+        }
 
-		return new Leaderboard(leaderboard.get(0), leaderboard.get(1), leaderboard.get(2));
-	}
+        return new Leaderboard(leaderboard.get(0), leaderboard.get(1), leaderboard.get(2));
+    }
 }

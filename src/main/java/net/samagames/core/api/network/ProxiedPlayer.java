@@ -14,56 +14,67 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class ProxiedPlayer implements IProxiedPlayer {
+public class ProxiedPlayer implements IProxiedPlayer
+{
 
-	private final UUID playerId;
+    private final UUID playerId;
 
-	public ProxiedPlayer(UUID playerId) {
-		this.playerId = playerId;
-	}
-
-	@Override
-	public String getServer() {
-		return SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId).get("currentserver", "Inconnu");
-	}
-
-	@Override
-	public String getProxy() {
-		return SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId).get("currentproxy", "Inconnu");
-	}
+    public ProxiedPlayer(UUID playerId)
+    {
+        this.playerId = playerId;
+    }
 
     @Override
-    public String getIp() {
+    public String getServer()
+    {
+        return SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId).get("currentserver", "Inconnu");
+    }
+
+    @Override
+    public String getProxy()
+    {
+        return SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId).get("currentproxy", "Inconnu");
+    }
+
+    @Override
+    public String getIp()
+    {
         return SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId).get("currentip", "0.0.0.0");
     }
 
     @Override
-    public UUID getUUID() {
+    public UUID getUUID()
+    {
         return playerId;
     }
 
     @Override
-    public String getName() {
+    public String getName()
+    {
         return SamaGamesAPI.get().getUUIDTranslator().getName(playerId);
     }
 
-	@Override
-	public void disconnect(TextComponent reason) {
+    @Override
+    public void disconnect(TextComponent reason)
+    {
         SamaGamesAPI.get().getPubSub().send("apiexec.kick", playerId + " " + new Gson().toJson(reason));
-	}
+    }
 
-	@Override
-	public void connect(String server) {
+    @Override
+    public void connect(String server)
+    {
         SamaGamesAPI.get().getPubSub().send("apiexec.connect", playerId + " " + server);
-	}
+    }
 
-	@Override
-	public void connectGame(String game) {
+    @Override
+    public void connectGame(String game)
+    {
         SamaGamesAPI.get().getPubSub().send("join." + game, playerId + "");
-	}
+    }
 
-	@Override
-	public void sendMessage(TextComponent component) {
+    @Override
+    public void sendMessage(TextComponent component)
+    {
         SamaGamesAPI.get().getPubSub().send("apiexec.message", playerId + " " + new Gson().toJson(component));
-	}
+    }
 }

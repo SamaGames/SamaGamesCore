@@ -31,7 +31,7 @@ public class GameProperties implements IGameProperties
         {
             File file = new File(APIPlugin.getInstance().getDataFolder().getAbsoluteFile().getParentFile().getParentFile(), "game.json");
 
-            if(!file.exists())
+            if (!file.exists())
             {
                 APIPlugin.log(Level.WARNING, "No game properties file found! If this serveur isn't a game server, don't worry about this message!");
                 return;
@@ -43,19 +43,18 @@ public class GameProperties implements IGameProperties
             this.minSlots = rootJson.get("min-slots").getAsInt();
             this.maxSlots = rootJson.get("max-slots").getAsInt();
             this.options = rootJson.get("options").getAsJsonObject();
-            
+
             File worldFolder = new File(APIPlugin.getInstance().getDataFolder().getAbsoluteFile().getParentFile().getParentFile(), "world");
             File arenaFile = new File(worldFolder, "arena.json");
-            
-            if(!arenaFile.exists())
+
+            if (!arenaFile.exists())
             {
                 APIPlugin.log(Level.WARNING, "No arena properties file found! If this serveur isn't a game server, don't worry about this message!");
                 return;
             }
-            
+
             this.mapProperties = new JsonParser().parse(new FileReader(arenaFile)).getAsJsonObject();
-        }
-        catch (FileNotFoundException e)
+        } catch (FileNotFoundException e)
         {
             e.printStackTrace();
             APIPlugin.log(Level.SEVERE, "Can't open the game properties file. Abort start!");
@@ -81,7 +80,7 @@ public class GameProperties implements IGameProperties
 
     public JsonElement getOption(String key, JsonElement defaultValue)
     {
-        if(this.options.has(key))
+        if (this.options.has(key))
             return this.options.get(key);
         else
             return defaultValue;
@@ -94,12 +93,12 @@ public class GameProperties implements IGameProperties
 
     public JsonElement getConfig(String key, JsonElement defaultValue)
     {
-        if(this.mapProperties.has(key))
+        if (this.mapProperties.has(key))
             return this.mapProperties.get(key);
         else
             return defaultValue;
     }
-    
+
     public JsonObject getConfigs()
     {
         return this.mapProperties;

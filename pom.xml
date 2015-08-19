@@ -19,6 +19,10 @@
             <url>http://maven.samagames.net/public/</url>
         </repository>
         <repository>
+            <id>samagames-developpers</id>
+            <url>http://maven.samagames.net/developpers/</url>
+        </repository>
+        <repository>
             <id>samagames-network</id>
             <url>http://maven.samagames.net/public/</url>
         </repository>
