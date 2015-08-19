@@ -16,12 +16,12 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-class CoinsManager
+public class CoinsManager
 {
 
-    protected final ApiImplementation api;
-    protected Promo currentPromo;
-    protected Date promoNextCheck = null;
+    private final ApiImplementation api;
+    private Promo currentPromo;
+    private Date promoNextCheck;
 
     public CoinsManager(ApiImplementation api)
     {
@@ -54,7 +54,7 @@ class CoinsManager
         if (currentPromo != null && current.before(currentPromo.end))
         {
             ret.globalAmount *= currentPromo.multiply;
-            ret.infos.put(currentPromo.message, currentPromo.multiply);
+            ret.data.put(currentPromo.message, currentPromo.multiply);
         }
 
         PermissionUser user = SamaGamesAPI.get().getPermissionsManager().getApi().getUser(joueur);
@@ -74,12 +74,12 @@ class CoinsManager
 
         if (multiplier != null)
         {
-            for (String multCause : multiplier.infos.keySet())
+            for (String multCause : multiplier.data.keySet())
             {
                 String causes = "";
 
-                if (multiplier.infos.containsKey(multCause))
-                    causes += " *" + multiplier.infos.get(multCause);
+                if (multiplier.data.containsKey(multCause))
+                    causes += " *" + multiplier.data.get(multCause);
 
                 text += " [" + causes + "]";
             }

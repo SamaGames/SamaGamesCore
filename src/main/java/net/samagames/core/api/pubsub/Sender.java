@@ -15,7 +15,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class Sender implements Runnable, ISender
+class Sender implements Runnable, ISender
 {
 
     private final LinkedBlockingQueue<PendingMessage> pendingMessages = new LinkedBlockingQueue<>();

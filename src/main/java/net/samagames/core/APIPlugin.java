@@ -3,6 +3,7 @@ package net.samagames.core;
 import net.samagames.core.database.DatabaseConnector;
 import net.samagames.core.database.RedisServer;
 import net.samagames.core.listeners.*;
+import net.samagames.core.rest.RestListener;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -134,6 +135,9 @@ public class APIPlugin extends JavaPlugin implements Listener
 
         debugListener = new DebugListener();
         api.getJoinManager().registerHandler(debugListener, 0);
+
+        // Web
+        api.getJoinManager().registerHandler(new RestListener(this), 1000);
         api.getPubSub().subscribe("*", debugListener);
 
         //Nickname
@@ -255,12 +259,12 @@ public class APIPlugin extends JavaPlugin implements Listener
         ips.stream().filter(ip -> !ipWhiteList.contains(ip)).forEach(ipWhiteList::add);
     }
 
-    public boolean containsIp(String ip)
+    private boolean containsIp(String ip)
     {
         return ipWhiteList.contains(ip);
     }
 
-    public void allowJoin()
+    private void allowJoin()
     {
         allowJoin = true;
     }
@@ -270,7 +274,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         return serverName;
     }
 
-    public void registerServer()
+    private void registerServer()
     {
         if (serverRegistered)
             return;

@@ -53,7 +53,7 @@ public class DatabaseConnector
         mainPool.destroy();
     }
 
-    public void initiateConnections()
+    private void initiateConnections()
     {
         // Préparation de la connexion
         JedisPoolConfig config = new JedisPoolConfig();

@@ -3,6 +3,8 @@ package net.samagames.core.api.player;
 import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.api.player.IPlayerDataManager;
 import net.samagames.core.ApiImplementation;
+import net.samagames.core.api.player.redis.RedisPlayerData;
+import net.samagames.core.rest.RestPlayerData;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,24 +19,26 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PlayerDataManager implements IPlayerDataManager
 {
 
-    protected final ApiImplementation api;
-    protected final ConcurrentHashMap<UUID, PlayerData> cachedData = new ConcurrentHashMap<>();
-    protected final CoinsManager coinsManager;
-    protected final StarsManager starsManager;
+    private final ApiImplementation api;
+    private final ConcurrentHashMap<UUID, PlayerData> cachedData = new ConcurrentHashMap<>();
+    private final CoinsManager coinsManager;
+    private final StarsManager starsManager;
+    private final boolean isRedis;
 
-    public PlayerDataManager(ApiImplementation api)
+    public PlayerDataManager(ApiImplementation api, boolean isRedis)
     {
         this.api = api;
         coinsManager = new CoinsManager(api);
         starsManager = new StarsManager(api);
+        this.isRedis = isRedis;
     }
 
-    CoinsManager getCoinsManager()
+    public CoinsManager getCoinsManager()
     {
         return coinsManager;
     }
 
-    StarsManager getStarsManager()
+    public StarsManager getStarsManager()
     {
         return starsManager;
     }
@@ -48,9 +52,9 @@ public class PlayerDataManager implements IPlayerDataManager
     @Override
     public AbstractPlayerData getPlayerData(UUID player, boolean forceRefresh)
     {
-        if (!cachedData.containsKey(player))
+        if (!cachedData.containsKey(player) && isRedis)
         {
-            PlayerData data = new PlayerData(player, api, this);
+            PlayerData data = new RedisPlayerData(player, api, this);
             cachedData.put(player, data);
             return data;
         }
@@ -65,6 +69,14 @@ public class PlayerDataManager implements IPlayerDataManager
 
         data.refreshIfNeeded();
         return data;
+    }
+
+    public void load(UUID player, PlayerData data, boolean forceLoad)
+    {
+        if (!cachedData.containsKey(player) || forceLoad)
+        {
+            cachedData.put(player, data);
+        }
     }
 
     @Override

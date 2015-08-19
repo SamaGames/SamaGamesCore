@@ -12,7 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.logging.Level;
 
-public class GameProperties implements IGameProperties
+class GameProperties implements IGameProperties
 {
     private String mapName;
     private JsonObject options;
@@ -22,7 +22,7 @@ public class GameProperties implements IGameProperties
 
     public GameProperties()
     {
-        this.reload();
+        reload();
     }
 
     public void reload()
@@ -39,10 +39,10 @@ public class GameProperties implements IGameProperties
 
             JsonObject rootJson = new JsonParser().parse(new FileReader(file)).getAsJsonObject();
 
-            this.mapName = rootJson.get("map-name").getAsString();
-            this.minSlots = rootJson.get("min-slots").getAsInt();
-            this.maxSlots = rootJson.get("max-slots").getAsInt();
-            this.options = rootJson.get("options").getAsJsonObject();
+            mapName = rootJson.get("map-name").getAsString();
+            minSlots = rootJson.get("min-slots").getAsInt();
+            maxSlots = rootJson.get("max-slots").getAsInt();
+            options = rootJson.get("options").getAsJsonObject();
 
             File worldFolder = new File(APIPlugin.getInstance().getDataFolder().getAbsoluteFile().getParentFile().getParentFile(), "world");
             File arenaFile = new File(worldFolder, "arena.json");
@@ -53,7 +53,7 @@ public class GameProperties implements IGameProperties
                 return;
             }
 
-            this.mapProperties = new JsonParser().parse(new FileReader(arenaFile)).getAsJsonObject();
+            mapProperties = new JsonParser().parse(new FileReader(arenaFile)).getAsJsonObject();
         } catch (FileNotFoundException e)
         {
             e.printStackTrace();
@@ -65,42 +65,42 @@ public class GameProperties implements IGameProperties
 
     public String getMapName()
     {
-        return this.mapName;
+        return mapName;
     }
 
     public int getMinSlots()
     {
-        return this.minSlots;
+        return minSlots;
     }
 
     public int getMaxSlots()
     {
-        return this.maxSlots;
+        return maxSlots;
     }
 
     public JsonElement getOption(String key, JsonElement defaultValue)
     {
-        if (this.options.has(key))
-            return this.options.get(key);
+        if (options.has(key))
+            return options.get(key);
         else
             return defaultValue;
     }
 
     public JsonObject getOptions()
     {
-        return this.options;
+        return options;
     }
 
     public JsonElement getConfig(String key, JsonElement defaultValue)
     {
-        if (this.mapProperties.has(key))
-            return this.mapProperties.get(key);
+        if (mapProperties.has(key))
+            return mapProperties.get(key);
         else
             return defaultValue;
     }
 
     public JsonObject getConfigs()
     {
-        return this.mapProperties;
+        return mapProperties;
     }
 }
