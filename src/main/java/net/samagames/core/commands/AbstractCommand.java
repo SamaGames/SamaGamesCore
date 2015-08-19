@@ -29,22 +29,19 @@ public abstract class AbstractCommand implements CommandExecutor {
 		return onCommand(commandSender, s, strings);
 	}
 
-	public abstract boolean onCommand(CommandSender sender, String label, String[] arguments);
+	protected abstract boolean onCommand(CommandSender sender, String label, String[] arguments);
 
 	protected boolean hasPermission(CommandSender sender, String permission) {
-		if (sender instanceof ConsoleCommandSender)
-			return true;
-		if (sender.isOp())
+		if (sender instanceof ConsoleCommandSender || sender.isOp())
 			return true;
 
-		boolean val = false;
-		if (sender instanceof Player) {
-			val = SamaGamesAPI.get().getPermissionsManager().hasPermission(sender, permission);
-		}
+		boolean result = false;
+		if (sender instanceof Player)
+			result = SamaGamesAPI.get().getPermissionsManager().hasPermission(sender, permission);
 
-		if (!val)
+		if (!result)
 			sender.sendMessage(ChatColor.RED + "Vous n'avez pas le droit de faire ça.");
 
-		return val;
+		return result;
 	}
 }

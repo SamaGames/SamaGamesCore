@@ -19,13 +19,13 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class PlayerData extends AbstractPlayerData
+class PlayerData extends AbstractPlayerData
 {
 
-    protected final ApiImplementation api;
-    protected final PlayerDataManager manager;
+    private final ApiImplementation api;
+    private final PlayerDataManager manager;
 
-    protected PlayerData(UUID player, ApiImplementation api, PlayerDataManager manager)
+    PlayerData(UUID player, ApiImplementation api, PlayerDataManager manager)
     {
         super(player);
 
@@ -34,7 +34,7 @@ public class PlayerData extends AbstractPlayerData
         updateData();
     }
 
-    protected void updateData()
+    void updateData()
     {
         Jedis jedis = api.getResource();
         Map<String, String> data = jedis.hgetAll("player:" + playerID);
@@ -44,7 +44,7 @@ public class PlayerData extends AbstractPlayerData
         this.lastRefresh = new Date();
     }
 
-    protected void refreshIfNeeded()
+    void refreshIfNeeded()
     {
         if ((lastRefresh.getTime() + (1000 * 60)) < System.currentTimeMillis())
         {

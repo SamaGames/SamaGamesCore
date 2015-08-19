@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import java.util.Set;
 import java.util.UUID;
 
-public class GameLoginHandler implements IJoinHandler
+class GameLoginHandler implements IJoinHandler
 {
     private final IGameManager api;
 
@@ -24,23 +24,23 @@ public class GameLoginHandler implements IJoinHandler
     @Override
     public void finishJoin(Player player)
     {
-        if (this.api.getGame() != null)
+        if (api.getGame() != null)
         {
-            if (!this.api.isWaited(player.getUniqueId()))
-                this.api.getGame().handleLogin(player);
+            if (!api.isWaited(player.getUniqueId()))
+                api.getGame().handleLogin(player);
             else
-                this.api.getGame().handleReconnect(player);
+                api.getGame().handleReconnect(player);
 
-            this.api.refreshArena();
+            api.refreshArena();
         }
     }
 
     @Override
     public JoinResponse requestJoin(UUID player, JoinResponse response)
     {
-        if (this.api.getGame() != null)
+        if (api.getGame() != null)
         {
-            Game game = this.api.getGame();
+            Game game = api.getGame();
 
             Pair<Boolean, String> gameResponse = game.canJoinGame(player, false);
 
@@ -57,10 +57,10 @@ public class GameLoginHandler implements IJoinHandler
                 response.disallow(ResponseType.DENY_IN_GAME);
             else if (game.getStatus() == Status.STARTING)
                 response.disallow(ResponseType.DENY_NOT_READY);
-            else if (game.getConnectedPlayers() >= this.api.getGameProperties().getMaxSlots())
+            else if (game.getConnectedPlayers() >= api.getGameProperties().getMaxSlots())
                 response.disallow(ResponseType.DENY_FULL);
 
-            if (this.api.isReconnectAllowed() && this.api.isWaited(player))
+            if (api.isReconnectAllowed() && api.isWaited(player))
             {
                 response.allow();
                 return response;
@@ -73,9 +73,9 @@ public class GameLoginHandler implements IJoinHandler
     @Override
     public JoinResponse requestPartyJoin(UUID partyLeader, Set<UUID> partyMembers, JoinResponse response)
     {
-        if (this.api.getGame() != null)
+        if (api.getGame() != null)
         {
-            Game game = this.api.getGame();
+            Game game = api.getGame();
 
             Pair<Boolean, String> gameResponse = game.canPartyJoinGame(partyMembers);
 
@@ -92,7 +92,7 @@ public class GameLoginHandler implements IJoinHandler
                 response.disallow(ResponseType.DENY_IN_GAME);
             else if (game.getStatus() == Status.STARTING)
                 response.disallow(ResponseType.DENY_NOT_READY);
-            else if (game.getConnectedPlayers() >= this.api.getGameProperties().getMaxSlots())
+            else if (game.getConnectedPlayers() >= api.getGameProperties().getMaxSlots())
                 response.disallow(ResponseType.DENY_FULL);
         }
 
@@ -102,12 +102,12 @@ public class GameLoginHandler implements IJoinHandler
     @Override
     public void onModerationJoin(Player player)
     {
-        this.api.getGame().handleModeratorLogin(player);
+        api.getGame().handleModeratorLogin(player);
     }
 
     @Override
     public void onLogout(Player player)
     {
-        this.api.onPlayerDisconnect(player);
+        api.onPlayerDisconnect(player);
     }
 }

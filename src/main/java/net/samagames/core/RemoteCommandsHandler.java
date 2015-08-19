@@ -10,7 +10,7 @@ import org.bukkit.Bukkit;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class RemoteCommandsHandler implements IPacketsReceiver
+class RemoteCommandsHandler implements IPacketsReceiver
 {
     @Override
     public void receive(String channel, String command)

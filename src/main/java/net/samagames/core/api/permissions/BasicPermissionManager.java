@@ -27,12 +27,12 @@ import java.util.logging.Level;
 public abstract class BasicPermissionManager implements RawPlugin, IPermissionsManager
 {
 
-    protected final ArrayList<BukkitTask> tasks = new ArrayList<>();
+    private final ArrayList<BukkitTask> tasks = new ArrayList<>();
     private final boolean isLobby;
     private final HashMap<UUID, VirtualPlayer> players = new HashMap<>();
-    protected PermissionsAPI api = null;
+    final PermissionsAPI api;
 
-    public BasicPermissionManager()
+    BasicPermissionManager()
     {
         isLobby = SamaGamesAPI.get().getServerName().startsWith("Hub");
         Bukkit.getLogger().info("Lobby mode was set to : " + isLobby);

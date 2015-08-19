@@ -20,10 +20,10 @@ public class TeamManager
      * The escape sequence for minecraft special chat codes
      */
     public static final char ESCAPE = '\u00A7';
-    public final IPermissionsManager manager;
-    public final List<PermissionGroup> groups = new ArrayList<>();
-    public final TeamHandler teamHandler;
-    public final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final IPermissionsManager manager;
+    private final List<PermissionGroup> groups = new ArrayList<>();
+    private final TeamHandler teamHandler;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public TeamManager(APIPlugin pl)
     {
@@ -59,7 +59,7 @@ public class TeamManager
         }
     }
 
-    public String getTeamName(PermissionGroup group)
+    private String getTeamName(PermissionGroup group)
     {
         String teamName = group.getLadder() + group.getGroupName();
         return teamName.substring(0, Math.min(teamName.length(), 16));

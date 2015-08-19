@@ -14,7 +14,7 @@ import java.lang.reflect.Field;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class ProtocolHandler extends TinyProtocol
+class ProtocolHandler extends TinyProtocol
 {
     private final ResourcePacksManagerImpl manager;
 

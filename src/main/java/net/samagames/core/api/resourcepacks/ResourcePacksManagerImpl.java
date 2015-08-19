@@ -28,8 +28,8 @@ import java.util.UUID;
 public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
 {
 
-    protected final HashSet<UUID> currentlyDownloading = new HashSet<>();
-    protected final HashMap<UUID, KillerTask> killers = new HashMap<>();
+    private final HashSet<UUID> currentlyDownloading = new HashSet<>();
+    private final HashMap<UUID, KillerTask> killers = new HashMap<>();
     private final SamaGamesAPI api;
     private final String resetUrl;
     private final ProtocolHandler handler;
@@ -71,7 +71,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
         this.callback = callback;
     }
 
-    void sendPack(Player player, String url, String hash)
+    private void sendPack(Player player, String url, String hash)
     {
         APIPlugin.getInstance().getLogger().info("Sending pack to " + player.getName() + " : " + url + " with hash " + hash);
 

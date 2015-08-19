@@ -10,7 +10,7 @@ import java.util.UUID;
 public class SettingsManager implements ISettingsManager
 {
 
-    protected final SamaGamesAPI api;
+    private final SamaGamesAPI api;
 
     public SettingsManager(SamaGamesAPI api)
     {

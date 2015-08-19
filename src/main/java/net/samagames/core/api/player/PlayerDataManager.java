@@ -17,10 +17,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PlayerDataManager implements IPlayerDataManager
 {
 
-    protected final ApiImplementation api;
-    protected final ConcurrentHashMap<UUID, PlayerData> cachedData = new ConcurrentHashMap<>();
-    protected final CoinsManager coinsManager;
-    protected final StarsManager starsManager;
+    private final ApiImplementation api;
+    private final ConcurrentHashMap<UUID, PlayerData> cachedData = new ConcurrentHashMap<>();
+    private final CoinsManager coinsManager;
+    private final StarsManager starsManager;
 
     public PlayerDataManager(ApiImplementation api)
     {

@@ -49,8 +49,8 @@ public class JoinManagerImplement implements IJoinManager, Listener
         isPartyLimited = !SamaGamesAPI.get().getServerName().startsWith("Hub");
     }
 
-    public boolean isPartyLimited()
-    { // This method can be overrided
+    private boolean isPartyLimited()
+    {
         return isPartyLimited;
     }
 
@@ -73,7 +73,7 @@ public class JoinManagerImplement implements IJoinManager, Listener
     }
 
 
-    public JoinResponse requestSoloJoin(UUID player)
+    private JoinResponse requestSoloJoin(UUID player)
     {
         JoinResponse response = new JoinResponse();
         for (IJoinHandler handler : handlerTreeMap.values())
@@ -87,7 +87,7 @@ public class JoinManagerImplement implements IJoinManager, Listener
         return response;
     }
 
-    public JoinResponse requestPartyJoin(UUID partyID, HashSet<UUID> dontMove)
+    private JoinResponse requestPartyJoin(UUID partyID, HashSet<UUID> dontMove)
     {
         UUID leader = SamaGamesAPI.get().getPartiesManager().getLeader(partyID);
         Set<UUID> members = SamaGamesAPI.get().getPartiesManager().getPlayersInParty(partyID).keySet();
@@ -126,7 +126,7 @@ public class JoinManagerImplement implements IJoinManager, Listener
         return requestJoin(player, false);
     }
 
-    public JoinResponse requestJoin(UUID player, boolean alreadyConnected)
+    private JoinResponse requestJoin(UUID player, boolean alreadyConnected)
     {
         UUID party = SamaGamesAPI.get().getPartiesManager().getPlayerParty(player);
         if (party != null && isPartyLimited())

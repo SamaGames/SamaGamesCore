@@ -255,12 +255,12 @@ public class APIPlugin extends JavaPlugin implements Listener
         ips.stream().filter(ip -> !ipWhiteList.contains(ip)).forEach(ipWhiteList::add);
     }
 
-    public boolean containsIp(String ip)
+    private boolean containsIp(String ip)
     {
         return ipWhiteList.contains(ip);
     }
 
-    public void allowJoin()
+    private void allowJoin()
     {
         allowJoin = true;
     }
@@ -270,7 +270,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         return serverName;
     }
 
-    public void registerServer()
+    private void registerServer()
     {
         if (serverRegistered)
             return;
