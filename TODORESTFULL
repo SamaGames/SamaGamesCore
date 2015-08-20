@@ -1,0 +1,17 @@
+To Implement in CORE :
+
+- promotion/coins
+- promotion/stars
+- permissions/groups
+- player/isfriend
+- player/friends
+- player/permissions
+- player/requesters
+- player/requested
+- player/groups
+
+
+Awaiting from Raesta :
+
+- PlayerData
+- more information in player/login
