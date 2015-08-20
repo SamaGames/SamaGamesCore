@@ -37,6 +37,7 @@ public class StarsManager
         if (promoNextCheck == null || current.after(promoNextCheck))
         {
             Jedis jedis = api.getResource();
+            //TODO: Use RestAPI
             String prom = jedis.get("stars:currentpromo"); // On get la promo
             jedis.close();
 

@@ -36,6 +36,7 @@ public class CoinsManager
         if (promoNextCheck == null || current.after(promoNextCheck))
         {
             Jedis jedis = api.getResource();
+            //TODO: Use RestAPI
             String prom = jedis.get("coins:currentpromo"); // On get la promo
             jedis.close();
 
