@@ -43,6 +43,32 @@ public class RestPlayerData extends PlayerData
     }
 
     @Override
+    public Integer getInt(String key)
+    {
+        if (key.equalsIgnoreCase("stars") && !playerData.containsKey(key))
+        {
+            Response response = RestAPI.getInstance().sendRequest("economy/stars", new Request().addProperty("playerUUID", playerID), StarsResponse.class, "POST");
+            if (response instanceof StarsResponse)
+            {
+                StarsResponse starsResponse = (StarsResponse) response;
+                playerData.put(key, String.valueOf(starsResponse.getStars()));
+                return starsResponse.getStars();
+            }
+
+        } else if (key.equalsIgnoreCase("coins") && !playerData.containsKey(key))
+        {
+            Response response = RestAPI.getInstance().sendRequest("economy/coins", new Request().addProperty("playerUUID", playerID), StarsResponse.class, "POST");
+            if (response instanceof CoinsResponse)
+            {
+                CoinsResponse coinsResponse = (CoinsResponse) response;
+                playerData.put(key, String.valueOf(coinsResponse.getCoins()));
+                return coinsResponse.getCoins();
+            }
+        }
+        return super.getInt(key);
+    }
+
+    @Override
     public void set(String key, String value)
     {
         playerData.put(key, value);
