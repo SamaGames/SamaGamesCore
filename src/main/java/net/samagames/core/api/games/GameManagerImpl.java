@@ -95,7 +95,8 @@ public class GameManagerImpl implements IGameManager
             out.writeUTF("Connect");
             out.writeUTF("lobby");
 
-        } catch (IOException eee)
+        }
+        catch (IOException eee)
         {
             Bukkit.getLogger().info("You'll never see me!");
         }
