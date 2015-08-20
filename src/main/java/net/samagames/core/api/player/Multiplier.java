@@ -1,14 +1,19 @@
 package net.samagames.core.api.player;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Created by LeadDev on 18/10/14.
+ * This file is a part of the SamaGames project
+ * This code is absolutely confidential.
+ * Created by Thog
+ * (C) Copyright Elydra Network 2015
+ * All rights reserved.
  */
 class Multiplier
 {
 
-    public final HashMap<String, Integer> infos = new HashMap<>();
+    public final Map<String, Integer> data = new HashMap<>();
     public int globalAmount = 1;
 
     public int getGlobalAmount()

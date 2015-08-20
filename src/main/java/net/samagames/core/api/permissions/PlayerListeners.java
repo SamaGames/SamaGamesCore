@@ -10,10 +10,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.UUID;
 
-public class PlayerListeners implements Listener
+class PlayerListeners implements Listener
 {
 
-    protected final BasicPermissionManager plugin;
+    private final BasicPermissionManager plugin;
 
     public PlayerListeners(BasicPermissionManager plugin)
     {
@@ -41,7 +41,7 @@ public class PlayerListeners implements Listener
         disconnect(ev.getPlayer().getUniqueId());
     }
 
-    public void disconnect(UUID player)
+    private void disconnect(UUID player)
     {
         plugin.removePlayer(player);
     }

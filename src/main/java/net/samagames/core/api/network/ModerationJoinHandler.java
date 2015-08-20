@@ -16,14 +16,14 @@ import java.util.UUID;
 public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver
 {
 
-    protected final HashMap<UUID, UUID> teleportTargets = new HashMap<>();
-    protected final JoinManagerImplement manager;
+    private final HashMap<UUID, UUID> teleportTargets = new HashMap<>();
+    private final JoinManagerImplement manager;
     private final ApiImplementation api;
 
     public ModerationJoinHandler(ApiImplementation api)
     {
         this.api = api;
-        this.manager = (JoinManagerImplement) api.getJoinManager();
+        manager = (JoinManagerImplement) api.getJoinManager();
     }
 
     @Override

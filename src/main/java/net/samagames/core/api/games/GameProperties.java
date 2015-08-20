@@ -54,8 +54,7 @@ public class GameProperties implements IGameProperties
             }
 
             this.mapProperties = new JsonParser().parse(new FileReader(arenaFile)).getAsJsonObject();
-        }
-        catch (FileNotFoundException e)
+        } catch (FileNotFoundException e)
         {
             e.printStackTrace();
             APIPlugin.log(Level.SEVERE, "Can't open the game properties file. Abort start!");

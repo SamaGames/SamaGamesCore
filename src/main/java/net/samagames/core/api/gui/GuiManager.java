@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GuiManager implements IGuiManager
 {
 
-    protected final ConcurrentHashMap<UUID, AbstractGui> currentGUIs;
+    private final ConcurrentHashMap<UUID, AbstractGui> currentGUIs;
 
     public GuiManager(APIPlugin plugin)
     {

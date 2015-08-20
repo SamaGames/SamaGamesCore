@@ -6,7 +6,7 @@ import redis.clients.jedis.Jedis;
 
 import java.util.UUID;
 
-public class PlayerStat implements IPlayerStat
+class PlayerStat implements IPlayerStat
 {
     private final UUID playerUUID;
     private final String game;

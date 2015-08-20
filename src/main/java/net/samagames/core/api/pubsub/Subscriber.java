@@ -16,11 +16,11 @@ import java.util.logging.Level;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class Subscriber extends JedisPubSub
+class Subscriber extends JedisPubSub
 {
 
-    protected final HashMap<String, HashSet<IPacketsReceiver>> packetsReceivers = new HashMap<>();
-    protected final HashMap<String, HashSet<IPatternReceiver>> patternsReceivers = new HashMap<>();
+    private final HashMap<String, HashSet<IPacketsReceiver>> packetsReceivers = new HashMap<>();
+    private final HashMap<String, HashSet<IPatternReceiver>> patternsReceivers = new HashMap<>();
 
     public void registerReceiver(String channel, IPacketsReceiver receiver)
     {

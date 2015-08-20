@@ -10,14 +10,14 @@ import org.bukkit.event.Listener;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public abstract class APIListener implements Listener
+abstract class APIListener implements Listener
 {
-    protected final APIPlugin plugin;
-    protected final SamaGamesAPI api;
+    final APIPlugin plugin;
+    final SamaGamesAPI api;
 
-    public APIListener(APIPlugin plugin)
+    APIListener(APIPlugin plugin)
     {
         this.plugin = plugin;
-        this.api = plugin.getAPI();
+        api = plugin.getAPI();
     }
 }

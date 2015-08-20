@@ -7,6 +7,7 @@ import org.bukkit.permissions.PermissionAttachment;
 
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * This file is a part of the SamaGames project
@@ -14,12 +15,12 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class VirtualPlayer implements RawPlayer
+class VirtualPlayer implements RawPlayer
 {
 
-    protected final Player player;
-    protected final UUID id;
-    protected final PermissionAttachment attachment;
+    private final Player player;
+    private final UUID id;
+    private final PermissionAttachment attachment;
 
     public VirtualPlayer(Player p)
     {
@@ -47,9 +48,7 @@ public class VirtualPlayer implements RawPlayer
     public void clearPermissions()
     {
         ArrayList<String> perms = new ArrayList<>();
-        for (String perm : attachment.getPermissions().keySet())
-            perms.add(perm);
-
+        perms.addAll(attachment.getPermissions().keySet().stream().collect(Collectors.toList()));
         perms.forEach(attachment::unsetPermission);
     }
 }

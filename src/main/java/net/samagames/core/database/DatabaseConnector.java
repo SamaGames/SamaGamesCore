@@ -15,9 +15,9 @@ import redis.clients.jedis.JedisPoolConfig;
 public class DatabaseConnector
 {
 
-    protected final APIPlugin plugin;
-    protected JedisPool mainPool;
-    protected JedisPool cachePool;
+    private final APIPlugin plugin;
+    private JedisPool mainPool;
+    private JedisPool cachePool;
     private RedisServer main;
     private RedisServer bungee;
     private WhiteListRefreshTask keeper;
@@ -53,7 +53,7 @@ public class DatabaseConnector
         mainPool.destroy();
     }
 
-    public void initiateConnections()
+    private void initiateConnections()
     {
         // Préparation de la connexion
         JedisPoolConfig config = new JedisPoolConfig();
@@ -72,7 +72,7 @@ public class DatabaseConnector
         }
     }
 
-    protected String fastGet(String key)
+    public String fastGet(String key)
     {
         Jedis jedis = getResource();
         String val = jedis.get(key);

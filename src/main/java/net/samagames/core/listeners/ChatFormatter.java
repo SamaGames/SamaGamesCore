@@ -21,7 +21,7 @@ public class ChatFormatter extends APIListener
         super(plugin);
     }
 
-    String replaceColors(String message)
+    private String replaceColors(String message)
     {
         String s = message;
         for (ChatColor color : ChatColor.values())

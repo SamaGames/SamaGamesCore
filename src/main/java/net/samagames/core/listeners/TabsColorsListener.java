@@ -22,7 +22,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class TabsColorsListener extends APIListener
 {
 
-    protected final TeamManager manager;
+    private final TeamManager manager;
 
     public TabsColorsListener(APIPlugin plugin)
     {
@@ -31,7 +31,7 @@ public class TabsColorsListener extends APIListener
         manager = new TeamManager(plugin);
     }
 
-    String replaceColors(String message)
+    private String replaceColors(String message)
     {
         String s = message;
         for (ChatColor color : ChatColor.values())

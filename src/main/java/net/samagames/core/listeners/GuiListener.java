@@ -18,11 +18,10 @@ import org.bukkit.inventory.PlayerInventory;
  */
 public class GuiListener implements Listener
 {
-    protected final GuiManager manager;
+    private final GuiManager manager;
 
     public GuiListener(GuiManager manager)
     {
-
         this.manager = manager;
     }
 
