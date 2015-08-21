@@ -6,6 +6,7 @@ import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import org.bukkit.Bukkit;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -27,6 +28,7 @@ public abstract class PlayerData extends AbstractPlayerData
         super(playerID);
         this.api = api;
         this.manager = manager;
+        lastRefresh = new Date();
     }
 
     public abstract void updateData();

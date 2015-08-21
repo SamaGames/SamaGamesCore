@@ -24,7 +24,7 @@ import java.net.URL;
 public class RestAPI
 {
     private static final RestAPI INSTANCE = new RestAPI();
-    private static final String ENDPOINT = "http://<ip>:2000/";
+    private static final String ENDPOINT = "http://localhost:2000/";
     private static final Gson GSON = new GsonBuilder().create();
     static String user, pass;
 

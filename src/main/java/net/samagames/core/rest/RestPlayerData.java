@@ -21,7 +21,7 @@ import java.util.UUID;
  */
 public class RestPlayerData extends PlayerData
 {
-    protected RestPlayerData(UUID playerID, ApiImplementation api, PlayerDataManager manager)
+    public RestPlayerData(UUID playerID, ApiImplementation api, PlayerDataManager manager)
     {
         super(playerID, api, manager);
     }
@@ -34,11 +34,18 @@ public class RestPlayerData extends PlayerData
         playerData.put("stars", String.valueOf(response.getStars()));
     }
 
+
+    public void onLogin(LoginResponse response)
+    {
+        playerData.put("coins", String.valueOf(response.getCoins()));
+        playerData.put("stars", String.valueOf(response.getStars()));
+
+    }
+
     @Override
     public void updateData()
     {
         lastRefresh = new Date();
-
         // Waiting for Raesta to implement it
     }
 

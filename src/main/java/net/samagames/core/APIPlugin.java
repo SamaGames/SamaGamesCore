@@ -138,6 +138,7 @@ public class APIPlugin extends JavaPlugin implements Listener
 
         // Web
         api.getJoinManager().registerHandler(new RestListener(this), 1000);
+
         api.getPubSub().subscribe("*", debugListener);
 
         //Nickname

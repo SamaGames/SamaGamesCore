@@ -23,14 +23,12 @@ public class PlayerDataManager implements IPlayerDataManager
     private final ConcurrentHashMap<UUID, PlayerData> cachedData = new ConcurrentHashMap<>();
     private final CoinsManager coinsManager;
     private final StarsManager starsManager;
-    private final boolean isRedis;
 
-    public PlayerDataManager(ApiImplementation api, boolean isRedis)
+    public PlayerDataManager(ApiImplementation api)
     {
         this.api = api;
         coinsManager = new CoinsManager(api);
         starsManager = new StarsManager(api);
-        this.isRedis = isRedis;
     }
 
     public CoinsManager getCoinsManager()
@@ -52,9 +50,16 @@ public class PlayerDataManager implements IPlayerDataManager
     @Override
     public AbstractPlayerData getPlayerData(UUID player, boolean forceRefresh)
     {
-        if (!cachedData.containsKey(player) && isRedis)
+        if (!cachedData.containsKey(player))
         {
-            PlayerData data = new RedisPlayerData(player, api, this);
+            PlayerData data;
+            if(api.useRestFull())
+            {
+                data = new RestPlayerData(player, api, this);
+            }
+            else
+                data = new RedisPlayerData(player, api, this);
+
             cachedData.put(player, data);
             return data;
         }

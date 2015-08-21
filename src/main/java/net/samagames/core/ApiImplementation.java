@@ -77,7 +77,7 @@ public class ApiImplementation extends SamaGamesAPI
 
         resourcePacksManager = new ResourcePacksManagerImpl(this);
         settingsManager = new SettingsManager(this);
-        playerDataManager = new PlayerDataManager(this, true);
+        playerDataManager = new PlayerDataManager(this);
         achievementManager = new AchievementManagerImpl(this);
 
         pubSub = new PubSubAPI(this);
@@ -211,4 +211,6 @@ public class ApiImplementation extends SamaGamesAPI
     {
         return plugin.getServerName();
     }
+
+    public boolean useRestFull() { return true;}
 }
