@@ -41,4 +41,10 @@ public class LoginResponse extends Response
     {
         return permissions;
     }
+
+    @Override
+    public String toString()
+    {
+        return uuid + " (coins:" + coins  + ", stars:" + stars + ", " + "groups:" + groups +  ")";
+    }
 }
