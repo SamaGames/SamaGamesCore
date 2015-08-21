@@ -4,10 +4,7 @@ import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.player.PlayerData;
 import net.samagames.core.api.player.PlayerDataManager;
 import net.samagames.core.rest.request.Request;
-import net.samagames.core.rest.response.CoinsResponse;
-import net.samagames.core.rest.response.LoginResponse;
-import net.samagames.core.rest.response.Response;
-import net.samagames.core.rest.response.StarsResponse;
+import net.samagames.core.rest.response.*;
 
 import java.util.Date;
 import java.util.UUID;
@@ -54,14 +51,20 @@ public class RestPlayerData extends PlayerData
             return getStarsInternal();
         else if (key.equalsIgnoreCase("coins") && !playerData.containsKey(key))
             return getCoinsInternal();
-        else if(key.contains("settings."))
+        else if(key.contains("settings.") && !playerData.containsKey(key))
             return getSetting(key.substring(key.indexOf(".") + 1));
         return super.get(key);
     }
 
     private String getSetting(String key)
     {
-        System.out.println(key);
+        Response response = RestAPI.getInstance().sendRequest("player/setting", new Request().addProperty("playerUUID", playerID).addProperty("key", key), ValueResponse.class, "POST");
+        if (response instanceof ValueResponse)
+        {
+            String value = (String) ((ValueResponse) response).getValue();
+            playerData.put(key, value);
+            return value;
+        }
         return null;
     }
 
