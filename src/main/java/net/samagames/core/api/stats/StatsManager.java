@@ -5,12 +5,17 @@ import net.samagames.api.stats.AbstractStatsManager;
 import net.samagames.api.stats.IPlayerStat;
 import net.samagames.api.stats.Leaderboard;
 import net.samagames.core.APIPlugin;
+import net.samagames.core.ApiImplementation;
+import net.samagames.core.rest.RestAPI;
+import net.samagames.core.rest.request.Request;
+import net.samagames.core.rest.response.Response;
+import net.samagames.core.rest.response.StatusResponse;
+import net.samagames.core.rest.response.ValueResponse;
 import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
 
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * This file is a part of the SamaGames project
@@ -20,58 +25,111 @@ import java.util.UUID;
  */
 public class StatsManager extends AbstractStatsManager
 {
-
-    public StatsManager(String game)
+    private final Logger logger;
+    private ApiImplementation api;
+    private Map<UUID, PlayerStat> caches;
+    public StatsManager(String game, ApiImplementation apiImplementation)
     {
         super(game);
+        this.api = apiImplementation;
+        this.caches = new HashMap<>();
+        logger = api.getPlugin().getLogger();
     }
 
     @Override
     public void increase(final UUID player, final String stat, final int amount)
     {
-        Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
-            Jedis j = SamaGamesAPI.get().getResource();
-            j.zincrby("gamestats:" + game + ":" + stat, amount, player.toString());
-            j.close();
-        });
+        if (api.useRestFull())
+        {
+            this.setValue(player, stat, getStatValue(player, stat) + amount);
+        }
+        else
+        {
+            Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
+                Jedis j = SamaGamesAPI.get().getResource();
+                j.zincrby("gamestats:" + game + ":" + stat, amount, player.toString());
+                j.close();
+            });
+        }
+
     }
 
     @Override
     public void setValue(UUID player, String stat, int value)
     {
-        Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
-            Jedis j = SamaGamesAPI.get().getResource();
-            j.zadd("gamestats:" + game + ":" + stat, value, player.toString());
-            j.close();
-        });
+        this.setValue(player, stat, (double)value);
+    }
+
+    public void setValue(UUID player, String stat, double value)
+    {
+        if (api.useRestFull())
+        {
+            Response response = RestAPI.getInstance().sendRequest("player/statistic", new Request().addProperty("playerUUID", player).addProperty("category", game).addProperty("key", stat).addProperty("value", value), StatusResponse.class, "POST");
+            boolean isErrored = true;
+            if (response instanceof StatusResponse)
+                isErrored = !((StatusResponse) response).getStatus();
+
+            if (isErrored)
+                logger.warning("Cannot set key " + stat + " with value " + value + "for uuid " + player);
+        }
+        else
+        {
+            Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
+                Jedis j = SamaGamesAPI.get().getResource();
+                j.zadd("gamestats:" + game + ":" + stat, value, player.toString());
+                j.close();
+            });
+        }
     }
 
     @Override
     public double getStatValue(UUID player, String stat)
     {
-        Jedis j = SamaGamesAPI.get().getResource();
-        double value = j.zscore("gamestats:" + game + ":" + stat, player.toString());
-        j.close();
-
-        return value;
+        if (api.useRestFull())
+        {
+            if (caches.containsKey(player))
+                return caches.get(player).getValue();
+            else
+            {
+                PlayerStat playerStat = new PlayerStat(player, game, stat);
+                playerStat.fill();
+                caches.put(player, playerStat);
+                return playerStat.getValue();
+            }
+        }
+        else
+        {
+            Jedis j = SamaGamesAPI.get().getResource();
+            double value = j.zscore("gamestats:" + game + ":" + stat, player.toString());
+            j.close();
+            return value;
+        }
     }
 
     @Override
     public Leaderboard getLeaderboard(String stat)
     {
-        ArrayList<IPlayerStat> leaderboard = new ArrayList<>();
-        Jedis jedis = SamaGamesAPI.get().getResource();
-        Set<String> ids = jedis.zrevrange("gamestats:" + game + ":" + stat, 0, 2);
-        jedis.close();
-
-        for (String id : ids)
+        if (api.useRestFull())
         {
-            IPlayerStat playerStat = new PlayerStat(UUID.fromString(id), this.game, stat);
-            playerStat.fill();
-
-            leaderboard.add(playerStat);
+            // TODO: Leaderboard for the RestfullAPI
+            return null;
         }
+        else
+        {
+            ArrayList<IPlayerStat> leaderboard = new ArrayList<>();
+            Jedis jedis = SamaGamesAPI.get().getResource();
+            Set<String> ids = jedis.zrevrange("gamestats:" + game + ":" + stat, 0, 2);
+            jedis.close();
 
-        return new Leaderboard(leaderboard.get(0), leaderboard.get(1), leaderboard.get(2));
+            for (String id : ids)
+            {
+                IPlayerStat playerStat = new PlayerStat(UUID.fromString(id), this.game, stat);
+                playerStat.fill();
+
+                leaderboard.add(playerStat);
+            }
+
+            return new Leaderboard(leaderboard.get(0), leaderboard.get(1), leaderboard.get(2));
+        }
     }
 }

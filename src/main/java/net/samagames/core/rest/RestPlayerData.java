@@ -108,7 +108,7 @@ public class RestPlayerData extends PlayerData
             isErrored = !((StatusResponse) response).getStatus();
 
         if (isErrored)
-            logger.warning("Cannot set key " + key + " with value " + value);
+            logger.warning("Cannot set key " + key + " with value " + value + "for uuid " + playerID);
     }
 
     @Override
