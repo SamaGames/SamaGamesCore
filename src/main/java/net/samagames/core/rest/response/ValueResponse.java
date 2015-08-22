@@ -5,9 +5,9 @@ package net.samagames.core.rest.response;
  */
 public class ValueResponse extends Response
 {
-    private Object value;
+    private String value;
 
-    public Object getValue()
+    public String getValue()
     {
         return this.value;
     }

@@ -24,7 +24,7 @@
         </repository>
         <repository>
             <id>samagames-network</id>
-            <url>http://maven.samagames.net/public/</url>
+            <url>http://maven.samagames.net/network/</url>
         </repository>
     </repositories>
 

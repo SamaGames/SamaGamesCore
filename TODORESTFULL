@@ -9,6 +9,10 @@ To Implement in CORE :
 - player/requesters
 - player/requested
 - player/groups
+- player/settings
+- player/statistics
+- player/statistic (both)
+
 
 
 Awaiting from Raesta :

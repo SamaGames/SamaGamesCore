@@ -51,7 +51,7 @@ public class RestPlayerData extends PlayerData
             return getStarsInternal();
         else if (key.equalsIgnoreCase("coins") && !playerData.containsKey(key))
             return getCoinsInternal();
-        else if(key.contains("settings.") && !playerData.containsKey(key))
+        else if (key.startsWith("settings.") && !playerData.containsKey(key))
             return getSetting(key.substring(key.indexOf(".") + 1));
         return super.get(key);
     }
@@ -61,7 +61,7 @@ public class RestPlayerData extends PlayerData
         Response response = RestAPI.getInstance().sendRequest("player/setting", new Request().addProperty("playerUUID", playerID).addProperty("key", key), ValueResponse.class, "POST");
         if (response instanceof ValueResponse)
         {
-            String value = (String) ((ValueResponse) response).getValue();
+            String value = ((ValueResponse) response).getValue();
             playerData.put(key, value);
             return value;
         }
@@ -91,11 +91,24 @@ public class RestPlayerData extends PlayerData
             if (oldValue != null)
                 toRemove = Integer.valueOf(oldValue);
             increaseStars((-toRemove) + Integer.valueOf(value));
-        }
+        } else if (key.startsWith("settings."))
+            setSetting(key.substring(key.indexOf(".") + 1), value);
+
         playerData.put(key, value);
 
         // Waiting for Raesta to implement it
         logger.info("Set (" + key + ": " + value + ")");
+    }
+
+    private void setSetting(String key, String value)
+    {
+        Response response = RestAPI.getInstance().sendRequest("player/setting", new Request().addProperty("playerUUID", playerID).addProperty("key", key).addProperty("value", value), StatusResponse.class, "PUT");
+        boolean isErrored = true;
+        if (response instanceof StatusResponse)
+            isErrored = !((StatusResponse) response).getStatus();
+
+        if (isErrored)
+            logger.warning("Cannot set key " + key + " with value " + value);
     }
 
     @Override
