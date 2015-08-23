@@ -64,13 +64,13 @@ public class StatsManager extends AbstractStatsManager
     {
         if (api.useRestFull())
         {
-            Response response = RestAPI.getInstance().sendRequest("player/statistic", new Request().addProperty("playerUUID", player).addProperty("category", game).addProperty("key", stat).addProperty("value", value), StatusResponse.class, "POST");
+            Response response = RestAPI.getInstance().sendRequest("player/statistic", new Request().addProperty("playerUUID", player).addProperty("category", game).addProperty("key", stat).addProperty("value", value), StatusResponse.class, "PUT");
             boolean isErrored = true;
             if (response instanceof StatusResponse)
                 isErrored = !((StatusResponse) response).getStatus();
 
             if (isErrored)
-                logger.warning("Cannot set key " + stat + " with value " + value + "for uuid " + player);
+                logger.warning("Cannot set key " + stat + " with value " + value + "for uuid " + player + " (DEBUG: " + response + ")");
         }
         else
         {

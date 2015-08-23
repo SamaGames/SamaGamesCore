@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import net.samagames.core.rest.request.Request;
 import net.samagames.core.rest.response.ErrorResponse;
 import net.samagames.core.rest.response.Response;
+import org.bukkit.Bukkit;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -71,6 +72,7 @@ public class RestAPI
             connection.setDoInput(true);
             connection.setDoOutput(true);
 
+            Bukkit.getLogger().info("Sending request to " + url + " with value " + json);
             // Write the data
             DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
             wr.write(postDataByte);
