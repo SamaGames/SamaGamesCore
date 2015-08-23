@@ -3,6 +3,7 @@ package net.samagames.core;
 import net.samagames.core.database.DatabaseConnector;
 import net.samagames.core.database.RedisServer;
 import net.samagames.core.listeners.*;
+import net.samagames.core.rest.RestListener;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -134,6 +135,10 @@ public class APIPlugin extends JavaPlugin implements Listener
 
         debugListener = new DebugListener();
         api.getJoinManager().registerHandler(debugListener, 0);
+
+        // Web
+        api.getJoinManager().registerHandler(new RestListener(this), 1000);
+
         api.getPubSub().subscribe("*", debugListener);
 
         //Nickname

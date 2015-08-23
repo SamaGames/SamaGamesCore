@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import redis.clients.jedis.Jedis;
@@ -36,7 +37,7 @@ import java.util.UUID;
  * -> Connection accepted : the system request the proxy to moove him
  */
 
-public class JoinManagerImplement implements IJoinManager, Listener
+public class JoinManagerImplement implements IJoinManager
 {
 
     private final TreeMap<Integer, IJoinHandler> handlerTreeMap = new TreeMap<>();
@@ -162,7 +163,7 @@ public class JoinManagerImplement implements IJoinManager, Listener
             JoinResponse response = requestJoin(event.getUniqueId(), true);
             if (!response.isAllowed())
             {
-                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ChatColor.RED + response.getReason());
+                event.disallow(Result.KICK_OTHER, ChatColor.RED + response.getReason());
                 return;
             }
         }
@@ -174,9 +175,9 @@ public class JoinManagerImplement implements IJoinManager, Listener
     }
 
     @EventHandler
-    public void onJoin(final PlayerJoinEvent event)
+    public void onJoin(PlayerJoinEvent event)
     {
-        final Player player = event.getPlayer();
+        Player player = event.getPlayer();
         if (moderatorsExpected.contains(player.getUniqueId()))
         {
             for (IJoinHandler handler : handlerTreeMap.values())
@@ -197,7 +198,7 @@ public class JoinManagerImplement implements IJoinManager, Listener
     }
 
     @EventHandler
-    public void onLogout(final PlayerQuitEvent event)
+    public void onLogout(PlayerQuitEvent event)
     {
         if (moderatorsExpected.contains(event.getPlayer().getUniqueId()))
             moderatorsExpected.remove(event.getPlayer().getUniqueId());

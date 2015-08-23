@@ -1,13 +1,14 @@
 package net.samagames.core.api.player;
 
 import net.md_5.bungee.api.ChatColor;
-import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.ApiImplementation;
 import net.samagames.permissionsapi.permissions.PermissionUser;
 import net.samagames.tools.Promo;
 import redis.clients.jedis.Jedis;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -16,39 +17,46 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-class CoinsManager
+public class CoinsManager
 {
 
     private final ApiImplementation api;
     private Promo currentPromo;
     private Date promoNextCheck;
+    private List<Multiplier> caches = new ArrayList<>();
 
     public CoinsManager(ApiImplementation api)
     {
         this.api = api;
     }
 
-    public Multiplier getCurrentMultiplier(UUID joueur)
+    public Multiplier getCurrentMultiplier(UUID player, String type)
     {
         Date current = new Date();
         Multiplier ret = new Multiplier();
 
         if (promoNextCheck == null || current.after(promoNextCheck))
         {
-            Jedis jedis = api.getResource();
-            String prom = jedis.get("coins:currentpromo"); // On get la promo
-            jedis.close();
-
-            if (prom == null)
+            if (api.useRestFull())
             {
-                currentPromo = null;
+                // TODO: Rewrite the whole system to manage multi offer and keep it compatible with DB mode
             } else
             {
-                currentPromo = new Promo(prom);
-            }
+                Jedis jedis = api.getResource();
+                String prom = jedis.get("coins:currentpromo"); // On get la promo
+                jedis.close();
 
-            promoNextCheck = new Date();
-            promoNextCheck.setTime(promoNextCheck.getTime() + (60 * 1000));
+                if (prom == null)
+                {
+                    currentPromo = null;
+                } else
+                {
+                    currentPromo = new Promo(prom);
+                }
+
+                promoNextCheck = new Date();
+                promoNextCheck.setTime(promoNextCheck.getTime() + (60 * 1000));
+            }
         }
 
         if (currentPromo != null && current.before(currentPromo.end))
@@ -57,7 +65,7 @@ class CoinsManager
             ret.data.put(currentPromo.message, currentPromo.multiply);
         }
 
-        PermissionUser user = SamaGamesAPI.get().getPermissionsManager().getApi().getUser(joueur);
+        PermissionUser user = api.getPermissionsManager().getApi().getUser(player);
         int multiply = (user != null && user.getProperty("multiplier") != null) ? Integer.decode(user.getProperty("multiplier")) : 1;
 
         multiply = (multiply < 1) ? 1 : multiply;

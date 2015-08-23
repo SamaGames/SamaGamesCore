@@ -3,6 +3,8 @@ package net.samagames.core.api.player;
 import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.api.player.IPlayerDataManager;
 import net.samagames.core.ApiImplementation;
+import net.samagames.core.api.player.redis.RedisPlayerData;
+import net.samagames.core.rest.RestPlayerData;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,12 +31,12 @@ public class PlayerDataManager implements IPlayerDataManager
         starsManager = new StarsManager(api);
     }
 
-    CoinsManager getCoinsManager()
+    public CoinsManager getCoinsManager()
     {
         return coinsManager;
     }
 
-    StarsManager getStarsManager()
+    public StarsManager getStarsManager()
     {
         return starsManager;
     }
@@ -50,7 +52,14 @@ public class PlayerDataManager implements IPlayerDataManager
     {
         if (!cachedData.containsKey(player))
         {
-            PlayerData data = new PlayerData(player, api, this);
+            PlayerData data;
+            if(api.useRestFull())
+            {
+                data = new RestPlayerData(player, api, this);
+            }
+            else
+                data = new RedisPlayerData(player, api, this);
+
             cachedData.put(player, data);
             return data;
         }
@@ -65,6 +74,14 @@ public class PlayerDataManager implements IPlayerDataManager
 
         data.refreshIfNeeded();
         return data;
+    }
+
+    public void load(UUID player, PlayerData data, boolean forceLoad)
+    {
+        if (!cachedData.containsKey(player) || forceLoad)
+        {
+            cachedData.put(player, data);
+        }
     }
 
     @Override

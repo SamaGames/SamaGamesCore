@@ -10,7 +10,7 @@ import java.util.Map;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-class Multiplier
+public class Multiplier
 {
 
     public final Map<String, Integer> data = new HashMap<>();

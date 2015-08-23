@@ -17,7 +17,7 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-class StarsManager
+public class StarsManager
 {
 
     private final ApiImplementation api;
@@ -37,6 +37,7 @@ class StarsManager
         if (promoNextCheck == null || current.after(promoNextCheck))
         {
             Jedis jedis = api.getResource();
+            //TODO: Use RestAPI
             String prom = jedis.get("stars:currentpromo"); // On get la promo
             jedis.close();
 

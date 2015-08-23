@@ -157,7 +157,7 @@ public class ApiImplementation extends SamaGamesAPI
 
     public AbstractStatsManager getStatsManager(String game)
     {
-        return new StatsManager(game);
+        return new StatsManager(game, this);
     }
 
     @Override
@@ -211,4 +211,6 @@ public class ApiImplementation extends SamaGamesAPI
     {
         return plugin.getServerName();
     }
+
+    public boolean useRestFull() { return false;}
 }
