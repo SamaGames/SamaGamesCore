@@ -5,9 +5,10 @@ import net.samagames.core.APIPlugin;
 import net.samagames.core.api.player.PlayerData;
 import net.samagames.core.api.player.PlayerDataManager;
 import net.samagames.core.api.player.redis.RedisPlayerData;
-import net.samagames.core.rest.request.Request;
-import net.samagames.core.rest.response.LoginResponse;
-import net.samagames.core.rest.response.Response;
+import net.samagames.restfull.RestAPI;
+import net.samagames.restfull.request.Request;
+import net.samagames.restfull.response.LoginResponse;
+import net.samagames.restfull.response.Response;
 import org.bukkit.Bukkit;
 
 import java.util.UUID;

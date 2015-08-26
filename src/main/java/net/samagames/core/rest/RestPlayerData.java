@@ -3,8 +3,9 @@ package net.samagames.core.rest;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.player.PlayerData;
 import net.samagames.core.api.player.PlayerDataManager;
-import net.samagames.core.rest.request.Request;
-import net.samagames.core.rest.response.*;
+import net.samagames.restfull.RestAPI;
+import net.samagames.restfull.request.Request;
+import net.samagames.restfull.response.*;
 
 import java.util.Date;
 import java.util.UUID;

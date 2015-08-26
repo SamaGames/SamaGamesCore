@@ -97,5 +97,11 @@
             <version>2.0</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>net.samagames</groupId>
+            <artifactId>restfull</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>

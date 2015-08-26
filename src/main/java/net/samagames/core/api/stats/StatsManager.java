@@ -6,11 +6,11 @@ import net.samagames.api.stats.IPlayerStat;
 import net.samagames.api.stats.Leaderboard;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
-import net.samagames.core.rest.RestAPI;
-import net.samagames.core.rest.request.Request;
-import net.samagames.core.rest.response.Response;
-import net.samagames.core.rest.response.StatusResponse;
-import net.samagames.core.rest.response.ValueResponse;
+import net.samagames.restfull.RestAPI;
+import net.samagames.restfull.request.Request;
+import net.samagames.restfull.response.Response;
+import net.samagames.restfull.response.StatusResponse;
+import net.samagames.restfull.response.ValueResponse;
 import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
 

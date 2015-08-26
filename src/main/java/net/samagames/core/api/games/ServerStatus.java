@@ -7,7 +7,7 @@ import net.samagames.core.APIPlugin;
 
 import java.util.logging.Level;
 
-class ServerStatus
+public class ServerStatus
 {
     private String bungeeName;
     private String game;
