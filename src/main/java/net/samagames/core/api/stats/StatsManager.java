@@ -64,7 +64,7 @@ public class StatsManager extends AbstractStatsManager
     {
         if (api.useRestFull())
         {
-            Response response = RestAPI.getInstance().sendRequest("player/statistic", new Request().addProperty("playerUUID", player).addProperty("category", game).addProperty("key", stat).addProperty("value", value), StatusResponse.class, "PUT");
+            Response response = (Response) RestAPI.getInstance().sendRequest("player/statistic", new Request().addProperty("playerUUID", player).addProperty("category", game).addProperty("key", stat).addProperty("value", value), StatusResponse.class, "PUT");
             boolean isErrored = true;
             if (response instanceof StatusResponse)
                 isErrored = !((StatusResponse) response).getStatus();
