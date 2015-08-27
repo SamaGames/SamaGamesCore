@@ -23,7 +23,7 @@ public class CommandStart extends AbstractCommand
     @Override
     public boolean onCommand(CommandSender sender, String label, String[] arguments)
     {
-        if (!hasPermission(sender, "staff.startgame"))
+        if (!hasPermission(sender, "api.game.start"))
             return true;
 
         if(SamaGamesAPI.get().getGameManager().getGame() == null)

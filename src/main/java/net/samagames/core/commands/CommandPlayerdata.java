@@ -26,7 +26,7 @@ public class CommandPlayerdata extends AbstractCommand {
 
 	@Override
 	public boolean onCommand(CommandSender sender, String label, String[] arguments) {
-		if (!hasPermission(sender, "playerdata.show"))
+		if (!hasPermission(sender, "api.playerdata.show"))
 			return true;
 
 		if (arguments.length == 0) {
@@ -35,7 +35,7 @@ public class CommandPlayerdata extends AbstractCommand {
 		}
 
 		if (arguments.length >= 3 && arguments[0].equalsIgnoreCase("set")) {
-			if (!hasPermission(sender, "playerdata.set"))
+			if (!hasPermission(sender, "api.playerdata.set"))
 				return true;
 
 			final String playerName = arguments[1];
@@ -52,7 +52,7 @@ public class CommandPlayerdata extends AbstractCommand {
 		}
 
 		if (arguments.length >= 3 && arguments[0].equalsIgnoreCase("del")) {
-			if (!hasPermission(sender, "playerdata.del"))
+			if (!hasPermission(sender, "api.playerdata.del"))
 				return true;
 
 			final String playerName = arguments[1];

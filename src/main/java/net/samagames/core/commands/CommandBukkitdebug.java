@@ -19,7 +19,7 @@ public class CommandBukkitdebug extends AbstractCommand {
 
 	@Override
 	public boolean onCommand(CommandSender sender, String label, String[] arguments) {
-		if (!hasPermission(sender, "servers.debug"))
+		if (!hasPermission(sender, "api.servers.debug"))
 			return true;
 
 		plugin.getDebugListener().toggle(sender);

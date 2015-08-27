@@ -47,7 +47,7 @@ public class CommandStars extends AbstractCommand {
 			if (arguments.length < 2)
 				return false;
 
-			if (!hasPermission(sender, "stars.getother"))
+			if (!hasPermission(sender, "api.stars.getother"))
 				return true;
 
 			final String playerName = arguments[1];
@@ -67,7 +67,7 @@ public class CommandStars extends AbstractCommand {
 			if (arguments.length < 3)
 				return false;
 
-			if (!hasPermission(sender, "stars.credit"))
+			if (!hasPermission(sender, "api.stars.credit"))
 				return true;
 
 			final String playerName = arguments[1];
@@ -89,7 +89,7 @@ public class CommandStars extends AbstractCommand {
 			if (arguments.length < 3)
 				return false;
 
-			if (!hasPermission(sender, "stars.withdraw"))
+			if (!hasPermission(sender, "api.stars.withdraw"))
 				return true;
 
 			final String playerName = arguments[1];

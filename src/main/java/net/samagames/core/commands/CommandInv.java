@@ -24,7 +24,7 @@ public class CommandInv extends AbstractCommand
     @Override
     public boolean onCommand(CommandSender sender, String label, String[] arguments)
     {
-        if (!hasPermission(sender, "inventory.show"))
+        if (!hasPermission(sender, "api.inventory.show"))
             return true;
 
         if(sender instanceof Player)

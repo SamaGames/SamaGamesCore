@@ -25,6 +25,9 @@ public class CommandBukkitrefresh extends AbstractCommand {
 
     @Override
     public boolean onCommand(final CommandSender commandSender, String label, String[] strings) {
+        if (!hasPermission(commandSender, "api.permissions.refresh"))
+            return true;
+
         Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
             api.getManager().refresh();
             commandSender.sendMessage(ChatColor.GREEN + "Les permissions locales ont été raffraichies !");

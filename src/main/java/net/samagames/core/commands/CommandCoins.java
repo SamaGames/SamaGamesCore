@@ -47,7 +47,7 @@ public class CommandCoins extends AbstractCommand {
 			if (arguments.length < 2)
 				return false;
 
-			if (!hasPermission(sender, "coins.getother"))
+			if (!hasPermission(sender, "api.coins.getother"))
 				return true;
 
 			final String playerName = arguments[1];
@@ -67,7 +67,7 @@ public class CommandCoins extends AbstractCommand {
 			if (arguments.length < 3)
 				return false;
 
-			if (!hasPermission(sender, "coins.credit"))
+			if (!hasPermission(sender, "api.coins.credit"))
 				return true;
 
 			final String playerName = arguments[1];
@@ -89,7 +89,7 @@ public class CommandCoins extends AbstractCommand {
 			if (arguments.length < 3)
 				return false;
 
-			if (!hasPermission(sender, "coins.withdraw"))
+			if (!hasPermission(sender, "api.coins.withdraw"))
 				return true;
 
 			final String playerName = arguments[1];

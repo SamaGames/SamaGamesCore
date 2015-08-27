@@ -30,3 +30,6 @@ commands:
    inv:
      description: Voir l'inventaire d'un joueur
      usage: /inv <pseudo>
+   speakup:
+     description: Ecrire un message au titre de la modération sur le serveur
+     usage: /speakup <message>

@@ -61,19 +61,10 @@ public class GameManagerImpl implements IGameManager
 
         game.handlePostRegistration();
 
-        Bukkit.getPluginManager().registerEvents(new SpectatorListener(), this.api.getPlugin());
+        Bukkit.getPluginManager().registerEvents(new SpectatorListener(game), this.api.getPlugin());
 
         APIPlugin.log(Level.INFO, "Registered game '" + game.getGameName() + "' successfuly!");
     }
-
-    /*@Override
-    public void kickPlayer(Player player, String reason)
-    {
-        if(reason != null)
-            player.sendMessage(reason);
-
-        Bukkit.getScheduler().runTaskLater(APIPlugin.getInstance(), () -> player.kickPlayer(null), 10L);
-    }*/
 
     @Override
     public void kickPlayer(Player p, String msg)
@@ -87,7 +78,9 @@ public class GameManagerImpl implements IGameManager
         if (!p.isOnline())
             return;
 
-        //kickPlayer(p, "");
+        if(msg != null)
+            p.sendMessage(msg);
+
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(b);
         try
@@ -100,8 +93,8 @@ public class GameManagerImpl implements IGameManager
         {
             Bukkit.getLogger().info("You'll never see me!");
         }
-        p.sendPluginMessage(this.api.getPlugin(), "BungeeCord", b.toByteArray());
 
+        p.sendPluginMessage(this.api.getPlugin(), "BungeeCord", b.toByteArray());
     }
 
     @Override
