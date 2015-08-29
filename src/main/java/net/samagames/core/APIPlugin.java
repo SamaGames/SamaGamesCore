@@ -1,5 +1,7 @@
 package net.samagames.core;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import net.samagames.core.database.DatabaseConnector;
 import net.samagames.core.database.RedisServer;
 import net.samagames.core.listeners.*;
@@ -19,7 +21,7 @@ import redis.clients.jedis.Jedis;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -151,9 +153,22 @@ public class APIPlugin extends JavaPlugin implements Listener
             Bukkit.getPluginManager().registerEvents(new NaturalListener(), this);
         if (configuration.getBoolean("tab-colors", true))
             Bukkit.getPluginManager().registerEvents(new TabsColorsListener(this), this);
+        Bukkit.getMessenger().registerOutgoingPluginChannel(this, "WDL|CONTROL");
+        Bukkit.getMessenger().registerIncomingPluginChannel(this, "WDL|INIT", (s, player, bytes) -> {
+            ByteArrayDataOutput out = ByteStreams.newDataOutput();
+            out.writeInt(1);
+            out.writeBoolean(false);
+            out.writeInt(1);
+            out.writeBoolean(false);
+            out.writeBoolean(false);
+            out.writeBoolean(false);
+            out.writeBoolean(false);
+            Bukkit.getLogger().info("Blocking WorldDownloader for " + player.getDisplayName());
+            player.sendPluginMessage(this, "WDL|CONTROL", out.toByteArray());
+        });
 
 		/*
-		Loading commands
+        Loading commands
 		 */
 
         for (String command : this.getDescription().getCommands().keySet())
@@ -270,7 +285,7 @@ public class APIPlugin extends JavaPlugin implements Listener
 
 
 	/*
-	Listen for join
+    Listen for join
 	 */
 
     @EventHandler
