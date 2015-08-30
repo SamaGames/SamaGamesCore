@@ -1,7 +1,7 @@
 package net.samagames.core.api.permissions;
 
 import net.samagames.core.APIPlugin;
-import net.samagames.permissionsapi.rawtypes.RawPlayer;
+import net.samagames.api.permissions.rawtypes.RawPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 

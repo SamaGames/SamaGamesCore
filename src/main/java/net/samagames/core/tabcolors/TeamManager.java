@@ -2,8 +2,8 @@ package net.samagames.core.tabcolors;
 
 import net.samagames.api.permissions.IPermissionsManager;
 import net.samagames.core.APIPlugin;
-import net.samagames.permissionsapi.permissions.PermissionGroup;
-import net.samagames.permissionsapi.permissions.PermissionUser;
+import net.samagames.api.permissions.permissions.PermissionGroup;
+import net.samagames.api.permissions.permissions.PermissionUser;
 import net.samagames.tools.scoreboards.TeamHandler;
 import org.bukkit.entity.Player;
 

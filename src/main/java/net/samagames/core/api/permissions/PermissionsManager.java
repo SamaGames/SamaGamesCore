@@ -1,6 +1,6 @@
 package net.samagames.core.api.permissions;
 
-import net.samagames.permissionsapi.permissions.PermissionEntity;
+import net.samagames.api.permissions.permissions.PermissionEntity;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 

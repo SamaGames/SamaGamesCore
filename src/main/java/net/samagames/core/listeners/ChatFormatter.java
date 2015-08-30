@@ -2,7 +2,7 @@ package net.samagames.core.listeners;
 
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.APIPlugin;
-import net.samagames.permissionsapi.permissions.PermissionUser;
+import net.samagames.api.permissions.permissions.PermissionUser;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
