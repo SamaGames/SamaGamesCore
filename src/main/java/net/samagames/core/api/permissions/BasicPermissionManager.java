@@ -5,6 +5,7 @@ import net.samagames.api.permissions.IPermissionsManager;
 import net.samagames.api.permissions.PermissionsAPI;
 import net.samagames.api.permissions.rawtypes.RawPlayer;
 import net.samagames.api.permissions.redis.JedisPlugin;
+import net.samagames.api.permissions.redis.RedisManager;
 import net.samagames.core.APIPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -38,7 +39,7 @@ public abstract class BasicPermissionManager implements JedisPlugin, IPermission
         Bukkit.getLogger().info("Lobby mode was set to : " + isLobby);
 
         logInfo(">> LOADING PERMISSIONS API !");
-        api = new PermissionsAPI(this, "Joueur");
+        api = new PermissionsAPI(this, "Joueur").adaptator(RedisManager.class).enableRefresh();
         api.getManager().refreshGroups();
         logInfo(">> LOADED PERMISSIONS API !");
 
