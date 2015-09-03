@@ -61,7 +61,7 @@ public class GameManagerImpl implements IGameManager
 
         game.handlePostRegistration();
 
-        Bukkit.getPluginManager().registerEvents(new SpectatorListener(), this.api.getPlugin());
+        Bukkit.getPluginManager().registerEvents(new SpectatorListener(game), this.api.getPlugin());
 
         APIPlugin.log(Level.INFO, "Registered game '" + game.getGameName() + "' successfuly!");
     }
