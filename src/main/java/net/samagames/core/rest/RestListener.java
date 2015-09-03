@@ -5,10 +5,12 @@ import net.samagames.core.APIPlugin;
 import net.samagames.core.api.player.PlayerData;
 import net.samagames.core.api.player.PlayerDataManager;
 import net.samagames.core.api.player.redis.RedisPlayerData;
-import net.samagames.core.rest.request.Request;
-import net.samagames.core.rest.response.LoginResponse;
-import net.samagames.core.rest.response.Response;
+import net.samagames.restfull.RestAPI;
+import net.samagames.restfull.request.Request;
+import net.samagames.restfull.response.LoginResponse;
+import net.samagames.restfull.response.Response;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
@@ -35,7 +37,8 @@ public class RestListener implements IJoinHandler
     {
         if (!pluginAPI.getAPI().useRestFull())
             return;
-        Response response = api.sendRequest("player/login", new Request().addProperty("playerUUID", player), LoginResponse.class, "POST");
+        Player bukkitPlayer = Bukkit.getPlayer(player);
+        Response response = (Response) api.sendRequest("player/login", new Request().addProperty("playerUUID", player).addProperty("playerName", bukkitPlayer == null ? null : bukkitPlayer.getName()), LoginResponse.class, "POST");
         //Bukkit.broadcastMessage(api.getGSON().toJson(response));
         if (response instanceof LoginResponse)
         {

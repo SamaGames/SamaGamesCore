@@ -1,7 +1,7 @@
 package net.samagames.core.commands;
 
 import net.samagames.core.APIPlugin;
-import net.samagames.permissionsapi.PermissionsAPI;
+import net.samagames.api.permissions.PermissionsAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

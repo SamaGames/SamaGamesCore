@@ -6,11 +6,11 @@ import net.samagames.api.stats.IPlayerStat;
 import net.samagames.api.stats.Leaderboard;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
-import net.samagames.core.rest.RestAPI;
-import net.samagames.core.rest.request.Request;
-import net.samagames.core.rest.response.Response;
-import net.samagames.core.rest.response.StatusResponse;
-import net.samagames.core.rest.response.ValueResponse;
+import net.samagames.restfull.RestAPI;
+import net.samagames.restfull.request.Request;
+import net.samagames.restfull.response.Response;
+import net.samagames.restfull.response.StatusResponse;
+import net.samagames.restfull.response.ValueResponse;
 import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
 
@@ -64,13 +64,13 @@ public class StatsManager extends AbstractStatsManager
     {
         if (api.useRestFull())
         {
-            Response response = RestAPI.getInstance().sendRequest("player/statistic", new Request().addProperty("playerUUID", player).addProperty("category", game).addProperty("key", stat).addProperty("value", value), StatusResponse.class, "POST");
+            Response response = (Response) RestAPI.getInstance().sendRequest("player/statistic", new Request().addProperty("playerUUID", player).addProperty("category", game).addProperty("key", stat).addProperty("value", value), StatusResponse.class, "PUT");
             boolean isErrored = true;
             if (response instanceof StatusResponse)
                 isErrored = !((StatusResponse) response).getStatus();
 
             if (isErrored)
-                logger.warning("Cannot set key " + stat + " with value " + value + "for uuid " + player);
+                logger.warning("Cannot set key " + stat + " with value " + value + "for uuid " + player + " (DEBUG: " + response + ")");
         }
         else
         {

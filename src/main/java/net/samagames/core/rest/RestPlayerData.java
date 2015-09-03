@@ -3,8 +3,9 @@ package net.samagames.core.rest;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.player.PlayerData;
 import net.samagames.core.api.player.PlayerDataManager;
-import net.samagames.core.rest.request.Request;
-import net.samagames.core.rest.response.*;
+import net.samagames.restfull.RestAPI;
+import net.samagames.restfull.request.Request;
+import net.samagames.restfull.response.*;
 
 import java.util.Date;
 import java.util.UUID;
@@ -58,7 +59,7 @@ public class RestPlayerData extends PlayerData
 
     private String getSetting(String key)
     {
-        Response response = RestAPI.getInstance().sendRequest("player/setting", new Request().addProperty("playerUUID", playerID).addProperty("key", key), ValueResponse.class, "POST");
+        Response response = (Response) RestAPI.getInstance().sendRequest("player/setting", new Request().addProperty("playerUUID", playerID).addProperty("key", key), ValueResponse.class, "POST");
         if (response instanceof ValueResponse)
         {
             String value = ((ValueResponse) response).getValue();
@@ -102,7 +103,7 @@ public class RestPlayerData extends PlayerData
 
     private void setSetting(String key, String value)
     {
-        Response response = RestAPI.getInstance().sendRequest("player/setting", new Request().addProperty("playerUUID", playerID).addProperty("key", key).addProperty("value", value), StatusResponse.class, "PUT");
+        Response response = (Response) RestAPI.getInstance().sendRequest("player/setting", new Request().addProperty("playerUUID", playerID).addProperty("key", key).addProperty("value", value), StatusResponse.class, "PUT");
         boolean isErrored = true;
         if (response instanceof StatusResponse)
             isErrored = !((StatusResponse) response).getStatus();
@@ -123,7 +124,7 @@ public class RestPlayerData extends PlayerData
     @Override
     public long increaseCoins(long incrBy)
     {
-        Response response = RestAPI.getInstance().sendRequest("economy/coins", new Request().addProperty("playerUUID", playerID).addProperty("count", incrBy), CoinsResponse.class, "PUT");
+        Response response = (Response) RestAPI.getInstance().sendRequest("economy/coins", new Request().addProperty("playerUUID", playerID).addProperty("count", incrBy), CoinsResponse.class, "PUT");
         if (response instanceof CoinsResponse)
         {
             CoinsResponse coinsResponse = (CoinsResponse) response;
@@ -136,7 +137,7 @@ public class RestPlayerData extends PlayerData
     @Override
     public long increaseStars(long incrBy)
     {
-        Response response = RestAPI.getInstance().sendRequest("economy/stars", new Request().addProperty("playerUUID", playerID).addProperty("count", incrBy), StarsResponse.class, "PUT");
+        Response response = (Response) RestAPI.getInstance().sendRequest("economy/stars", new Request().addProperty("playerUUID", playerID).addProperty("count", incrBy), StarsResponse.class, "PUT");
         if (response instanceof StarsResponse)
         {
             StarsResponse starsResponse = (StarsResponse) response;
@@ -148,7 +149,7 @@ public class RestPlayerData extends PlayerData
 
     private String getCoinsInternal()
     {
-        Response response = RestAPI.getInstance().sendRequest("economy/coins", new Request().addProperty("playerUUID", playerID), StarsResponse.class, "POST");
+        Response response = (Response) RestAPI.getInstance().sendRequest("economy/coins", new Request().addProperty("playerUUID", playerID), StarsResponse.class, "POST");
         if (response instanceof CoinsResponse)
         {
             CoinsResponse coinsResponse = (CoinsResponse) response;
@@ -161,7 +162,7 @@ public class RestPlayerData extends PlayerData
 
     public String getStarsInternal()
     {
-        Response response = RestAPI.getInstance().sendRequest("economy/stars", new Request().addProperty("playerUUID", playerID), StarsResponse.class, "POST");
+        Response response = (Response) RestAPI.getInstance().sendRequest("economy/stars", new Request().addProperty("playerUUID", playerID), StarsResponse.class, "POST");
         if (response instanceof StarsResponse)
         {
             StarsResponse starsResponse = (StarsResponse) response;

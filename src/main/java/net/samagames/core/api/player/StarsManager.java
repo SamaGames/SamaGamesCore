@@ -3,7 +3,7 @@ package net.samagames.core.api.player;
 import net.md_5.bungee.api.ChatColor;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.ApiImplementation;
-import net.samagames.permissionsapi.permissions.PermissionUser;
+import net.samagames.api.permissions.permissions.PermissionUser;
 import net.samagames.tools.Promo;
 import redis.clients.jedis.Jedis;
 

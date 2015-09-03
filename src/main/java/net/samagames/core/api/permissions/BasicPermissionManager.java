@@ -2,10 +2,11 @@ package net.samagames.core.api.permissions;
 
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.permissions.IPermissionsManager;
+import net.samagames.api.permissions.PermissionsAPI;
+import net.samagames.api.permissions.rawtypes.RawPlayer;
+import net.samagames.api.permissions.redis.JedisPlugin;
+import net.samagames.api.permissions.redis.RedisManager;
 import net.samagames.core.APIPlugin;
-import net.samagames.permissionsapi.PermissionsAPI;
-import net.samagames.permissionsapi.rawtypes.RawPlayer;
-import net.samagames.permissionsapi.rawtypes.RawPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -24,7 +25,7 @@ import java.util.logging.Level;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public abstract class BasicPermissionManager implements RawPlugin, IPermissionsManager
+public abstract class BasicPermissionManager implements JedisPlugin, IPermissionsManager
 {
 
     private final ArrayList<BukkitTask> tasks = new ArrayList<>();
@@ -38,7 +39,7 @@ public abstract class BasicPermissionManager implements RawPlugin, IPermissionsM
         Bukkit.getLogger().info("Lobby mode was set to : " + isLobby);
 
         logInfo(">> LOADING PERMISSIONS API !");
-        api = new PermissionsAPI(this, "Joueur");
+        api = new PermissionsAPI(this, "Joueur").adaptator(RedisManager.class).enableRefresh();
         api.getManager().refreshGroups();
         logInfo(">> LOADED PERMISSIONS API !");
 
@@ -56,6 +57,7 @@ public abstract class BasicPermissionManager implements RawPlugin, IPermissionsM
         return isLobby;
     }
 
+    @Override
     public PermissionsAPI getApi()
     {
         return api;

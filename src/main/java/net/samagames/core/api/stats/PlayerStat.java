@@ -3,10 +3,10 @@ package net.samagames.core.api.stats;
 import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.api.stats.IPlayerStat;
 import net.samagames.core.ApiImplementation;
-import net.samagames.core.rest.RestAPI;
-import net.samagames.core.rest.request.Request;
-import net.samagames.core.rest.response.Response;
-import net.samagames.core.rest.response.ValueResponse;
+import net.samagames.restfull.RestAPI;
+import net.samagames.restfull.request.Request;
+import net.samagames.restfull.response.Response;
+import net.samagames.restfull.response.ValueResponse;
 import redis.clients.jedis.Jedis;
 
 import java.util.UUID;
@@ -36,7 +36,7 @@ public class PlayerStat implements IPlayerStat
     {
         if (api.useRestFull())
         {
-            Response response = RestAPI.getInstance().sendRequest("player/statistic", new Request().addProperty("playerUUID", playerUUID).addProperty("category", game).addProperty("key", stat), ValueResponse.class, "POST");
+            Response response = (Response) RestAPI.getInstance().sendRequest("player/statistic", new Request().addProperty("playerUUID", playerUUID).addProperty("category", game).addProperty("key", stat), ValueResponse.class, "POST");
             if (response instanceof ValueResponse)
             {
                 String newValue = ((ValueResponse) response).getValue();

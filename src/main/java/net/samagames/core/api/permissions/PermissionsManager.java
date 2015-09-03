@@ -1,6 +1,6 @@
 package net.samagames.core.api.permissions;
 
-import net.samagames.permissionsapi.permissions.PermissionEntity;
+import net.samagames.api.permissions.permissions.PermissionEntity;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
@@ -43,9 +43,7 @@ public class PermissionsManager extends BasicPermissionManager
         String display = entity.getProperty("display");
         if (display == null)
             return null;
-        display = display.replaceAll("&s", " ");
-        display = ChatColor.translateAlternateColorCodes('&', display);
-        return display;
+        return ChatColor.translateAlternateColorCodes('&', display.replaceAll("&s", " "));
     }
 
     @Override
