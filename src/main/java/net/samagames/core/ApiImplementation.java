@@ -16,7 +16,6 @@ import net.samagames.api.resourcepacks.IResourcePacksManager;
 import net.samagames.api.settings.ISettingsManager;
 import net.samagames.api.shops.AbstractShopsManager;
 import net.samagames.api.stats.AbstractStatsManager;
-import net.samagames.core.api.achievements.AchievementManagerImpl;
 import net.samagames.core.api.friends.FriendsManagement;
 import net.samagames.core.api.games.GameManagerImpl;
 import net.samagames.core.api.gui.GuiManager;
@@ -32,6 +31,7 @@ import net.samagames.core.api.settings.SettingsManager;
 import net.samagames.core.api.shops.ShopsManager;
 import net.samagames.core.api.stats.StatsManager;
 import net.samagames.core.listeners.GlobalChannelHandler;
+import net.samagames.core.rest.AchievementManagerRest;
 import net.samagames.tools.BarAPI.BarAPI;
 import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
@@ -78,7 +78,7 @@ public class ApiImplementation extends SamaGamesAPI
         resourcePacksManager = new ResourcePacksManagerImpl(this);
         settingsManager = new SettingsManager(this);
         playerDataManager = new PlayerDataManager(this);
-        achievementManager = new AchievementManagerImpl(this);
+        achievementManager = new AchievementManagerRest(this);
 
         pubSub = new PubSubAPI(this);
         pubSub.subscribe("global", new GlobalChannelHandler(plugin));

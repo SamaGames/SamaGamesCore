@@ -26,7 +26,7 @@ public class PubSubAPI implements IPubSubAPI
         new Thread(() -> {
             while (continueSub)
             {
-                Jedis jedis = api.getResource();
+                Jedis jedis = api.getBungeeResource();
                 try
                 {
                     jedis.psubscribe(subscriber, "*");

@@ -44,7 +44,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
         this.handler = new ProtocolHandler(APIPlugin.getInstance(), this);
         this.api = api;
 
-        Jedis jedis = api.getResource();
+        Jedis jedis = api.getBungeeResource();
         this.resetUrl = jedis.get("resourcepacks:reseturl");
         APIPlugin.getInstance().getLogger().info("Resource packs reset URL defined to " + resetUrl);
         jedis.close();
@@ -60,7 +60,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
     public void forcePack(String name, IResourceCallback callback)
     {
         Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
-            Jedis jedis = api.getResource();
+            Jedis jedis = api.getBungeeResource();
             forceUrl = jedis.hget("resourcepack:" + name, "url");
             forceHash = jedis.hget("resourcepack:" + name, "hash");
             jedis.close();
@@ -90,7 +90,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
         {
             currentlyDownloading.remove(player.getUniqueId());
             Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
-                Jedis jedis = api.getResource();
+                Jedis jedis = api.getBungeeResource();
                 jedis.sadd("playersWithPack", player.getUniqueId().toString());
                 jedis.close();
             });
@@ -120,7 +120,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
         } else
         {
             Bukkit.getScheduler().runTaskLater(APIPlugin.getInstance(), () -> {
-                Jedis jedis = api.getResource();
+                Jedis jedis = api.getBungeeResource();
                 Long l = jedis.srem("playersWithPack", player.getUniqueId().toString());
                 jedis.close();
 

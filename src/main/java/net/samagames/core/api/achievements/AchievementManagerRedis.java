@@ -1,27 +1,25 @@
 package net.samagames.core.api.achievements;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import net.samagames.api.achievements.*;
+import net.samagames.api.achievements.Achievement;
+import net.samagames.api.achievements.AchievementCategory;
+import net.samagames.api.achievements.IAchievementManager;
+import net.samagames.api.achievements.IncrementationAchievement;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
-import net.samagames.tools.ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.logging.Level;
 
-public class AchievementManagerImpl implements IAchievementManager
+@Deprecated
+public class AchievementManagerRedis implements IAchievementManager
 {
     private final ApiImplementation api;
 
     private final ArrayList<Achievement> achievements;
     private final ArrayList<AchievementCategory> achievementCategories;
 
-    public AchievementManagerImpl(ApiImplementation api)
+    public AchievementManagerRedis(ApiImplementation api)
     {
         this.api = api;
 
@@ -36,7 +34,7 @@ public class AchievementManagerImpl implements IAchievementManager
     @Override
     public void reloadList()
     {
-        APIPlugin.log(Level.INFO, "Reloading achievement list...");
+        /*APIPlugin.log(Level.INFO, "Reloading achievement list...");
 
         this.achievements.clear();
         this.achievementCategories.clear();
@@ -78,7 +76,7 @@ public class AchievementManagerImpl implements IAchievementManager
 
             this.achievements.add(new Achievement(achievementID, achievementDisplayName, achievementParentID, achievementDescription, reward));
             APIPlugin.log(Level.INFO, "Registered achievement '" + achievementID + "'");
-        }
+        }*/
     }
 
     @Override

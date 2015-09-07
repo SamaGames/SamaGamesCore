@@ -29,28 +29,14 @@ public class StarsManager
         this.api = api;
     }
 
-    public Multiplier getCurrentMultiplier(UUID joueur)
+    public Multiplier getCurrentMultiplier(UUID player)
     {
         Date current = new Date();
         Multiplier ret = new Multiplier();
 
         if (promoNextCheck == null || current.after(promoNextCheck))
         {
-            Jedis jedis = api.getResource();
-            //TODO: Use RestAPI
-            String prom = jedis.get("stars:currentpromo"); // On get la promo
-            jedis.close();
-
-            if (prom == null)
-            {
-                currentPromo = null;
-            } else
-            {
-                currentPromo = new Promo(prom);
-            }
-
-            promoNextCheck = new Date();
-            promoNextCheck.setTime(promoNextCheck.getTime() + (60 * 1000));
+            // TODO: Rewrite the whole system to manage multi offer
         }
 
         if (currentPromo != null && current.before(currentPromo.end))
@@ -59,8 +45,8 @@ public class StarsManager
             ret.data.put(currentPromo.message, currentPromo.multiply);
         }
 
-        PermissionUser user = SamaGamesAPI.get().getPermissionsManager().getApi().getUser(joueur);
-        int multiply = (user != null && user.getProperty("stars-multiplier") != null) ? Integer.decode(user.getProperty("stars-multiplier")) : 1;
+        PermissionUser user = api.getPermissionsManager().getApi().getUser(player);
+        int multiply = (user != null && user.getProperty("multiplier") != null) ? Integer.decode(user.getProperty("multiplier")) : 1;
 
         multiply = (multiply < 1) ? 1 : multiply;
 
