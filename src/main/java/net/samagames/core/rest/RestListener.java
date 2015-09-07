@@ -35,7 +35,7 @@ public class RestListener implements IJoinHandler
     public void onLogin(UUID player)
     {
         Player bukkitPlayer = Bukkit.getPlayer(player);
-        Response response = (Response) api.sendRequest("player/login", new Request().addProperty("playerUUID", player).addProperty("playerName", bukkitPlayer == null ? null : bukkitPlayer.getName()), LoginResponse.class, "POST");
+        Response response = (Response) api.sendRequest("player/login", new Request().addProperty("playerUUID", player).addProperty("playerName", bukkitPlayer == null ? "null" : bukkitPlayer.getName()), LoginResponse.class, "POST");
         //Bukkit.broadcastMessage(api.getGSON().toJson(response));
         if (response instanceof LoginResponse)
         {

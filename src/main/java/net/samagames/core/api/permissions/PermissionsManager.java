@@ -20,7 +20,7 @@ public class PermissionsManager extends BasicPermissionManager
     {
         String prefix = entity.getProperty("prefix");
         if (prefix == null)
-            return null;
+            return "";
         prefix = prefix.replaceAll("&s", " ");
         prefix = ChatColor.translateAlternateColorCodes('&', prefix);
         return prefix;
@@ -31,7 +31,7 @@ public class PermissionsManager extends BasicPermissionManager
     {
         String suffix = entity.getProperty("suffix");
         if (suffix == null)
-            return null;
+            return "";
         suffix = suffix.replaceAll("&s", " ");
         suffix = ChatColor.translateAlternateColorCodes('&', suffix);
         return suffix;
@@ -42,7 +42,7 @@ public class PermissionsManager extends BasicPermissionManager
     {
         String display = entity.getProperty("display");
         if (display == null)
-            return null;
+            return "";
         return ChatColor.translateAlternateColorCodes('&', display.replaceAll("&s", " "));
     }
 
