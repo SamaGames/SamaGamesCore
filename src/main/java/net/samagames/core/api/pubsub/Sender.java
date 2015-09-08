@@ -70,7 +70,7 @@ class Sender implements Runnable, ISender
     {
         try
         {
-            jedis = connector.getResource();
+            jedis = connector.getBungeeResource();
         } catch (Exception e)
         {
             APIPlugin.getInstance().getLogger().severe("[Publisher] Cannot connect to redis server : " + e.getMessage() + ". Retrying in 5 seconds.");

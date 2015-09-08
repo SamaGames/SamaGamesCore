@@ -117,8 +117,8 @@ public class GameManagerImpl implements IGameManager
 
         playersDisconnected.add(player.getUniqueId());
 
-        api.getResource().set("rejoin:" + player.getUniqueId(), api.getServerName());
-        api.getResource().expire("rejoin:" + player.getUniqueId(), maxReconnectTime * 60);
+        api.getBungeeResource().set("rejoin:" + player.getUniqueId(), api.getServerName());
+        api.getBungeeResource().expire("rejoin:" + player.getUniqueId(), maxReconnectTime * 60);
 
         playerReconnectedTimers.put(player.getUniqueId(), Bukkit.getScheduler().runTaskTimerAsynchronously(APIPlugin.getInstance(), new Runnable()
         {

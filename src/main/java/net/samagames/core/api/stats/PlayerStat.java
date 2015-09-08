@@ -34,45 +34,21 @@ public class PlayerStat implements IPlayerStat
 
     public boolean fill()
     {
-        if (api.useRestFull())
+        Response response = (Response) RestAPI.getInstance().sendRequest("player/statistic", new Request().addProperty("playerUUID", playerUUID).addProperty("category", game).addProperty("key", stat), ValueResponse.class, "POST");
+        if (response instanceof ValueResponse)
         {
-            Response response = (Response) RestAPI.getInstance().sendRequest("player/statistic", new Request().addProperty("playerUUID", playerUUID).addProperty("category", game).addProperty("key", stat), ValueResponse.class, "POST");
-            if (response instanceof ValueResponse)
+            String newValue = ((ValueResponse) response).getValue();
+            if (newValue == null || newValue.isEmpty())
             {
-                String newValue = ((ValueResponse) response).getValue();
-                if (newValue == null || newValue.isEmpty())
-                {
-                    this.value = 0.0D;
-                    return false;
-                }
-                else
-                    this.value = Double.parseDouble(newValue);
-                this.rank = 1L; // TODO: implement Rank into RestAPI
-                return true;
-            }
-            return false;
-        }
-        else
-        {
-            Jedis jedis = api.getResource();
-
-            this.value = jedis.zscore("gamestats:" + this.game + ":" + this.stat, this.playerUUID.toString());
-
-            if (this.value == null)
-            {
-                jedis.close();
+                this.value = 0.0D;
                 return false;
             }
-
-            this.rank = jedis.zrank("gamestats:" + this.game + ":" + this.stat, this.playerUUID.toString());
-
-            if (this.rank != null)
-                this.rank++;
-
-            jedis.close();
-
+            else
+                this.value = Double.parseDouble(newValue);
+            this.rank = 1L; // TODO: implement Rank into RestAPI
             return true;
         }
+        return false;
     }
 
     public UUID getPlayerUUID()

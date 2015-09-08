@@ -29,37 +29,37 @@ public class ShopsManager extends AbstractShopsManager
     @Override
     public String getItemLevelForPlayer(UUID player, String itemCategory)
     {
-        return api.getPlayerManager().getPlayerData(player).get("shops:" + gameType + ":" + itemCategory + ":current");
+        return api.getPlayerManager().getPlayerData(player).get("shops." + gameType + "." + itemCategory + ".current");
     }
 
     @Override
     public List<String> getOwnedLevels(UUID player, String itemCategory)
     {
-        String value = api.getPlayerManager().getPlayerData(player).get("shops:" + gameType + ":" + itemCategory + ":owned");
+        String value = api.getPlayerManager().getPlayerData(player).get("shops." + gameType + "." + itemCategory + ".owned");
         if (value == null)
             return null;
-        return Arrays.asList(value.split(":"));
+        return Arrays.asList(value.split("."));
     }
 
     @Override
     public void addOwnedLevel(UUID player, String itemCategory, String itemName)
     {
-        String current = api.getPlayerManager().getPlayerData(player).get("shops:" + gameType + ":" + itemCategory + ":owned");
+        String current = api.getPlayerManager().getPlayerData(player).get("shops." + gameType + "." + itemCategory + ".owned");
         if (current == null)
             current = itemName;
         else
         {
             if (current.contains(itemName))
                 return;
-            current += ":" + itemName;
+            current += "." + itemName;
         }
 
-        api.getPlayerManager().getPlayerData(player).set("shops:" + gameType + ":" + itemCategory + ":owned", current);
+        api.getPlayerManager().getPlayerData(player).set("shops." + gameType + "." + itemCategory + ".owned", current);
     }
 
     @Override
     public void setCurrentLevel(UUID player, String itemCategory, String itemName)
     {
-        api.getPlayerManager().getPlayerData(player).set("shops:" + gameType + ":" + itemCategory + ":current", itemName);
+        api.getPlayerManager().getPlayerData(player).set("shops." + gameType + "." + itemCategory + ".current", itemName);
     }
 }

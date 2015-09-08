@@ -6,6 +6,7 @@ import net.samagames.core.database.DatabaseConnector;
 import net.samagames.core.database.RedisServer;
 import net.samagames.core.listeners.*;
 import net.samagames.core.rest.RestListener;
+import net.samagames.restfull.RestAPI;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -129,8 +130,10 @@ public class APIPlugin extends JavaPlugin implements Listener
 
         }
 
-        api = new ApiImplementation(this);
 
+        RestAPI.getInstance().setup("test", "test");
+
+        api = new ApiImplementation(this);
 		/*
         Loading listeners
 		 */
@@ -142,7 +145,6 @@ public class APIPlugin extends JavaPlugin implements Listener
         api.getJoinManager().registerHandler(new RestListener(this), 1000);
 
         api.getPubSub().subscribe("*", debugListener);
-
         //Nickname
 
         nicknamePacketListener = new NicknamePacketListener(this);

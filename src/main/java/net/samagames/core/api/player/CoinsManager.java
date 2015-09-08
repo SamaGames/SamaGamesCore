@@ -37,26 +37,7 @@ public class CoinsManager
 
         if (promoNextCheck == null || current.after(promoNextCheck))
         {
-            if (api.useRestFull())
-            {
-                // TODO: Rewrite the whole system to manage multi offer and keep it compatible with DB mode
-            } else
-            {
-                Jedis jedis = api.getResource();
-                String prom = jedis.get("coins:currentpromo"); // On get la promo
-                jedis.close();
-
-                if (prom == null)
-                {
-                    currentPromo = null;
-                } else
-                {
-                    currentPromo = new Promo(prom);
-                }
-
-                promoNextCheck = new Date();
-                promoNextCheck.setTime(promoNextCheck.getTime() + (60 * 1000));
-            }
+            // TODO: Rewrite the whole system to manage multi offer and keep it compatible with DB mode
         }
 
         if (currentPromo != null && current.before(currentPromo.end))

@@ -3,7 +3,6 @@ package net.samagames.core.api.player;
 import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.api.player.IPlayerDataManager;
 import net.samagames.core.ApiImplementation;
-import net.samagames.core.api.player.redis.RedisPlayerData;
 import net.samagames.core.rest.RestPlayerData;
 
 import java.util.UUID;
@@ -52,14 +51,7 @@ public class PlayerDataManager implements IPlayerDataManager
     {
         if (!cachedData.containsKey(player))
         {
-            PlayerData data;
-            if(api.useRestFull())
-            {
-                data = new RestPlayerData(player, api, this);
-            }
-            else
-                data = new RedisPlayerData(player, api, this);
-
+            PlayerData data = new RestPlayerData(player, api, this);
             cachedData.put(player, data);
             return data;
         }

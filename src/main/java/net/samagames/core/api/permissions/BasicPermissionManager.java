@@ -4,15 +4,14 @@ import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.permissions.IPermissionsManager;
 import net.samagames.api.permissions.PermissionsAPI;
 import net.samagames.api.permissions.rawtypes.RawPlayer;
-import net.samagames.api.permissions.redis.JedisPlugin;
-import net.samagames.api.permissions.redis.RedisManager;
+import net.samagames.api.permissions.restfull.RestfullManager;
+import net.samagames.api.permissions.restfull.RestfullPlugin;
 import net.samagames.core.APIPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
-import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +24,7 @@ import java.util.logging.Level;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public abstract class BasicPermissionManager implements JedisPlugin, IPermissionsManager
+public abstract class BasicPermissionManager implements RestfullPlugin, IPermissionsManager
 {
 
     private final ArrayList<BukkitTask> tasks = new ArrayList<>();
@@ -39,7 +38,7 @@ public abstract class BasicPermissionManager implements JedisPlugin, IPermission
         Bukkit.getLogger().info("Lobby mode was set to : " + isLobby);
 
         logInfo(">> LOADING PERMISSIONS API !");
-        api = new PermissionsAPI(this, "Joueur").adaptator(RedisManager.class).enableRefresh();
+        api = new PermissionsAPI(this, "Joueur").adaptator(RestfullManager.class).enableRefresh();
         api.getManager().refreshGroups();
         logInfo(">> LOADED PERMISSIONS API !");
 
@@ -112,12 +111,6 @@ public abstract class BasicPermissionManager implements JedisPlugin, IPermission
         VirtualPlayer pl = new VirtualPlayer(p);
         players.put(player, pl);
         return pl;
-    }
-
-    @Override
-    public Jedis getJedis()
-    {
-        return SamaGamesAPI.get().getResource();
     }
 
     @Override

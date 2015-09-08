@@ -31,45 +31,13 @@ public class FriendsManagement implements IFriendsManager
     @Override
     public List<String> namesFriendsList(UUID asking)
     {
-        ArrayList<String> playerNames = new ArrayList<>();
-
-        for (UUID id : uuidFriendsList(asking))
-        {
-            String name = api.getUUIDTranslator().getName(id, true);
-            if (name == null)
-            {
-                continue;
-            }
-            playerNames.add(name);
-        }
-        return playerNames;
+        return new ArrayList<>();
     }
 
     @Override
     public List<UUID> uuidFriendsList(UUID asking)
     {
-        ArrayList<UUID> playerIDs = new ArrayList<>();
-
-        Jedis jedis = api.getResource();
-        for (String data : jedis.lrange("friends:" + asking, 0, -1))
-        {
-            if (data == null || data.equals(""))
-            {
-                jedis.lrem("friends:" + asking, 0, data);
-                continue;
-            }
-
-            try
-            {
-                UUID id = UUID.fromString(data);
-                playerIDs.add(id);
-            } catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-        jedis.close();
-        return playerIDs;
+        return new ArrayList<>();
     }
 
     public Map<UUID, String> associatedFriendsList(UUID asking)
@@ -91,47 +59,13 @@ public class FriendsManagement implements IFriendsManager
     @Override
     public List<String> requests(UUID asking)
     {
-        String dbKey = "friendrequest:*:" + asking;
-        ArrayList<String> playerNames = new ArrayList<>();
-
-        Jedis jedis = api.getResource();
-        for (String data : jedis.keys(dbKey))
-        {
-            String[] parts = data.split(":");
-            try
-            {
-                UUID id = UUID.fromString(parts[1]);
-                playerNames.add(api.getUUIDTranslator().getName(id, true));
-            } catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-        jedis.close();
-        return playerNames;
+        return new ArrayList<>();
     }
 
     @Override
     public List<String> sentRequests(UUID asking)
     {
-        String dbKey = "friendrequest:" + asking + ":";
-        ArrayList<String> playerNames = new ArrayList<>();
-
-        Jedis jedis = api.getResource();
-        for (String data : jedis.keys(dbKey))
-        {
-            String[] parts = data.split(":");
-            try
-            {
-                UUID id = UUID.fromString(parts[1]);
-                playerNames.add(api.getUUIDTranslator().getName(id, true));
-            } catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-        jedis.close();
-        return playerNames;
+        return new ArrayList<>();
     }
 
 }
