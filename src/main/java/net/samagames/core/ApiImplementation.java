@@ -150,11 +150,6 @@ public class ApiImplementation extends SamaGamesAPI
         return joinManager;
     }
 
-    public Jedis getResource()
-    {
-        return plugin.getDatabaseConnector().getResource();
-    }
-
     public AbstractStatsManager getStatsManager(String game)
     {
         return new StatsManager(game, this);

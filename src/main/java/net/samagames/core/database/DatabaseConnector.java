@@ -37,11 +37,6 @@ public class DatabaseConnector
         initiateConnections();
     }
 
-    public Jedis getResource()
-    {
-        return mainPool.getResource();
-    }
-
     public Jedis getBungeeResource()
     {
         return cachePool.getResource();
@@ -70,14 +65,6 @@ public class DatabaseConnector
             keeper = new WhiteListRefreshTask(plugin, this);
             Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, keeper, 0, 30 * 20);
         }
-    }
-
-    public String fastGet(String key)
-    {
-        Jedis jedis = getResource();
-        String val = jedis.get(key);
-        jedis.close();
-        return val;
     }
 
 }
