@@ -1,12 +1,11 @@
 package net.samagames.core.tabcolors;
 
 import net.samagames.api.permissions.IPermissionsManager;
-import net.samagames.api.permissions.rawtypes.IManager;
-import net.samagames.api.permissions.redis.RedisManager;
-import net.samagames.api.permissions.restfull.RestfullManager;
-import net.samagames.core.APIPlugin;
 import net.samagames.api.permissions.permissions.PermissionGroup;
 import net.samagames.api.permissions.permissions.PermissionUser;
+import net.samagames.api.permissions.rawtypes.IManager;
+import net.samagames.api.permissions.restfull.RestfullManager;
+import net.samagames.core.APIPlugin;
 import net.samagames.tools.scoreboards.TeamHandler;
 import org.bukkit.entity.Player;
 
@@ -39,10 +38,7 @@ public class TeamManager
 
 
         // TODO: Totaly remove compatibility
-        if(permissionManager instanceof RedisManager)
-            groups.addAll(manager.getApi().getManager().getGroupsCache().values().stream().collect(Collectors.toList()));
-        else
-            groups.addAll(((RestfullManager)manager.getApi().getManager()).getGroups().stream().collect(Collectors.toList()));
+        groups.addAll(((RestfullManager) manager.getApi().getManager()).getGroups().stream().collect(Collectors.toList()));
 
         for (PermissionGroup pg : groups)
         {

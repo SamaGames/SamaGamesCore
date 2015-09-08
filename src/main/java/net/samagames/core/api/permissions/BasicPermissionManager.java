@@ -4,8 +4,6 @@ import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.permissions.IPermissionsManager;
 import net.samagames.api.permissions.PermissionsAPI;
 import net.samagames.api.permissions.rawtypes.RawPlayer;
-import net.samagames.api.permissions.rawtypes.RawPlugin;
-import net.samagames.api.permissions.redis.RedisManager;
 import net.samagames.api.permissions.restfull.RestfullManager;
 import net.samagames.api.permissions.restfull.RestfullPlugin;
 import net.samagames.core.APIPlugin;
@@ -14,7 +12,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
-import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
 import java.util.HashMap;
