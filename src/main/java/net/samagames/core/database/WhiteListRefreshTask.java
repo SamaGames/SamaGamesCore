@@ -26,7 +26,7 @@ class WhiteListRefreshTask implements Runnable
 
     public void run()
     {
-        Jedis jedis = databaseConnector.getResource();
+        Jedis jedis = databaseConnector.getBungeeResource();
         Set<String> whiteList = jedis.smembers("proxys");
         jedis.close();
 
