@@ -28,7 +28,7 @@ public class ShopsManager extends AbstractShopsManager
     public String getItemLevelForPlayer(UUID player, String itemCategory)
     {
         ValueResponse value = ((RestPlayerData)api.getPlayerManager().getPlayerData(player)).getEquipped(gameType, itemCategory);
-        if (value.getValue() == null)
+        if (value.getValue() == null || value.getValue().equals("false"))
             return null;
         return value.getValue();
     }
