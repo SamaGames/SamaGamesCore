@@ -37,7 +37,7 @@ public abstract class AbstractCommand implements CommandExecutor {
 
 		boolean result = false;
 		if (sender instanceof Player)
-			result = SamaGamesAPI.get().getPermissionsManager().hasPermission(sender, permission);
+			result = plugin.getAPI().getPermissionsManager().hasPermission(sender, permission);
 
 		if (!result)
 			sender.sendMessage(ChatColor.RED + "Vous n'avez pas le droit de faire ça.");

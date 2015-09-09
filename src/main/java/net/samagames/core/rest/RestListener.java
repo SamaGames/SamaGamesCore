@@ -10,7 +10,6 @@ import net.samagames.restfull.request.Request;
 import net.samagames.restfull.response.LoginResponse;
 import net.samagames.restfull.response.Response;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;

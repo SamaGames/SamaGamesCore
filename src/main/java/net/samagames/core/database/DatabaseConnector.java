@@ -16,7 +16,6 @@ public class DatabaseConnector
 {
 
     private final APIPlugin plugin;
-    private JedisPool mainPool;
     private JedisPool cachePool;
     private RedisServer main;
     private RedisServer bungee;
@@ -24,7 +23,6 @@ public class DatabaseConnector
 
     public DatabaseConnector(APIPlugin plugin)
     {
-        mainPool = null;
         this.plugin = plugin;
     }
 
@@ -45,17 +43,16 @@ public class DatabaseConnector
     public void killConnections()
     {
         cachePool.destroy();
-        mainPool.destroy();
     }
 
     private void initiateConnections()
     {
         // Préparation de la connexion
         JedisPoolConfig config = new JedisPoolConfig();
-        config.setMaxTotal(1024);
+        config.setMaxTotal(-1);
+        config.setJmxEnabled(false);
         config.setMaxWaitMillis(5000);
 
-        this.mainPool = new JedisPool(config, this.main.getIp(), this.main.getPort(), 5000, this.main.getPassword());
         this.cachePool = new JedisPool(config, this.bungee.getIp(), this.bungee.getPort(), 5000, this.bungee.getPassword());
 
         // Init du thread

@@ -4,7 +4,6 @@ import net.md_5.bungee.api.ChatColor;
 import net.samagames.core.ApiImplementation;
 import net.samagames.api.permissions.permissions.PermissionUser;
 import net.samagames.tools.Promo;
-import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
 import java.util.Date;

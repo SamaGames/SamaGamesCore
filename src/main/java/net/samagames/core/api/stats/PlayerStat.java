@@ -7,7 +7,6 @@ import net.samagames.restfull.RestAPI;
 import net.samagames.restfull.request.Request;
 import net.samagames.restfull.response.Response;
 import net.samagames.restfull.response.ValueResponse;
-import redis.clients.jedis.Jedis;
 
 import java.util.UUID;
 

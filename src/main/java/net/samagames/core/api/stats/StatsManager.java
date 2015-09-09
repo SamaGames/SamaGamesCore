@@ -1,16 +1,12 @@
 package net.samagames.core.api.stats;
 
-import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.stats.AbstractStatsManager;
 import net.samagames.api.stats.Leaderboard;
-import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import net.samagames.restfull.RestAPI;
 import net.samagames.restfull.request.Request;
 import net.samagames.restfull.response.Response;
 import net.samagames.restfull.response.StatusResponse;
-import org.bukkit.Bukkit;
-import redis.clients.jedis.Jedis;
 
 import java.util.HashMap;
 import java.util.Map;

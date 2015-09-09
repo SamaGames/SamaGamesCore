@@ -207,5 +207,4 @@ public class ApiImplementation extends SamaGamesAPI
         return plugin.getServerName();
     }
 
-    public boolean useRestFull() { return false;}
 }

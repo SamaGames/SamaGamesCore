@@ -2,7 +2,6 @@ package net.samagames.core.api.friends;
 
 import net.samagames.api.friends.IFriendsManager;
 import net.samagames.core.ApiImplementation;
-import redis.clients.jedis.Jedis;
 
 import java.util.*;
 
