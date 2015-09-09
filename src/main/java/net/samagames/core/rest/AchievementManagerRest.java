@@ -50,13 +50,13 @@ public class AchievementManagerRest implements IAchievementManager
     @Override
     public ArrayList<Achievement> getAchievements()
     {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
     public ArrayList<AchievementCategory> getAchievementsCategories()
     {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
