@@ -33,7 +33,7 @@ public class PlayerStat implements IPlayerStat
 
     public boolean fill()
     {
-        Response response = (Response) RestAPI.getInstance().sendRequest("player/statistic", new Request().addProperty("playerUUID", playerUUID).addProperty("category", game).addProperty("key", stat), ValueResponse.class, "POST");
+        Object response = RestAPI.getInstance().sendRequest("player/statistic", new Request().addProperty("playerUUID", playerUUID).addProperty("category", game).addProperty("key", stat), ValueResponse.class, "POST");
         if (response instanceof ValueResponse)
         {
             String newValue = ((ValueResponse) response).getValue();

@@ -36,9 +36,8 @@ public class RestListener implements IJoinHandler
     @Override
     public void onLogin(UUID player, String username)
     {
-        Response response = (Response) api.sendRequest("player/login", new Request().addProperty("playerUUID", player).addProperty("playerName", username == null ? "null" : username), LoginResponse.class, "POST");
-        
-        //Bukkit.broadcastMessage(api.getGSON().toJson(response));
+        Object response = api.sendRequest("player/login", new Request().addProperty("playerUUID", player).addProperty("playerName", username == null ? "null" : username), LoginResponse.class, "POST");
+
         if (response instanceof LoginResponse)
         {
             LoginResponse repLogin = (LoginResponse) response;
@@ -52,6 +51,6 @@ public class RestListener implements IJoinHandler
             }
         }
         else
-            Bukkit.getLogger().warning(response.toString());
+            Bukkit.getLogger().warning("Error in request player/login (" + response + ")");
     }
 }
