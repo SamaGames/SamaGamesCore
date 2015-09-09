@@ -109,9 +109,9 @@ public class APIPlugin extends JavaPlugin implements Listener
         this.getLogger().info("Searching data.yml in " + conf.getAbsolutePath());
         if (!conf.exists())
         {
-            log(Level.SEVERE, "Cannot find database configuration. Disabling database mode.");
-            log(Level.WARNING, "Database is disabled for this session. API will work perfectly, but some plugins might have issues during run.");
-            databaseConnector = new DatabaseConnector(this);
+            log(Level.SEVERE, "Cannot find database configuration. Stopping!");
+            Bukkit.shutdown();
+            return;
         } else
         {
             YamlConfiguration dataYML = YamlConfiguration.loadConfiguration(conf);
@@ -120,13 +120,14 @@ public class APIPlugin extends JavaPlugin implements Listener
             int bungeePort = dataYML.getInt("redis-bungee-port", 4242);
             String bungeePassword = dataYML.getString("redis-bungee-password", "passw0rd");
             RedisServer bungee = new RedisServer(bungeeIp, bungeePort, bungeePassword);
-
+            String restIP = dataYML.getString("restfull-ip", "127.0.0.1");
+            String restPort = dataYML.getString("restfull-port", "2000");
+            String restUser = dataYML.getString("restfull-user", "test");
+            String restPass = dataYML.getString("restfull-pass", "test");
+            RestAPI.getInstance().setup("http://" + restIP + ":" + restPort + "/", restUser, restPass);
             databaseConnector = new DatabaseConnector(this, bungee);
 
         }
-
-
-        RestAPI.getInstance().setup("test", "test");
 
         api = new ApiImplementation(this);
 		/*
