@@ -2,25 +2,23 @@ package net.samagames.core.api.shops;
 
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.shops.AbstractShopsManager;
+import net.samagames.core.rest.RestPlayerData;
+import net.samagames.restfull.response.ValueResponse;
+import net.samagames.restfull.response.elements.ShopElement;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 /**
  * This file is a part of the SamaGames Project CodeBase
  * This code is absolutely confidential.
- * Created by zyuiop
+ * Created by Thog
  * (C) Copyright Elydra Network 2014 & 2015
  * All rights reserved.
  */
 
-/*
-TODO use playerdata instead
- */
 public class ShopsManager extends AbstractShopsManager
 {
-
     public ShopsManager(String gameType, SamaGamesAPI api)
     {
         super(gameType, api);
@@ -29,37 +27,30 @@ public class ShopsManager extends AbstractShopsManager
     @Override
     public String getItemLevelForPlayer(UUID player, String itemCategory)
     {
-        return api.getPlayerManager().getPlayerData(player).get("shops." + gameType + "." + itemCategory + ".current");
+        ValueResponse value = ((RestPlayerData)api.getPlayerManager().getPlayerData(player)).getEquipped(gameType, itemCategory);
+        if (value.getValue() == null)
+            return null;
+        return value.getValue();
     }
 
     @Override
     public List<String> getOwnedLevels(UUID player, String itemCategory)
     {
-        String value = api.getPlayerManager().getPlayerData(player).get("shops." + gameType + "." + itemCategory + ".owned");
+        ShopElement value = ((RestPlayerData)api.getPlayerManager().getPlayerData(player)).getShopData(gameType, itemCategory);
         if (value == null)
             return null;
-        return Arrays.asList(value.split("."));
+        return value.getValue();
     }
 
     @Override
     public void addOwnedLevel(UUID player, String itemCategory, String itemName)
     {
-        String current = api.getPlayerManager().getPlayerData(player).get("shops." + gameType + "." + itemCategory + ".owned");
-        if (current == null)
-            current = itemName;
-        else
-        {
-            if (current.contains(itemName))
-                return;
-            current += "." + itemName;
-        }
-
-        api.getPlayerManager().getPlayerData(player).set("shops." + gameType + "." + itemCategory + ".owned", current);
+        ((RestPlayerData)api.getPlayerManager().getPlayerData(player)).setShopData(gameType, itemCategory, itemName);
     }
 
     @Override
     public void setCurrentLevel(UUID player, String itemCategory, String itemName)
     {
-        api.getPlayerManager().getPlayerData(player).set("shops." + gameType + "." + itemCategory + ".current", itemName);
+        ((RestPlayerData)api.getPlayerManager().getPlayerData(player)).setEquipped(gameType, itemCategory, itemName);
     }
 }

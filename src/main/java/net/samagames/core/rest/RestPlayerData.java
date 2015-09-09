@@ -6,8 +6,10 @@ import net.samagames.core.api.player.PlayerDataManager;
 import net.samagames.restfull.RestAPI;
 import net.samagames.restfull.request.Request;
 import net.samagames.restfull.response.*;
+import net.samagames.restfull.response.elements.ShopElement;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -21,6 +23,8 @@ import java.util.logging.Logger;
 public class RestPlayerData extends PlayerData
 {
     private Logger logger;
+
+    private HashMap<String, ShopElement> shopCache = new HashMap<>();
 
     public RestPlayerData(UUID playerID, ApiImplementation api, PlayerDataManager manager)
     {
@@ -171,5 +175,47 @@ public class RestPlayerData extends PlayerData
             return value;
         }
         return "0";
+    }
+
+    public ShopElement getShopData(String category, String key)
+    {
+        String cacheName = category + "." + key;
+        if (shopCache.containsKey(cacheName))
+            return shopCache.get(category + "." + key);
+
+        Object response = RestAPI.getInstance().sendRequest("player/shop", new Request().addProperty("playerUUID", playerID).addProperty("category", category).addProperty("key", key), ShopElement.class, "POST");
+        if (response instanceof ShopElement)
+        {
+            ShopElement element = (ShopElement) response;
+            shopCache.put(cacheName, element);
+            return element;
+        }
+
+        return null;
+    }
+
+    public void setShopData(String category, String key, String value)
+    {
+        String cacheName = category + "." + key;
+        shopCache.remove(cacheName);
+        Object response = RestAPI.getInstance().sendRequest("player/shop", new Request().addProperty("playerUUID", playerID).addProperty("category", category).addProperty("key", key).addProperty("value", value), StatusResponse.class, "PUT");
+        if (!(response instanceof StatusResponse) || !((StatusResponse) response).getStatus())
+            logger.warning("cannot set player/shop (" + response + ")");
+    }
+
+    public void setEquipped(String category, String key, String value)
+    {
+        Object response = RestAPI.getInstance().sendRequest("player/equipped", new Request().addProperty("playerUUID", playerID).addProperty("category", category).addProperty("key", key).addProperty("value", value), StatusResponse.class, "PUT");
+        if (!(response instanceof StatusResponse) || !((StatusResponse) response).getStatus())
+            logger.warning("cannot set player/equipped (" + response + ")");
+    }
+
+    public ValueResponse getEquipped(String category, String key)
+    {
+        Object response = RestAPI.getInstance().sendRequest("player/equipped", new Request().addProperty("playerUUID", playerID).addProperty("category", category).addProperty("key", key), ValueResponse.class, "POST");
+        if (response instanceof ValueResponse)
+            return (ValueResponse) response;
+
+        return new ValueResponse();
     }
 }
