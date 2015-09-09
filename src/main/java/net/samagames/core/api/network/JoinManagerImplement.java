@@ -170,7 +170,7 @@ public class JoinManagerImplement implements IJoinManager
         playersExpected.remove(player);
 
         for (IJoinHandler handler : handlerTreeMap.values())
-            handler.onLogin(player);
+            handler.onLogin(player, event.getName());
     }
 
     @EventHandler

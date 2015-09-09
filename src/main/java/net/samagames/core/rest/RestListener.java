@@ -32,10 +32,11 @@ public class RestListener implements IJoinHandler
         this.pluginAPI = pluginAPI;
         playerDataManager = (PlayerDataManager) pluginAPI.getAPI().getPlayerManager();
     }
-    public void onLogin(UUID player)
+
+    @Override
+    public void onLogin(UUID player, String username)
     {
-        Player bukkitPlayer = Bukkit.getPlayer(player);
-        Response response = (Response) api.sendRequest("player/login", new Request().addProperty("playerUUID", player).addProperty("playerName", bukkitPlayer == null ? "null" : bukkitPlayer.getName()), LoginResponse.class, "POST");
+        Response response = (Response) api.sendRequest("player/login", new Request().addProperty("playerUUID", player).addProperty("playerName", username == null ? "null" : username), LoginResponse.class, "POST");
         
         //Bukkit.broadcastMessage(api.getGSON().toJson(response));
         if (response instanceof LoginResponse)
