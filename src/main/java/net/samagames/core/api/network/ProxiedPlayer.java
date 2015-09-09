@@ -33,13 +33,13 @@ class ProxiedPlayer implements IProxiedPlayer
     @Override
     public String getProxy()
     {
-        return SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId).get("currentproxy", "Inconnu");
+        return SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId).get("redis.currentproxy", "Inconnu");
     }
 
     @Override
     public String getIp()
     {
-        return SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId).get("currentip", "0.0.0.0");
+        return SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId).get("redis.currentip", "0.0.0.0");
     }
 
     @Override

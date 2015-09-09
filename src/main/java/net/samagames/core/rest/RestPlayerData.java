@@ -7,6 +7,7 @@ import net.samagames.restfull.RestAPI;
 import net.samagames.restfull.request.Request;
 import net.samagames.restfull.response.*;
 import net.samagames.restfull.response.elements.ShopElement;
+import redis.clients.jedis.Jedis;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -58,8 +59,21 @@ public class RestPlayerData extends PlayerData
             return getCoinsInternal();
         else if (key.startsWith("settings.") && !playerData.containsKey(key))
             return getSetting(key.substring(key.indexOf(".") + 1));
+        else if (key.startsWith("redis."))
+            return getFromRedis(key.substring(key.indexOf(".") + 1));
+        else
+            logger.warning("Can't manage get " + key);
         return super.get(key);
     }
+
+    private String getFromRedis(String key)
+    {
+        Jedis jedis = api.getBungeeResource();
+        String result = jedis.hget("player:" + playerID, key);
+        jedis.close();
+        return result;
+    }
+
 
     private String getSetting(String key)
     {
@@ -98,11 +112,22 @@ public class RestPlayerData extends PlayerData
             increaseStars((-toRemove) + Integer.valueOf(value));
         } else if (key.startsWith("settings."))
             setSetting(key.substring(key.indexOf(".") + 1), value);
+        else if (key.startsWith("redis."))
+            setFromRedis(key.substring(key.indexOf(".") + 1), value);
+        else
+            logger.warning("Can't manage set " + key + " for value: " + value);
 
         playerData.put(key, value);
 
         // Waiting for Raesta to implement it
         logger.info("Set (" + key + ": " + value + ")");
+    }
+
+    private void setFromRedis(String key, String value)
+    {
+        Jedis jedis = api.getBungeeResource();
+        jedis.hset("player:" + playerID, key, value);
+        jedis.close();
     }
 
     private void setSetting(String key, String value)
@@ -121,8 +146,15 @@ public class RestPlayerData extends PlayerData
     {
         playerData.remove(key);
 
-        // Waiting for Raesta to implement it
-        logger.info("Remove " + key);
+        if (key.startsWith("redis."))
+            removeFromRedis(key.substring(key.indexOf(".") + 1));
+    }
+
+    private void removeFromRedis(String key)
+    {
+        Jedis jedis = api.getBungeeResource();
+        jedis.hdel("player:" + playerID, key);
+        jedis.close();
     }
 
     @Override
