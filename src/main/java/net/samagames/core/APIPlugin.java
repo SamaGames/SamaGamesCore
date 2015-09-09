@@ -116,17 +116,12 @@ public class APIPlugin extends JavaPlugin implements Listener
         {
             YamlConfiguration dataYML = YamlConfiguration.loadConfiguration(conf);
 
-            String mainIp = dataYML.getString("redis-ip", "127.0.0.1");
-            int mainPort = dataYML.getInt("redis-port", 6379);
-            String mainPassword = dataYML.getString("redis-password", "passw0rd");
-            RedisServer main = new RedisServer(mainIp, mainPort, mainPassword);
-
             String bungeeIp = dataYML.getString("redis-bungee-ip", "127.0.0.1");
             int bungeePort = dataYML.getInt("redis-bungee-port", 4242);
             String bungeePassword = dataYML.getString("redis-bungee-password", "passw0rd");
             RedisServer bungee = new RedisServer(bungeeIp, bungeePort, bungeePassword);
 
-            databaseConnector = new DatabaseConnector(this, main, bungee);
+            databaseConnector = new DatabaseConnector(this, bungee);
 
         }
 
@@ -209,7 +204,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         api.getPubSub().send("servers", "stop " + bungeename);
         rb_jedis.close();
         nicknamePacketListener.close();
-        databaseConnector.killConnections();
+        databaseConnector.killConnection();
         executor.shutdownNow();
         Bukkit.getServer().shutdown();
     }

@@ -94,11 +94,10 @@ public class GameManagerImpl implements IGameManager
         {
             out.writeUTF("Connect");
             out.writeUTF("lobby");
-
         }
         catch (IOException eee)
         {
-            Bukkit.getLogger().info("You'll never see me!");
+            Bukkit.getLogger().warning("Error during redirection " + p);
         }
         p.sendPluginMessage(this.api.getPlugin(), "BungeeCord", b.toByteArray());
 

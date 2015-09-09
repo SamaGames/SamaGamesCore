@@ -17,7 +17,6 @@ public class DatabaseConnector
 
     private final APIPlugin plugin;
     private JedisPool cachePool;
-    private RedisServer main;
     private RedisServer bungee;
     private WhiteListRefreshTask keeper;
 
@@ -26,13 +25,12 @@ public class DatabaseConnector
         this.plugin = plugin;
     }
 
-    public DatabaseConnector(APIPlugin plugin, RedisServer main, RedisServer bungee)
+    public DatabaseConnector(APIPlugin plugin, RedisServer bungee)
     {
         this.plugin = plugin;
-        this.main = main;
         this.bungee = bungee;
 
-        initiateConnections();
+        initiateConnection();
     }
 
     public Jedis getBungeeResource()
@@ -40,12 +38,12 @@ public class DatabaseConnector
         return cachePool.getResource();
     }
 
-    public void killConnections()
+    public void killConnection()
     {
         cachePool.destroy();
     }
 
-    private void initiateConnections()
+    private void initiateConnection()
     {
         // Préparation de la connexion
         JedisPoolConfig config = new JedisPoolConfig();
