@@ -87,19 +87,7 @@ public class GameManagerImpl implements IGameManager
         if (!p.isOnline())
             return;
 
-        //kickPlayer(p, "");
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream(b);
-        try
-        {
-            out.writeUTF("Connect");
-            out.writeUTF("lobby");
-        }
-        catch (IOException eee)
-        {
-            Bukkit.getLogger().warning("Error during redirection " + p);
-        }
-        p.sendPluginMessage(this.api.getPlugin(), "BungeeCord", b.toByteArray());
+        api.getProxyDataManager().apiexec("connect", p.getUniqueId().toString(), "lobby");
 
     }
 

@@ -85,8 +85,6 @@ public class APIPlugin extends JavaPlugin implements Listener
 
         executor = Executors.newScheduledThreadPool(16);
 
-        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-
         log("Loading main configuration...");
         this.saveDefaultConfig();
         configuration = this.getConfig();
