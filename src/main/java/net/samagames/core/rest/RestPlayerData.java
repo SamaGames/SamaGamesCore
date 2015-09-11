@@ -61,7 +61,7 @@ public class RestPlayerData extends PlayerData
             return getSetting(key.substring(key.indexOf(".") + 1));
         else if (key.startsWith("redis."))
             return getFromRedis(key.substring(key.indexOf(".") + 1));
-        else
+        else if (!playerData.containsKey(key))
             logger.warning("Can't manage get " + key);
         return super.get(key);
     }
