@@ -3,31 +3,37 @@ package net.samagames.core.api.stats;
 import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.api.stats.IPlayerStat;
 import net.samagames.core.ApiImplementation;
+import net.samagames.core.api.player.PlayerData;
 import net.samagames.restfull.RestAPI;
 import net.samagames.restfull.request.Request;
 import net.samagames.restfull.response.Response;
 import net.samagames.restfull.response.ValueResponse;
+import net.samagames.restfull.response.elements.LeaderboradElement;
 
 import java.util.UUID;
 
-@Deprecated
 public class PlayerStat implements IPlayerStat
 {
-    private final UUID playerUUID;
-    private final String game;
-    private final String stat;
-    private final ApiImplementation api;
-    private Double value;
+    private UUID playerUUID;
+    private String game;
+    private String stat;
+    private ApiImplementation api;
+    private int value;
     private Long rank;
 
     private AbstractPlayerData playerData;
 
+    public PlayerStat(String game, String stat)
+    {
+        this.game = game;
+        this.api = (ApiImplementation) ApiImplementation.get();
+        this.stat = stat;
+    }
+
     public PlayerStat(UUID playerUUID, String game, String stat)
     {
+        this(game, stat);
         this.playerUUID = playerUUID;
-        this.game = game;
-        this.stat = stat;
-        this.api = (ApiImplementation) ApiImplementation.get();
         this.playerData = api.getPlayerManager().getPlayerData(playerUUID);
     }
 
@@ -39,15 +45,22 @@ public class PlayerStat implements IPlayerStat
             String newValue = ((ValueResponse) response).getValue();
             if (newValue == null || newValue.isEmpty())
             {
-                this.value = 0.0D;
+                this.value = 0;
                 return false;
             }
             else
-                this.value = Double.parseDouble(newValue);
+                this.value = Integer.valueOf(newValue);
             this.rank = 1L; // TODO: implement Rank into RestAPI
             return true;
         }
         return false;
+    }
+
+    public PlayerStat readResponse(LeaderboradElement leaderboradElement)
+    {
+        this.value = leaderboradElement.getValue();
+        this.playerUUID = leaderboradElement.getPlayerUUID();
+        return this;
     }
 
     public UUID getPlayerUUID()

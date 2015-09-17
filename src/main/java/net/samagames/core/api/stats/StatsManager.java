@@ -1,5 +1,7 @@
 package net.samagames.core.api.stats;
 
+import com.google.gson.TypeAdapter;
+import com.google.gson.reflect.TypeToken;
 import net.samagames.api.stats.AbstractStatsManager;
 import net.samagames.api.stats.Leaderboard;
 import net.samagames.core.ApiImplementation;
@@ -7,8 +9,10 @@ import net.samagames.restfull.RestAPI;
 import net.samagames.restfull.request.Request;
 import net.samagames.restfull.response.Response;
 import net.samagames.restfull.response.StatusResponse;
+import net.samagames.restfull.response.elements.LeaderboradElement;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -73,7 +77,14 @@ public class StatsManager extends AbstractStatsManager
     @Override
     public Leaderboard getLeaderboard(String stat)
     {
-        // TODO: Leaderboard for the RestfullAPI
+        Object response = RestAPI.getInstance().sendRequest("statistics/leaderboard", new Request().addProperty("category", game).addProperty("key", stat), new TypeToken<List<LeaderboradElement>>() {}.getType(), "PUT");
+
+        System.out.println(response);
+        if (response instanceof List && ((List) response).size() == 3)
+        {
+            List<LeaderboradElement> responseList = (List<LeaderboradElement>) response;
+            return new Leaderboard(new PlayerStat(game, stat).readResponse(responseList.get(0)), new PlayerStat(game, stat).readResponse(responseList.get(1)), new PlayerStat(game, stat).readResponse(responseList.get(2)));
+        }
         return null;
     }
 }
