@@ -7,6 +7,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
+import java.util.Date;
+
 /**
  * This file is a part of the SamaGames project
  * This code is absolutely confidential.
@@ -43,11 +45,11 @@ public class CommandLag extends AbstractCommand {
 
 		player.sendMessage(org.bukkit.ChatColor.YELLOW + "------[ Informations de Lag ]------");
 		player.sendMessage(ChatColor.GOLD + " ");
-		player.sendMessage(ChatColor.YELLOW + "Serveur : " + ChatColor.AQUA + server);
+		player.sendMessage(ChatColor.YELLOW + "Serveur : " + ChatColor.AQUA + server + " " + ChatColor.YELLOW + new Date());
 		player.sendMessage(ChatColor.GOLD + " ");
-		player.sendMessage(ChatColor.YELLOW + "Latence (ping) : " + ChatColor.AQUA + formatLag(latency) + " ms");
+		player.sendMessage(ChatColor.YELLOW + "Latence avec le server (ping) : " + ChatColor.AQUA + formatLag(latency) + " ms");
 		player.sendMessage(ChatColor.GOLD + " ");
-		player.sendMessage(ChatColor.YELLOW + "Ticks par seconde (20 = Parfait)");
+		player.sendMessage(ChatColor.YELLOW + "Ticks par seconde (" + ChatColor.GREEN + "20 = " + ChatColor.AQUA + "Parfait)");
 		player.sendMessage(tps.toString());
 
 		return true;
