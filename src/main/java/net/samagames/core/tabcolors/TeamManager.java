@@ -33,10 +33,6 @@ public class TeamManager
 
         teamHandler = new TeamHandler();
 
-
-        IManager permissionManager = manager.getApi().getManager();
-
-
         // TODO: Totaly remove compatibility
         groups.addAll(((RestfullManager) manager.getApi().getManager()).getGroups().stream().collect(Collectors.toList()));
 

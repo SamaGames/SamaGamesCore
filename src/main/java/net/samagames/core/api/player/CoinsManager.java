@@ -22,8 +22,6 @@ public class CoinsManager
     private final ApiImplementation api;
     private Promo currentPromo;
     private Date promoNextCheck;
-    private List<Multiplier> caches = new ArrayList<>();
-
     public CoinsManager(ApiImplementation api)
     {
         this.api = api;
@@ -58,8 +56,8 @@ public class CoinsManager
 
     public String getCreditMessage(long amount, String reason, Multiplier multiplier)
     {
-        String text = ChatColor.GOLD + "+" + amount + " pièces (" + reason + ")";
-
+        StringBuilder builder = new StringBuilder();
+        builder.append( ChatColor.GOLD + "+" + amount + " pièces (" + reason + ")");
         if (multiplier != null)
         {
             for (String multCause : multiplier.data.keySet())
@@ -67,12 +65,12 @@ public class CoinsManager
                 String causes = "";
 
                 if (multiplier.data.containsKey(multCause))
-                    causes += " *" + multiplier.data.get(multCause);
+                    causes = " *" + multiplier.data.get(multCause);
 
-                text += " [" + causes + "]";
+                builder.append(" [" + causes + "]");
             }
         }
 
-        return text;
+        return builder.toString();
     }
 }

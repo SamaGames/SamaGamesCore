@@ -50,7 +50,7 @@ public class ApiImplementation extends SamaGamesAPI
     private final ISettingsManager settingsManager;
     private final IPlayerDataManager playerDataManager;
     private final IAchievementManager achievementManager;
-    private final IPubSubAPI pubSub;
+    private final PubSubAPI pubSub;
     private final IUUIDTranslator uuidTranslator;
     private final IJoinManager joinManager;
     private final IProxyDataManager proxyDataManager;
@@ -80,7 +80,8 @@ public class ApiImplementation extends SamaGamesAPI
         playerDataManager = new PlayerDataManager(this);
         achievementManager = new AchievementManagerRest(this);
 
-        pubSub = new PubSubAPI(this);
+        pubSub = new PubSubAPI();
+        pubSub.init(this);
         pubSub.subscribe("global", new GlobalChannelHandler(plugin));
         pubSub.subscribe(plugin.getServerName(), new GlobalChannelHandler(plugin));
         pubSub.subscribe("commands.servers." + getServerName(), new RemoteCommandsHandler());

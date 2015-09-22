@@ -20,7 +20,7 @@ public class StarsManager
 
     private final ApiImplementation api;
     private Promo currentPromo;
-    private Date promoNextCheck = null;
+    private Date promoNextCheck;
 
     public StarsManager(ApiImplementation api)
     {
@@ -56,7 +56,8 @@ public class StarsManager
 
     public String getCreditMessage(long amount, String reason, Multiplier multiplier)
     {
-        String text = ChatColor.AQUA + "+" + amount + " étoiles (" + reason + ")";
+        StringBuilder builder = new StringBuilder();
+        builder.append(ChatColor.AQUA + "+" + amount + " étoiles (" + reason + ")");
 
         if (multiplier != null)
         {
@@ -67,10 +68,10 @@ public class StarsManager
                 if (multiplier.data.containsKey(multCause))
                     causes += " *" + multiplier.data.get(multCause);
 
-                text += " [" + causes + "]";
+                builder.append("[" + causes + "]");
             }
         }
 
-        return text;
+        return builder.toString();
     }
 }

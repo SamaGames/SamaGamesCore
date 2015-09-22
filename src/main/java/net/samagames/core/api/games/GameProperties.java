@@ -7,9 +7,8 @@ import net.samagames.api.games.IGameProperties;
 import net.samagames.core.APIPlugin;
 import org.bukkit.Bukkit;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.logging.Level;
 
 class GameProperties implements IGameProperties
@@ -37,7 +36,7 @@ class GameProperties implements IGameProperties
                 return;
             }
 
-            JsonObject rootJson = new JsonParser().parse(new FileReader(file)).getAsJsonObject();
+            JsonObject rootJson = new JsonParser().parse(new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8"))).getAsJsonObject();
 
             mapName = rootJson.get("map-name").getAsString();
             minSlots = rootJson.get("min-slots").getAsInt();
@@ -53,7 +52,7 @@ class GameProperties implements IGameProperties
                 return;
             }
 
-            mapProperties = new JsonParser().parse(new FileReader(arenaFile)).getAsJsonObject();
+            mapProperties = new JsonParser().parse(new InputStreamReader(new FileInputStream(arenaFile), Charset.forName("UTF-8"))).getAsJsonObject();
         } catch (FileNotFoundException e)
         {
             e.printStackTrace();

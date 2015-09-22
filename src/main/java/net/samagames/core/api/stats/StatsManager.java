@@ -1,6 +1,5 @@
 package net.samagames.core.api.stats;
 
-import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import net.samagames.api.stats.AbstractStatsManager;
 import net.samagames.api.stats.Leaderboard;
@@ -8,7 +7,6 @@ import net.samagames.core.ApiImplementation;
 import net.samagames.restfull.RestAPI;
 import net.samagames.restfull.request.Request;
 import net.samagames.restfull.response.ErrorResponse;
-import net.samagames.restfull.response.Response;
 import net.samagames.restfull.response.StatusResponse;
 import net.samagames.restfull.response.elements.LeaderboradElement;
 

@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ class UUIDFetcher implements Callable<Map<String, UUID>>
     private static void writeBody(HttpURLConnection connection, String body) throws Exception
     {
         OutputStream stream = connection.getOutputStream();
-        stream.write(body.getBytes());
+        stream.write(body.getBytes(Charset.forName("UTF-8")));
         stream.flush();
         stream.close();
     }
@@ -66,11 +67,10 @@ class UUIDFetcher implements Callable<Map<String, UUID>>
             HttpURLConnection connection = createConnection();
             String body = new Gson().toJson(names.subList(i * 100, Math.min((i + 1) * 100, names.size())));
             writeBody(connection, body);
-            Profile[] array = new Gson().fromJson(new InputStreamReader(connection.getInputStream()), Profile[].class);
+            Profile[] array = new Gson().fromJson(new InputStreamReader(connection.getInputStream(), Charset.forName("UTF-8")), Profile[].class);
             for (Profile profile : array)
             {
-                UUID uuid = UUIDFetcher.getUUID(profile.id);
-                uuidMap.put(profile.name, uuid);
+                uuidMap.put(profile.name, UUIDFetcher.getUUID(profile.id));
             }
             if (rateLimiting && i != requests - 1)
             {
@@ -80,7 +80,7 @@ class UUIDFetcher implements Callable<Map<String, UUID>>
         return uuidMap;
     }
 
-    private class Profile
+    private static class Profile
     {
         String id;
         String name;

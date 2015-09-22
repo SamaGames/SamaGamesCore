@@ -16,11 +16,12 @@ import redis.clients.jedis.Jedis;
 public class PubSubAPI implements IPubSubAPI
 {
 
-    private final Subscriber subscriber;
-    private final Sender sender;
+    private Subscriber subscriber;
+    private Sender sender;
     private boolean continueSub = true;
 
-    public PubSubAPI(ApiImplementation api)
+    // Avoid to init Threads before the subclass constructor is started (Fix possible atomicity violation)
+    public void init(ApiImplementation api)
     {
         subscriber = new Subscriber();
         new Thread(() -> {

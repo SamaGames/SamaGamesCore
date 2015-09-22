@@ -101,15 +101,15 @@ public class RestPlayerData extends PlayerData
             String oldValue = playerData.get("coins");
             int toRemove = 0;
             if (oldValue != null)
-                toRemove = Integer.valueOf(oldValue);
-            increaseCoins((-toRemove) + Integer.valueOf(value));
+                toRemove = Integer.parseInt(oldValue);
+            increaseCoins((-toRemove) + Integer.parseInt(value));
         } else if (key.equalsIgnoreCase("stars"))
         {
             String oldValue = playerData.get("stars");
             int toRemove = 0;
             if (oldValue != null)
-                toRemove = Integer.valueOf(oldValue);
-            increaseStars((-toRemove) + Integer.valueOf(value));
+                toRemove = Integer.parseInt(oldValue);
+            increaseStars((-toRemove) + Integer.parseInt(value));
         } else if (key.startsWith("settings."))
             setSetting(key.substring(key.indexOf(".") + 1), value);
         else if (key.startsWith("redis."))
@@ -167,7 +167,7 @@ public class RestPlayerData extends PlayerData
             playerData.put("coins", String.valueOf(coinsResponse.getCoins()));
             return coinsResponse.getCoins();
         }
-        return Integer.valueOf(playerData.get("coins"));
+        return Integer.parseInt(playerData.get("coins"));
     }
 
     @Override
@@ -180,7 +180,7 @@ public class RestPlayerData extends PlayerData
             playerData.put("stars", String.valueOf(starsResponse.getStars()));
             return starsResponse.getStars();
         }
-        return Integer.valueOf(playerData.get("stars"));
+        return Integer.parseInt(playerData.get("stars"));
     }
 
     private String getCoinsInternal()

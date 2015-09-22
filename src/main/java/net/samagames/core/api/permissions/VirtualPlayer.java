@@ -47,8 +47,6 @@ class VirtualPlayer implements RawPlayer
     @Override
     public void clearPermissions()
     {
-        ArrayList<String> perms = new ArrayList<>();
-        perms.addAll(attachment.getPermissions().keySet().stream().collect(Collectors.toList()));
-        perms.forEach(attachment::unsetPermission);
+        attachment.getPermissions().keySet().stream().forEach(attachment::unsetPermission);
     }
 }

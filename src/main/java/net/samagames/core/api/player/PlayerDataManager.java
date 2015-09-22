@@ -49,13 +49,6 @@ public class PlayerDataManager implements IPlayerDataManager
     @Override
     public AbstractPlayerData getPlayerData(UUID player, boolean forceRefresh)
     {
-        if (!cachedData.containsKey(player))
-        {
-            PlayerData data = new RestPlayerData(player, api, this);
-            cachedData.put(player, data);
-            return data;
-        }
-
         PlayerData data = cachedData.get(player);
 
         if (forceRefresh)

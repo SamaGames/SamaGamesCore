@@ -12,6 +12,10 @@ import net.samagames.restfull.response.elements.LeaderboradElement;
 
 import java.util.UUID;
 
+@Deprecated
+/**
+ * @deprecated Will be remplaaced as soon as possible with PlayerData
+ */
 public class PlayerStat implements IPlayerStat
 {
     private UUID playerUUID;
@@ -49,7 +53,7 @@ public class PlayerStat implements IPlayerStat
                 return false;
             }
             else
-                this.value = Integer.valueOf(newValue);
+                this.value = Integer.parseInt(newValue);
             this.rank = 1L; // TODO: implement Rank into RestAPI
             return true;
         }
