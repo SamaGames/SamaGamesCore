@@ -84,7 +84,7 @@ public class StatsManager extends AbstractStatsManager
             return new Leaderboard(new PlayerStat(game, stat).readResponse(responseList.get(0)), new PlayerStat(game, stat).readResponse(responseList.get(1)), new PlayerStat(game, stat).readResponse(responseList.get(2)));
         }
         else if (response instanceof ErrorResponse)
-            logger.warning(String.format("Error during recuperation of leaaderboard for category %s and key %s (response: %s)", game, stat, response.toString()));
+            logger.warning(String.format("Error during recuperation of leaderboard for category %s and key %s (response: %s)", game, stat, response.toString()));
 
         return null;
     }
