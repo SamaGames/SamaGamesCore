@@ -7,6 +7,7 @@ import net.samagames.api.stats.Leaderboard;
 import net.samagames.core.ApiImplementation;
 import net.samagames.restfull.RestAPI;
 import net.samagames.restfull.request.Request;
+import net.samagames.restfull.response.ErrorResponse;
 import net.samagames.restfull.response.Response;
 import net.samagames.restfull.response.StatusResponse;
 import net.samagames.restfull.response.elements.LeaderboradElement;
@@ -77,14 +78,16 @@ public class StatsManager extends AbstractStatsManager
     @Override
     public Leaderboard getLeaderboard(String stat)
     {
-        Object response = RestAPI.getInstance().sendRequest("statistics/leaderboard", new Request().addProperty("category", game).addProperty("key", stat), new TypeToken<List<LeaderboradElement>>() {}.getType(), "PUT");
+        Object response = RestAPI.getInstance().sendRequest("statistics/leaderboard", new Request().addProperty("category", game).addProperty("key", stat), new TypeToken<List<LeaderboradElement>>() {}.getType(), "POST");
 
-        System.out.println(response);
         if (response instanceof List && ((List) response).size() == 3)
         {
             List<LeaderboradElement> responseList = (List<LeaderboradElement>) response;
             return new Leaderboard(new PlayerStat(game, stat).readResponse(responseList.get(0)), new PlayerStat(game, stat).readResponse(responseList.get(1)), new PlayerStat(game, stat).readResponse(responseList.get(2)));
         }
+        else if (response instanceof ErrorResponse)
+            logger.warning(String.format("Error during recuperation of leaaderboard for category %s and key %s (response: %s)", game, stat, response.toString()));
+
         return null;
     }
 }
