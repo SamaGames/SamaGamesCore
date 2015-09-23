@@ -49,7 +49,7 @@ public class CommandLag extends AbstractCommand {
 		player.sendMessage(ChatColor.GOLD + " ");
 		player.sendMessage(ChatColor.YELLOW + "Latence avec le server (ping) : " + ChatColor.AQUA + formatLag(latency) + " ms");
 		player.sendMessage(ChatColor.GOLD + " ");
-		player.sendMessage(ChatColor.YELLOW + "Ticks par seconde (" + ChatColor.GREEN + "20 = " + ChatColor.AQUA + "Parfait)");
+		player.sendMessage(ChatColor.YELLOW + "Ticks par seconde (" + ChatColor.GREEN + "20 = " + ChatColor.AQUA + "Parfait" + ChatColor.YELLOW + ")");
 		player.sendMessage(tps.toString());
 
 		return true;
