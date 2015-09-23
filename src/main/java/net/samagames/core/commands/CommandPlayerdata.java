@@ -45,6 +45,13 @@ public class CommandPlayerdata extends AbstractCommand {
 			new Thread(() -> {
 				UUID playerId = SamaGamesAPI.get().getUUIDTranslator().getUUID(playerName, true);
 				AbstractPlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId);
+
+				if (data == null)
+				{
+					sender.sendMessage(ChatColor.RED + "Une erreur inconnue s'est produite.");
+					return;
+				}
+
 				data.set(key, value);
 				sender.sendMessage(ChatColor.YELLOW + "Données modifiées.");
 			}, "CommandPlayerDataSet").start();
@@ -61,6 +68,13 @@ public class CommandPlayerdata extends AbstractCommand {
 			new Thread(() -> {
 				UUID playerId = SamaGamesAPI.get().getUUIDTranslator().getUUID(playerName, true);
                 AbstractPlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId);
+
+				if (data == null)
+				{
+					sender.sendMessage(ChatColor.RED + "Une erreur inconnue s'est produite.");
+					return;
+				}
+
 				data.remove(key);
 				sender.sendMessage(ChatColor.YELLOW + "Données supprimées.");
 			}, "CommandPlayerDataSet").start();
@@ -71,6 +85,13 @@ public class CommandPlayerdata extends AbstractCommand {
 			new Thread(() -> {
 				UUID playerId = SamaGamesAPI.get().getUUIDTranslator().getUUID(playerName, true);
                 AbstractPlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId);
+
+				if (data == null)
+				{
+					sender.sendMessage(ChatColor.RED + "Une erreur inconnue s'est produite.");
+					return;
+				}
+
 				sender.sendMessage(ChatColor.YELLOW + "Data pour " + ChatColor.GREEN + playerName + ChatColor.YELLOW + " / " + ChatColor.AQUA + playerId);
 				for (Map.Entry<String, String> entry : data.getValues().entrySet()) {
 					sender.sendMessage(ChatColor.YELLOW + " - " + entry.getKey() + " : " + entry.getValue());

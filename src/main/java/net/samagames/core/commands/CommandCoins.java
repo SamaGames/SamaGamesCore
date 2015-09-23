@@ -72,9 +72,16 @@ public class CommandCoins extends AbstractCommand {
 
 			final String playerName = arguments[1];
 			final String amount = arguments[2];
+
 			new Thread(() -> {
 				UUID playerId = SamaGamesAPI.get().getUUIDTranslator().getUUID(playerName, true);
                 AbstractPlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId);
+
+				if (data == null)
+				{
+					sender.sendMessage(ChatColor.RED + "Une erreur inconnue s'est produite.");
+					return;
+				}
 
 				try {
 					long amt = Long.valueOf(amount);
@@ -98,6 +105,12 @@ public class CommandCoins extends AbstractCommand {
 			new Thread(() -> {
 				UUID playerId = SamaGamesAPI.get().getUUIDTranslator().getUUID(playerName, true);
                 AbstractPlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId);
+
+				if (data == null)
+				{
+					sender.sendMessage(ChatColor.RED + "Une erreur inconnue s'est produite.");
+					return;
+				}
 
 				try {
 					long amt = Long.valueOf(amount);
