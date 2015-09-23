@@ -26,6 +26,9 @@ public class CommandSpeakup extends AbstractCommand
         if (!hasPermission(sender, "api.modo.speakup"))
             return true;
 
+        if(arguments.length == 0)
+            return true;
+
         Bukkit.broadcastMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "[Modération] " + ChatColor.RESET + ChatColor.RED + ChatColor.BOLD + sender.getName() + ChatColor.RESET + ChatColor.GOLD + ": " + StringUtils.join(arguments, " "));
 
         return true;
