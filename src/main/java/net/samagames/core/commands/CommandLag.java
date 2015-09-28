@@ -27,7 +27,7 @@ public class CommandLag extends AbstractCommand
     {
 		super(plugin);
 
-        this.dateFormat = new SimpleDateFormat("dd.MM.yyyy à HH:mm:ss", Locale.FRANCE);
+        this.dateFormat = new SimpleDateFormat("dd/MM/yyyy à HH:mm:ss", Locale.FRANCE);
 	}
 
 	@Override
@@ -55,9 +55,9 @@ public class CommandLag extends AbstractCommand
 		player.sendMessage(ChatUtils.getCenteredText(ChatColor.WHITE + "•" + ChatColor.BOLD + " Informations de lag " + ChatColor.RESET + ChatColor.WHITE + "•"));
         player.sendMessage("");
         player.sendMessage(ChatColor.YELLOW + "Date : " + ChatColor.GRAY + this.dateFormat.format(new Date()));
-        player.sendMessage(ChatColor.YELLOW + "Serveur : " + ChatColor.GRAY + APIPlugin.getInstance().getServerName());
+        player.sendMessage(ChatColor.YELLOW + "Serveur : " + ChatColor.GRAY + APIPlugin.getInstance().getServerName().replace("_", ""));
 		player.sendMessage("");
-		player.sendMessage(ChatColor.YELLOW + "Latence : " + this.formatLag(latency) + ChatColor.GRAY + " ms");
+		player.sendMessage(ChatColor.YELLOW + "Latence : " + this.formatLag(latency) + ChatColor.GRAY + "ms");
 		player.sendMessage(ChatColor.YELLOW + "Charge serveur : " + ChatColor.GRAY + tps.toString());
         player.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
 
