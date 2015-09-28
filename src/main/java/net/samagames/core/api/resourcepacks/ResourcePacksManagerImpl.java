@@ -59,12 +59,17 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
     @Override
     public void forcePack(String name, IResourceCallback callback)
     {
-        Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
-            Jedis jedis = api.getBungeeResource();
-            forceUrl = jedis.hget("resourcepack:" + name, "url");
-            forceHash = jedis.hget("resourcepack:" + name, "hash");
-            jedis.close();
+        Jedis jedis = api.getBungeeResource();
+        forcePack(jedis.hget("resourcepack:" + name, "url"), jedis.hget("resourcepack:" + name, "hash"), callback);
+        jedis.close();
+    }
 
+    @Override
+    public void forcePack(String url, String hash, IResourceCallback callback)
+    {
+        Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
+            forceUrl = url;
+            forceHash = hash;
             APIPlugin.getInstance().getLogger().info("Defined automatic resource pack : " + forceUrl + " with hash " + forceHash);
         });
 

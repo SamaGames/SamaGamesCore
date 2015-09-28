@@ -49,6 +49,9 @@ public class PlayerDataManager implements IPlayerDataManager
     @Override
     public AbstractPlayerData getPlayerData(UUID player, boolean forceRefresh)
     {
+        if (player == null)
+            return null;
+
         PlayerData data = cachedData.get(player);
 
         if (forceRefresh)

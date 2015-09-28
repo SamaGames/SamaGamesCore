@@ -76,6 +76,12 @@ public class CommandStars extends AbstractCommand {
 				UUID playerId = SamaGamesAPI.get().getUUIDTranslator().getUUID(playerName, true);
                 AbstractPlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId);
 
+				if (data == null)
+				{
+					sender.sendMessage(ChatColor.RED + "Une erreur inconnue s'est produite.");
+					return;
+				}
+
 				try {
 					long amt = Long.valueOf(amount);
 					data.creditStars(amt, "Cadeau du staff :p", false, (newAmount, difference, error) -> sender.sendMessage(ChatColor.GOLD + "Le joueur a bien reçu " + difference + " étoiles. Il en a maintenant " + newAmount));
@@ -98,6 +104,12 @@ public class CommandStars extends AbstractCommand {
 			new Thread(() -> {
 				UUID playerId = SamaGamesAPI.get().getUUIDTranslator().getUUID(playerName, true);
                 AbstractPlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId);
+
+				if (data == null)
+				{
+					sender.sendMessage(ChatColor.RED + "Une erreur inconnue s'est produite.");
+					return;
+				}
 
 				try {
 					long amt = Long.valueOf(amount);

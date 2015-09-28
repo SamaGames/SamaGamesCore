@@ -74,6 +74,20 @@ public class StatsManager extends AbstractStatsManager
     }
 
     @Override
+    public double getRankValue(UUID player, String stat)
+    {
+        if (caches.containsKey(player))
+            return caches.get(player).getRank();
+        else
+        {
+            PlayerStat playerStat = new PlayerStat(player, game, stat);
+            playerStat.fill();
+            caches.put(player, playerStat);
+            return playerStat.getRank();
+        }
+    }
+
+    @Override
     public Leaderboard getLeaderboard(String stat)
     {
         Object response = RestAPI.getInstance().sendRequest("statistics/leaderboard", new Request().addProperty("category", game).addProperty("key", stat), new TypeToken<List<LeaderboradElement>>() {}.getType(), "POST");
@@ -87,5 +101,11 @@ public class StatsManager extends AbstractStatsManager
             logger.warning(String.format("Error during recuperation of leaderboard for category %s and key %s (response: %s)", game, stat, response.toString()));
 
         return null;
+    }
+
+    @Override
+    public void clearCache()
+    {
+        this.caches.clear();
     }
 }
