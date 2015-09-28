@@ -39,7 +39,7 @@ public class CommandLag extends AbstractCommand
 		Player player = (Player) sender;
 		int latency = ((CraftPlayer) player).getHandle().ping;
 
-		StringBuilder tps = new StringBuilder(org.bukkit.ChatColor.GOLD + "TPS des dernières 1m, 5m, 15m: ");
+		StringBuilder tps = new StringBuilder();
 		double[] tab;
 		int length = (tab = MinecraftServer.getServer().recentTps).length;
 
@@ -53,6 +53,7 @@ public class CommandLag extends AbstractCommand
 
 		player.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
 		player.sendMessage(ChatUtils.getCenteredText(ChatColor.WHITE + "•" + ChatColor.BOLD + " Informations de lag " + ChatColor.RESET + ChatColor.WHITE + "•"));
+        player.sendMessage("");
         player.sendMessage(ChatColor.YELLOW + "Date : " + ChatColor.GRAY + this.dateFormat.format(new Date()));
         player.sendMessage(ChatColor.YELLOW + "Serveur : " + ChatColor.GRAY + APIPlugin.getInstance().getServerName());
 		player.sendMessage("");
