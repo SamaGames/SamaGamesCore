@@ -18,6 +18,7 @@ public class CoherenceMachineImpl implements ICoherenceMachine
     private final IGameProperties gameProperties;
     private final IMessageManager messageManager;
     private final ITemplateManager templateManager;
+    private String startCountdownCatchPhrase;
 
     public CoherenceMachineImpl(Game game, IGameProperties gameProperties)
     {
@@ -26,6 +27,14 @@ public class CoherenceMachineImpl implements ICoherenceMachine
 
         this.messageManager = new MessageManagerImpl(this);
         this.templateManager = new TemplateManagerImpl();
+
+        this.startCountdownCatchPhrase = "Préparez-vous à jouer !";
+    }
+
+    @Override
+    public void setStartCountdownCatchPhrase(String phrase)
+    {
+        this.startCountdownCatchPhrase = phrase;
     }
 
     @Override
@@ -67,5 +76,11 @@ public class CoherenceMachineImpl implements ICoherenceMachine
         door.setItemMeta(meta);
 
         return door;
+    }
+
+    @Override
+    public String getStartCountdownCatchPhrase()
+    {
+        return this.startCountdownCatchPhrase;
     }
 }

@@ -10,9 +10,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -34,14 +31,14 @@ public class GameManagerImpl implements IGameManager
     public GameManagerImpl(ApiImplementation api)
     {
         this.api = api;
-        game = null;
+        this.game = null;
 
-        playersDisconnected = new ArrayList<>();
-        playerDisconnectTime = new HashMap<>();
-        playerReconnectedTimers = new HashMap<>();
+        this.playersDisconnected = new ArrayList<>();
+        this.playerDisconnectTime = new HashMap<>();
+        this.playerReconnectedTimers = new HashMap<>();
 
-        maxReconnectTime = -1;
-        gameProperties = new GameProperties();
+        this.maxReconnectTime = -1;
+        this.gameProperties = new GameProperties();
     }
 
     @Override
@@ -65,15 +62,6 @@ public class GameManagerImpl implements IGameManager
 
         APIPlugin.log(Level.INFO, "Registered game '" + game.getGameName() + "' successfuly!");
     }
-
-    /*@Override
-    public void kickPlayer(Player player, String reason)
-    {
-        if(reason != null)
-            player.sendMessage(reason);
-
-        Bukkit.getScheduler().runTaskLater(APIPlugin.getInstance(), () -> player.kickPlayer(null), 10L);
-    }*/
 
     @Override
     public void kickPlayer(Player p, String msg)
