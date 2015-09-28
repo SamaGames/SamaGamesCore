@@ -55,7 +55,7 @@ public class CommandLag extends AbstractCommand
 		player.sendMessage(ChatUtils.getCenteredText(ChatColor.WHITE + "•" + ChatColor.BOLD + " Informations de lag " + ChatColor.RESET + ChatColor.WHITE + "•"));
         player.sendMessage("");
         player.sendMessage(ChatColor.YELLOW + "Date : " + ChatColor.GRAY + this.dateFormat.format(new Date()));
-        player.sendMessage(ChatColor.YELLOW + "Serveur : " + ChatColor.GRAY + APIPlugin.getInstance().getServerName().replace("_", ""));
+        player.sendMessage(ChatColor.YELLOW + "Serveur : " + ChatColor.GRAY + APIPlugin.getInstance().getServerName().replace("_", " "));
 		player.sendMessage("");
 		player.sendMessage(ChatColor.YELLOW + "Latence : " + this.formatLag(latency) + ChatColor.GRAY + "ms");
 		player.sendMessage(ChatColor.YELLOW + "Charge serveur : " + ChatColor.GRAY + tps.toString());
@@ -72,6 +72,6 @@ public class CommandLag extends AbstractCommand
 
 	private String formatLag(double lag)
     {
-		return "" + (lag > 200.0 ? org.bukkit.ChatColor.RED : (lag > 120D? org.bukkit.ChatColor.GOLD: (lag > 70D? org.bukkit.ChatColor.YELLOW: org.bukkit.ChatColor.GREEN))).toString() + (double)Math.round(lag * 100.0D) / 100.0D;
+		return "" + (lag > 200.0 ? org.bukkit.ChatColor.RED : (lag > 120D? org.bukkit.ChatColor.GOLD: (lag > 70D? org.bukkit.ChatColor.YELLOW: org.bukkit.ChatColor.GREEN))).toString() + (int) Math.round(lag * 100.0D) / 100.0D;
 	}
 }
