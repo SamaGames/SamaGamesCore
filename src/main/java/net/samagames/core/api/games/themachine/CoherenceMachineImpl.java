@@ -19,6 +19,7 @@ public class CoherenceMachineImpl implements ICoherenceMachine
     private final IMessageManager messageManager;
     private final ITemplateManager templateManager;
     private String startCountdownCatchPhrase;
+    private String nameShortcut;
 
     public CoherenceMachineImpl(Game game, IGameProperties gameProperties)
     {
@@ -29,6 +30,7 @@ public class CoherenceMachineImpl implements ICoherenceMachine
         this.templateManager = new TemplateManagerImpl();
 
         this.startCountdownCatchPhrase = "Préparez-vous à jouer !";
+        this.nameShortcut = null;
     }
 
     @Override
@@ -38,9 +40,15 @@ public class CoherenceMachineImpl implements ICoherenceMachine
     }
 
     @Override
+    public void setNameShortcut(String shortcut)
+    {
+        this.nameShortcut = shortcut;
+    }
+
+    @Override
     public String getGameTag()
     {
-        return ChatColor.DARK_AQUA + "[" + ChatColor.AQUA + this.game.getGameName() + ChatColor.DARK_AQUA + "]" + ChatColor.RESET;
+        return ChatColor.DARK_AQUA + "[" + ChatColor.AQUA + (this.nameShortcut != null ? this.nameShortcut : this.game.getGameName()) + ChatColor.DARK_AQUA + "]" + ChatColor.RESET;
     }
 
     @Override
@@ -82,5 +90,11 @@ public class CoherenceMachineImpl implements ICoherenceMachine
     public String getStartCountdownCatchPhrase()
     {
         return this.startCountdownCatchPhrase;
+    }
+
+    @Override
+    public String getNameShortcut()
+    {
+        return this.nameShortcut;
     }
 }
