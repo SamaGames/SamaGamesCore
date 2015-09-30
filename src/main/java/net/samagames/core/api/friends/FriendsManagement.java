@@ -112,4 +112,13 @@ public class FriendsManagement implements IFriendsManager
         return new ArrayList<>();
     }
 
+    @Override
+    public boolean removeFriend(UUID asking, UUID target)
+    {
+        Object result = RestAPI.getInstance().sendRequest("player/friend", new Request().addProperty("playerUUID", asking).addProperty("friendUUID", target), StatusResponse.class, "DELETE");
+        if (result instanceof StatusResponse)
+            return ((StatusResponse) result).getStatus();
+        return false;
+    }
+
 }
