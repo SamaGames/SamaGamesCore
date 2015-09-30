@@ -48,6 +48,7 @@ class GameProperties implements IGameProperties
 
             if (!arenaFile.exists())
             {
+                this.mapProperties = new JsonObject();
                 APIPlugin.log(Level.WARNING, "No arena properties file found! If this serveur isn't a game server, don't worry about this message!");
                 return;
             }
