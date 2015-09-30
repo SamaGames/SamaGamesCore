@@ -39,7 +39,7 @@ public class MessageManagerImpl implements IMessageManager
     @Override
     public Message writeGameStartIn(int remainingTime)
     {
-        return new Message(ChatColor.YELLOW + "Début du jeu dans " + ChatColor.RED + remainingTime + " secondes.", this.machine.getGameTag()).displayToAll();
+        return new Message(ChatColor.YELLOW + "Début du jeu dans " + ChatColor.RED + remainingTime + " secondes" + ChatColor.YELLOW + ".", this.machine.getGameTag()).displayToAll();
     }
 
     @Override
