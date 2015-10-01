@@ -186,7 +186,7 @@ public class GameManagerImpl implements IGameManager
         if (this.game == null)
             throw new NullPointerException("Can't get CoherenceMachine because game is null!");
 
-        if (this.coherenceMachine == null)
+        if (this.game.getCoherenceMachine() == null)
             return new CoherenceMachineImpl(this.game, this.gameProperties);
 
         return this.game.getCoherenceMachine();
