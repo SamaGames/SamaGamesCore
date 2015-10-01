@@ -184,13 +184,13 @@ public class GameManagerImpl implements IGameManager
     @Override
     public ICoherenceMachine getCoherenceMachine()
     {
-        if (game == null)
+        if (this.game == null)
             throw new NullPointerException("Can't get CoherenceMachine because game is null!");
 
-        if (coherenceMachine == null)
-            this.coherenceMachine = new CoherenceMachineImpl(game, gameProperties);
+        if (this.coherenceMachine == null)
+            this.coherenceMachine = new CoherenceMachineImpl(this.game, this.gameProperties);
 
-        return this.coherenceMachine;
+        return this.game.getCoherenceMachine();
     }
 
     @Override
