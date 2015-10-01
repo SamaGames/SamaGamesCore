@@ -37,7 +37,6 @@ public class CoherenceMachineImpl implements ICoherenceMachine
     public void setStartCountdownCatchPhrase(String phrase)
     {
         this.startCountdownCatchPhrase = phrase;
-        this.game.getBeginTimer().setCatchPhrase(phrase);
     }
 
     @Override
