@@ -25,7 +25,6 @@ public class GameManagerImpl implements IGameManager
     private final HashMap<UUID, BukkitTask> playerReconnectedTimers;
     private final IGameProperties gameProperties;
     private Game game;
-    private ICoherenceMachine coherenceMachine;
     private int maxReconnectTime;
 
     public GameManagerImpl(ApiImplementation api)
@@ -188,7 +187,7 @@ public class GameManagerImpl implements IGameManager
             throw new NullPointerException("Can't get CoherenceMachine because game is null!");
 
         if (this.coherenceMachine == null)
-            this.coherenceMachine = new CoherenceMachineImpl(this.game, this.gameProperties);
+            return new CoherenceMachineImpl(this.game, this.gameProperties);
 
         return this.game.getCoherenceMachine();
     }
