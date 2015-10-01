@@ -4,7 +4,10 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import net.samagames.core.database.DatabaseConnector;
 import net.samagames.core.database.RedisServer;
-import net.samagames.core.listeners.*;
+import net.samagames.core.listeners.ChatFormatter;
+import net.samagames.core.listeners.NicknamePacketListener;
+import net.samagames.core.listeners.PlayerDataListener;
+import net.samagames.core.listeners.TabsColorsListener;
 import net.samagames.core.rest.RestListener;
 import net.samagames.restfull.RestAPI;
 import org.apache.commons.lang.StringUtils;
@@ -92,9 +95,11 @@ public class APIPlugin extends JavaPlugin implements Listener
         Bukkit.getPluginManager().registerEvents(this, this);
 
         serverName = configuration.getString("bungeename");
+
         if (serverName == null)
         {
             log(Level.SEVERE, "Plugin cannot load : ServerName is empty.");
+            this.setEnabled(false);
             Bukkit.getServer().shutdown();
             return;
         }
