@@ -41,7 +41,7 @@ public abstract class PlayerData extends AbstractPlayerData
 
                 if (applyMultiplier)
                 {
-                    Multiplier multiplier = manager.getStarsManager().getCurrentMultiplier(playerID);
+                    Multiplier multiplier = manager.getStarsManager().getCurrentMultiplier(playerID, ApiImplementation.get().getGameManager().getGame().getGameCodeName());
                     amount *= multiplier.getGlobalAmount();
 
                     message = manager.getStarsManager().getCreditMessage(amount, reason, multiplier);

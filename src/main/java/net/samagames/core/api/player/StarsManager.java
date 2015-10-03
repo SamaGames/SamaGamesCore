@@ -1,8 +1,8 @@
 package net.samagames.core.api.player;
 
 import net.md_5.bungee.api.ChatColor;
-import net.samagames.core.ApiImplementation;
 import net.samagames.api.permissions.permissions.PermissionUser;
+import net.samagames.core.ApiImplementation;
 import net.samagames.tools.Promo;
 
 import java.util.Date;
@@ -27,15 +27,17 @@ public class StarsManager
         this.api = api;
     }
 
-    public Multiplier getCurrentMultiplier(UUID player)
+    public Multiplier getCurrentMultiplier(UUID player, String type)
     {
         Date current = new Date();
         Multiplier ret = new Multiplier();
 
-        if (promoNextCheck == null || current.after(promoNextCheck))
+        if(type != null)
         {
-            // TODO: Rewrite the whole system to manage multi offer
+            // TODO: Rest promo type of game
         }
+
+        // TODO: Set currentPromo to other value than null
 
         if (currentPromo != null && current.before(currentPromo.end))
         {
@@ -63,12 +65,19 @@ public class StarsManager
         {
             for (String multCause : multiplier.data.keySet())
             {
-                String causes = "";
+                if(multCause.equals(""))
+                {
+                    builder.append(" [*" + multiplier.data.get(multCause) + "]");
+                }
+                else
+                {
+                    String causes = multCause;
 
-                if (multiplier.data.containsKey(multCause))
-                    causes += " *" + multiplier.data.get(multCause);
+                    if (multiplier.data.containsKey(multCause))
+                        causes = " *" + multiplier.data.get(multCause);
 
-                builder.append("[" + causes + "]");
+                    builder.append(" [" + causes + "]");
+                }
             }
         }
 

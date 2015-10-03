@@ -1,13 +1,11 @@
 package net.samagames.core.api.player;
 
 import net.md_5.bungee.api.ChatColor;
-import net.samagames.core.ApiImplementation;
 import net.samagames.api.permissions.permissions.PermissionUser;
+import net.samagames.core.ApiImplementation;
 import net.samagames.tools.Promo;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -18,10 +16,9 @@ import java.util.UUID;
  */
 public class CoinsManager
 {
-
     private final ApiImplementation api;
     private Promo currentPromo;
-    private Date promoNextCheck;
+
     public CoinsManager(ApiImplementation api)
     {
         this.api = api;
@@ -32,10 +29,12 @@ public class CoinsManager
         Date current = new Date();
         Multiplier ret = new Multiplier();
 
-        if (promoNextCheck == null || current.after(promoNextCheck))
+        if(type != null)
         {
-            // TODO: Rewrite the whole system to manage multi offer and keep it compatible with DB mode
+            // TODO: Rest promo type of game
         }
+
+        // TODO: Set currentPromo to other value than null
 
         if (currentPromo != null && current.before(currentPromo.end))
         {
@@ -58,16 +57,24 @@ public class CoinsManager
     {
         StringBuilder builder = new StringBuilder();
         builder.append( ChatColor.GOLD + "+" + amount + " pièces (" + reason + ")");
+
         if (multiplier != null)
         {
             for (String multCause : multiplier.data.keySet())
             {
-                String causes = "";
+                if(multCause.equals(""))
+                {
+                    builder.append(" [*" + multiplier.data.get(multCause) + "]");
+                }
+                else
+                {
+                    String causes = multCause;
 
-                if (multiplier.data.containsKey(multCause))
-                    causes = " *" + multiplier.data.get(multCause);
+                    if (multiplier.data.containsKey(multCause))
+                        causes = " *" + multiplier.data.get(multCause);
 
-                builder.append(" [" + causes + "]");
+                    builder.append(" [" + causes + "]");
+                }
             }
         }
 
