@@ -29,7 +29,6 @@ public class EconomyManager
         this.api = api;
         this.coinsMultiplier = new HashMap<>();
         this.starsMultiplier = new HashMap<>();
-        this.reload();
     }
 
     public void reload()
@@ -94,9 +93,9 @@ public class EconomyManager
             Multiplier globalDiscount = data.get("global");
             Multiplier gameDiscount = data.get(game);
 
-            if (globalDiscount != null)
+            if (globalDiscount != null && globalDiscount.isValid())
                 result = result.cross(globalDiscount);
-            if (gameDiscount != null)
+            if (gameDiscount != null && gameDiscount.isValid())
                 result = result.cross(gameDiscount);
         }
 
