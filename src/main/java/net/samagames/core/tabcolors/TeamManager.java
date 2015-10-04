@@ -32,8 +32,7 @@ public class TeamManager
         manager = pl.getAPI().getPermissionsManager();
 
         teamHandler = new TeamHandler();
-
-        // TODO: Totaly remove compatibility
+        
         groups.addAll(((RestfullManager) manager.getApi().getManager()).getGroups().stream().collect(Collectors.toList()));
 
         for (PermissionGroup pg : groups)

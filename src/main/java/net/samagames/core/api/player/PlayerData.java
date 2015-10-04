@@ -41,13 +41,13 @@ public abstract class PlayerData extends AbstractPlayerData
 
                 if (applyMultiplier)
                 {
-                    Multiplier multiplier = manager.getStarsManager().getCurrentMultiplier(playerID, ApiImplementation.get().getGameManager().getGame().getGameCodeName());
+                    Multiplier multiplier = manager.getEconomyManager().getCurrentMultiplier(playerID, "stars", ApiImplementation.get().getGameManager().getGame().getGameCodeName());
                     amount *= multiplier.getGlobalAmount();
 
-                    message = manager.getStarsManager().getCreditMessage(amount, reason, multiplier);
+                    message = manager.getEconomyManager().getCreditMessage(amount, "stars", reason, multiplier);
                 } else
                 {
-                    message = manager.getStarsManager().getCreditMessage(amount, reason, null);
+                    message = manager.getEconomyManager().getCreditMessage(amount, "stars", reason, null);
                 }
 
                 if (Bukkit.getPlayer(playerID) != null)
@@ -76,13 +76,13 @@ public abstract class PlayerData extends AbstractPlayerData
 
                 if (applyMultiplier)
                 {
-                    Multiplier multiplier = manager.getCoinsManager().getCurrentMultiplier(playerID, ApiImplementation.get().getGameManager().getGame().getGameCodeName());
+                    Multiplier multiplier = manager.getEconomyManager().getCurrentMultiplier(playerID, "coins", ApiImplementation.get().getGameManager().getGame().getGameCodeName());
                     amount *= multiplier.getGlobalAmount();
 
-                    message = manager.getCoinsManager().getCreditMessage(amount, reason, multiplier);
+                    message = manager.getEconomyManager().getCreditMessage(amount, "coins", reason, multiplier);
                 } else
                 {
-                    message = manager.getCoinsManager().getCreditMessage(amount, reason, null);
+                    message = manager.getEconomyManager().getCreditMessage(amount, "coins", reason, null);
                 }
 
                 if (Bukkit.getPlayer(playerID) != null)

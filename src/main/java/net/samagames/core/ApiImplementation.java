@@ -48,7 +48,7 @@ public class ApiImplementation extends SamaGamesAPI
     private final APIPlugin plugin;
     private final IGuiManager guiManager;
     private final ISettingsManager settingsManager;
-    private final IPlayerDataManager playerDataManager;
+    private final PlayerDataManager playerDataManager;
     private final IAchievementManager achievementManager;
     private final PubSubAPI pubSub;
     private final IUUIDTranslator uuidTranslator;
@@ -99,6 +99,11 @@ public class ApiImplementation extends SamaGamesAPI
         partiesManager = new PartiesManager(this);
         permissionsManager = new PermissionsManager();
         friendsManager = new FriendsManagement(this);
+    }
+
+    public void onShutdown()
+    {
+        this.playerDataManager.onShutdown();
     }
 
     @Override

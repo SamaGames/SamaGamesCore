@@ -12,13 +12,53 @@ import java.util.Map;
  */
 public class Multiplier
 {
+    private int globalAmount;
+    private final long endTime;
+    private final Map<String, Integer> combinedData = new HashMap<>();
+    private String message;
 
-    public final Map<String, Integer> data = new HashMap<>();
-    public int globalAmount = 1;
+    public Multiplier(int globalAmount, long endTime, String message)
+    {
+        this(globalAmount, endTime);
+        this.message = message;
+    }
 
+    public Multiplier(int globalAmount, long endTime)
+    {
+        this.globalAmount = globalAmount;
+        this.endTime = endTime;
+    }
     public int getGlobalAmount()
     {
         return (globalAmount >= 1) ? globalAmount : 1;
     }
 
+    public boolean isValid()
+    {
+        return endTime < System.currentTimeMillis();
+    }
+    
+    public String getMessage()
+    {
+        return message;
+    }
+
+    public Multiplier cross(Multiplier multiplier)
+    {
+        this.globalAmount *= multiplier.getGlobalAmount();
+        this.combinedData.put(multiplier.getMessage(), multiplier.getGlobalAmount());
+        return this;
+    }
+
+    public Map<String, Integer> getCombinedData()
+    {
+        return combinedData;
+    }
+
+    public Multiplier cross(int multiplier)
+    {
+        this.combinedData.put("", multiplier);
+        this.globalAmount *= multiplier;
+        return this;
+    }
 }

@@ -205,6 +205,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         nicknamePacketListener.close();
         databaseConnector.killConnection();
         executor.shutdownNow();
+        api.onShutdown();
         Bukkit.getServer().shutdown();
     }
 
