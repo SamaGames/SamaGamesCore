@@ -151,6 +151,7 @@ public class ApiImplementation extends SamaGamesAPI
         return barAPI;
     }
 
+    @Override
     public IJoinManager getJoinManager()
     {
         return joinManager;
