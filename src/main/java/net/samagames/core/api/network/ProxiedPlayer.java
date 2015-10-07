@@ -4,6 +4,10 @@ import com.google.gson.Gson;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.network.IProxiedPlayer;
+import net.samagames.api.player.AbstractPlayerData;
+import net.samagames.core.APIPlugin;
+import net.samagames.core.api.player.PlayerDataManager;
+import net.samagames.core.rest.RestPlayerData;
 
 import java.util.UUID;
 
@@ -18,28 +22,32 @@ class ProxiedPlayer implements IProxiedPlayer
 {
 
     private final UUID playerId;
+    private AbstractPlayerData playerData;
 
     public ProxiedPlayer(UUID playerId)
     {
+        this.playerData = SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId);
+        if (this.playerData == null)
+            this.playerData = new RestPlayerData(playerId, APIPlugin.getInstance().getAPI(), (PlayerDataManager) APIPlugin.getInstance().getAPI().getPlayerManager());
         this.playerId = playerId;
     }
 
     @Override
     public String getServer()
     {
-        return SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId).get("currentserver", "Inconnu");
+        return playerData.get("redis.currentserver", "Inconnu");
     }
 
     @Override
     public String getProxy()
     {
-        return SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId).get("redis.currentproxy", "Inconnu");
+        return playerData.get("redis.currentproxy", "Inconnu");
     }
 
     @Override
     public String getIp()
     {
-        return SamaGamesAPI.get().getPlayerManager().getPlayerData(playerId).get("redis.currentip", "0.0.0.0");
+        return playerData.get("redis.currentip", "0.0.0.0");
     }
 
     @Override
