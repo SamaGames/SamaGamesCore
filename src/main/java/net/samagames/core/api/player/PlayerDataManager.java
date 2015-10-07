@@ -50,6 +50,9 @@ public class PlayerDataManager implements IPlayerDataManager
 
         PlayerData data = cachedData.get(player);
 
+        if (data == null)
+            return null;
+
         if (forceRefresh)
         {
             data.updateData();
