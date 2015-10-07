@@ -256,4 +256,11 @@ public class RestPlayerData extends PlayerData
 
         return new ValueResponse();
     }
+
+    @Override
+    public String get(String key, String def)
+    {
+        String result = get(key);
+        return result != null ? result : def;
+    }
 }
