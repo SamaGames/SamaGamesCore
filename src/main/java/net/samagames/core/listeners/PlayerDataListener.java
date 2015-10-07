@@ -2,6 +2,7 @@ package net.samagames.core.listeners;
 
 import net.samagames.core.APIPlugin;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -20,13 +21,13 @@ public class PlayerDataListener extends APIListener
         super(plugin);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onLogout(PlayerQuitEvent event)
     {
         api.getPlayerManager().unload(event.getPlayer().getUniqueId());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onLogout(PlayerKickEvent event)
     {
         api.getPlayerManager().unload(event.getPlayer().getUniqueId());
