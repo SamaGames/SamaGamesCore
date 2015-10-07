@@ -35,19 +35,19 @@ class ProxiedPlayer implements IProxiedPlayer
     @Override
     public String getServer()
     {
-        return playerData.get("redis.currentserver", "Inconnu");
+        return playerData.get("redis.server", "Inconnu");
     }
 
     @Override
     public String getProxy()
     {
-        return playerData.get("redis.currentproxy", "Inconnu");
+        return playerData.get("redis.proxy", "Inconnu");
     }
 
     @Override
     public String getIp()
     {
-        return playerData.get("redis.currentip", "0.0.0.0");
+        return playerData.get("redis.ip", "0.0.0.0");
     }
 
     @Override
