@@ -113,11 +113,11 @@ public class EconomyManager
             {
                 if(multCause.isEmpty())
                 {
-                    builder.append(" [ *" + multiplier.getCombinedData().get(multCause) + "]");
+                    builder.append(" [* " + multiplier.getCombinedData().get(multCause) + "]");
                 }
                 else
                 {
-                    builder.append(" [ *").append(multiplier.getCombinedData().get(multCause)).append(" ").append(multCause).append("]");
+                    builder.append(" [* ").append(multiplier.getCombinedData().get(multCause)).append(" ").append(multCause).append("]");
                 }
             }
         }

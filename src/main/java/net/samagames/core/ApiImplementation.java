@@ -99,6 +99,9 @@ public class ApiImplementation extends SamaGamesAPI
         partiesManager = new PartiesManager(this);
         permissionsManager = new PermissionsManager();
         friendsManager = new FriendsManagement(this);
+
+        // Init Group change listener
+        pubSub.subscribe("groupchange", new GroupChangeHandler(permissionsManager));
     }
 
     public void onShutdown()
