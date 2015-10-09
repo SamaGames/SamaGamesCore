@@ -9,9 +9,12 @@ import net.minecraft.server.v1_8_R3.EntityPlayer;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.TileEntitySkull;
 import net.samagames.api.SamaGamesAPI;
+import net.samagames.restfull.RestAPI;
+import net.samagames.restfull.request.Request;
 import net.samagames.tools.Reflection;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -34,8 +37,9 @@ public class RestCacheLoader extends CacheLoader<String, GameProfile>
 
         if (profile == null)
         {
-            profile = new GameProfile(SamaGamesAPI.get().getUUIDTranslator().getUUID(user, false), user);
-            String skinURL = "http://textures.minecraft.net/texture/cd6be915b261643fd13621ee4e99c9e541a551d80272687a3b56183b981fb9a";
+            UUID uuid = SamaGamesAPI.get().getUUIDTranslator().getUUID(user, false);
+            profile = new GameProfile(uuid == null ? UUID.randomUUID() : uuid, user);
+            String skinURL = "https://minotar.net/skin/" + user;
             profile.getProperties().put("textures", new Property("textures", Base64Coder.encodeString("{textures:{SKIN:{url:\"" + skinURL + "\"}}}")));
         }
 
@@ -51,5 +55,10 @@ public class RestCacheLoader extends CacheLoader<String, GameProfile>
         {
             e.printStackTrace();
         }
+    }
+
+    public static class SkinResponse
+    {
+
     }
 }

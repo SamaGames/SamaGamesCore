@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import net.samagames.core.database.DatabaseConnector;
 import net.samagames.core.database.RedisServer;
+import net.samagames.core.hook.RestCacheLoader;
 import net.samagames.core.listeners.ChatFormatter;
 import net.samagames.core.listeners.NicknamePacketListener;
 import net.samagames.core.listeners.PlayerDataListener;
@@ -162,6 +163,7 @@ public class APIPlugin extends JavaPlugin implements Listener
             Bukkit.getLogger().info("Blocking WorldDownloader for " + player.getDisplayName());
             player.sendPluginMessage(this, "WDL|CONTROL", out.toByteArray());
         });
+        RestCacheLoader.hook();
 
 		/*
         Loading commands
