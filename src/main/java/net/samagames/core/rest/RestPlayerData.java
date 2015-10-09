@@ -244,7 +244,7 @@ public class RestPlayerData extends PlayerData
     public void setEquipped(String category, String key, String value)
     {
         Object response = RestAPI.getInstance().sendRequest("player/equipped", new Request().addProperty("playerUUID", playerID).addProperty("category", category).addProperty("key", key).addProperty("value", value), StatusResponse.class, "PUT");
-        if (!(response instanceof StatusResponse) || !((StatusResponse) response).getStatus())
+        if ((!(response instanceof StatusResponse) || !((StatusResponse) response).getStatus()))
             logger.warning("cannot set player/equipped (" + response + ")");
     }
 
@@ -262,5 +262,12 @@ public class RestPlayerData extends PlayerData
     {
         String result = get(key);
         return result != null ? result : def;
+    }
+
+    public void resetEquipped(String gameType, String itemCategory)
+    {
+        Object response = RestAPI.getInstance().sendRequest("player/equipped", new Request().addProperty("playerUUID", playerID).addProperty("category", itemCategory), StatusResponse.class, "DELETE");
+        if ((!(response instanceof StatusResponse) || !((StatusResponse) response).getStatus()))
+            logger.warning("cannot delete player/equipped (" + response + ")");
     }
 }

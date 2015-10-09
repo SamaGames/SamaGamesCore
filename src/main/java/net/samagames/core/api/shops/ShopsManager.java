@@ -53,4 +53,10 @@ public class ShopsManager extends AbstractShopsManager
     {
         ((RestPlayerData)api.getPlayerManager().getPlayerData(player)).setEquipped(gameType, itemCategory, itemName);
     }
+
+    @Override
+    public void resetLevel(UUID player, String itemCategory)
+    {
+        ((RestPlayerData)api.getPlayerManager().getPlayerData(player)).resetEquipped(gameType, itemCategory);
+    }
 }
