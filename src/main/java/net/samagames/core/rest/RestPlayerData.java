@@ -243,14 +243,14 @@ public class RestPlayerData extends PlayerData
 
     public void setEquipped(String category, String key, String value)
     {
-        Object response = RestAPI.getInstance().sendRequest("player/equiped", new Request().addProperty("playerUUID", playerID).addProperty("category", category).addProperty("key", key).addProperty("value", value), StatusResponse.class, "PUT");
+        Object response = RestAPI.getInstance().sendRequest("player/equipped", new Request().addProperty("playerUUID", playerID).addProperty("category", category).addProperty("key", key).addProperty("value", value), StatusResponse.class, "PUT");
         if ((!(response instanceof StatusResponse) || !((StatusResponse) response).getStatus()))
             logger.warning("cannot set player/equipped (" + response + ")");
     }
 
     public ValueResponse getEquipped(String category, String key)
     {
-        Object response = RestAPI.getInstance().sendRequest("player/equiped", new Request().addProperty("playerUUID", playerID).addProperty("category", category).addProperty("key", key), ValueResponse.class, "POST");
+        Object response = RestAPI.getInstance().sendRequest("player/equipped", new Request().addProperty("playerUUID", playerID).addProperty("category", category).addProperty("key", key), ValueResponse.class, "POST");
         if (response instanceof ValueResponse)
             return (ValueResponse) response;
 
@@ -266,7 +266,7 @@ public class RestPlayerData extends PlayerData
 
     public void resetEquipped(String gameType, String itemCategory)
     {
-        Object response = RestAPI.getInstance().sendRequest("player/equiped", new Request().addProperty("playerUUID", playerID).addProperty("category", gameType).addProperty("key", itemCategory), StatusResponse.class, "DELETE");
+        Object response = RestAPI.getInstance().sendRequest("player/equipped", new Request().addProperty("playerUUID", playerID).addProperty("category", gameType).addProperty("key", itemCategory), StatusResponse.class, "DELETE");
         if ((!(response instanceof StatusResponse) || !((StatusResponse) response).getStatus()))
             logger.warning("cannot delete player/equipped (" + response + ")");
     }
