@@ -266,7 +266,7 @@ public class RestPlayerData extends PlayerData
 
     public void resetEquipped(String gameType, String itemCategory)
     {
-        Object response = RestAPI.getInstance().sendRequest("player/equipped", new Request().addProperty("playerUUID", playerID).addProperty("category", itemCategory), StatusResponse.class, "DELETE");
+        Object response = RestAPI.getInstance().sendRequest("player/equipped", new Request().addProperty("playerUUID", playerID).addProperty("category", gameType).addProperty("key", itemCategory), StatusResponse.class, "DELETE");
         if ((!(response instanceof StatusResponse) || !((StatusResponse) response).getStatus()))
             logger.warning("cannot delete player/equipped (" + response + ")");
     }
