@@ -109,5 +109,6 @@ class GameLoginHandler implements IJoinHandler
     public void onLogout(Player player)
     {
         api.onPlayerDisconnect(player);
+        api.refreshArena();
     }
 }
