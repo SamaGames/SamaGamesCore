@@ -39,8 +39,13 @@ public class RestCacheLoader extends CacheLoader<String, GameProfile>
         {
             UUID uuid = SamaGamesAPI.get().getUUIDTranslator().getUUID(user, false);
             profile = new GameProfile(uuid == null ? UUID.randomUUID() : uuid, user);
-            String skinURL = "https://minotar.net/skin/" + user;
-            profile.getProperties().put("textures", new Property("textures", Base64Coder.encodeString("{textures:{SKIN:{url:\"" + skinURL + "\"}}}")));
+
+            Object result = RestAPI.getInstance().sendRequest("player/skin", new Request().addProperty("playerName", user), SkinResponse.class, "POST");
+
+            if (result instanceof SkinResponse && ((SkinResponse) result).skin != null && !((SkinResponse) result).skin.isEmpty())
+            {
+                profile.getProperties().put("textures", new Property("textures", Base64Coder.encodeString("{textures:{SKIN:{url:\"" + ((SkinResponse) result).skin + "\"}}}")));
+            }
         }
 
         return profile;
@@ -59,6 +64,6 @@ public class RestCacheLoader extends CacheLoader<String, GameProfile>
 
     public static class SkinResponse
     {
-
+        private String skin;
     }
 }
