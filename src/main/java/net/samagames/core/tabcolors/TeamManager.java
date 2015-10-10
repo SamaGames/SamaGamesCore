@@ -63,7 +63,7 @@ public class TeamManager
 
     private String getTeamName(PermissionGroup group)
     {
-        String teamName = group.getLadder() + group.getGroupName();
+        String teamName = ((group.getLadder()< 10)?"0":"") + group.getLadder() + group.getGroupName();
         return teamName.substring(0, Math.min(teamName.length(), 16));
     }
 
