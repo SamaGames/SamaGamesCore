@@ -123,7 +123,7 @@ public class APIPlugin extends JavaPlugin implements Listener
             String bungeePassword = dataYML.getString("redis-bungee-password", "passw0rd");
             RedisServer bungee = new RedisServer(bungeeIp, bungeePort, bungeePassword);
             String restIP = dataYML.getString("restfull-ip", "127.0.0.1");
-            String restPort = dataYML.getString("restfull-port", "2000");
+            int restPort = dataYML.getInt("restfull-port", 80);
             String restUser = dataYML.getString("restfull-user", "test");
             String restPass = dataYML.getString("restfull-pass", "test");
             RestAPI.getInstance().setup("http://" + restIP + ":" + restPort + "/", restUser, restPass);
