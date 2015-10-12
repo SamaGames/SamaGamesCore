@@ -76,7 +76,7 @@ public class ApiImplementation extends SamaGamesAPI
         guiManager = new GuiManager(plugin);
 
         resourcePacksManager = new ResourcePacksManagerImpl(this);
-        settingsManager = new SettingsManager(this);
+        settingsManager = new SettingsManager();
         playerDataManager = new PlayerDataManager(this);
         achievementManager = new AchievementManagerRest(this);
 
