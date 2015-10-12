@@ -50,13 +50,20 @@ public class StatsManager extends AbstractStatsManager
 
     public void setValue(UUID player, String stat, double value)
     {
-        Object response = RestAPI.getInstance().sendRequest("player/statistic", new Request().addProperty("playerUUID", player).addProperty("category", game).addProperty("key", stat).addProperty("value", value), StatusResponse.class, "PUT");
-        boolean isErrored = true;
-        if (response instanceof StatusResponse)
-            isErrored = !((StatusResponse) response).getStatus();
+        PlayerStat stats = caches.get(player);
+        if (stats == null)
+            return;
+        stats.setValue(value);
+    }
 
-        if (isErrored)
-            logger.warning("Cannot set key " + stat + " with value " + value + "for uuid " + player + " (DEBUG: " + response + ")");
+
+    @Override
+    public void finish()
+    {
+        for (PlayerStat stat : caches.values())
+        {
+            stat.send();
+        }
     }
 
     @Override
@@ -73,7 +80,6 @@ public class StatsManager extends AbstractStatsManager
         }
     }
 
-    @Override
     public double getRankValue(UUID player, String stat)
     {
         if (caches.containsKey(player))

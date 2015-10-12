@@ -7,8 +7,10 @@ import net.samagames.core.api.player.PlayerData;
 import net.samagames.restfull.RestAPI;
 import net.samagames.restfull.request.Request;
 import net.samagames.restfull.response.Response;
+import net.samagames.restfull.response.StatusResponse;
 import net.samagames.restfull.response.ValueResponse;
 import net.samagames.restfull.response.elements.LeaderboradElement;
+import org.bukkit.Bukkit;
 
 import java.util.UUID;
 
@@ -22,7 +24,7 @@ public class PlayerStat implements IPlayerStat
     private String game;
     private String stat;
     private ApiImplementation api;
-    private int value;
+    private double value;
     private Long rank;
 
     private AbstractPlayerData playerData;
@@ -90,5 +92,22 @@ public class PlayerStat implements IPlayerStat
     public double getValue()
     {
         return this.value;
+    }
+
+
+    public void setValue(double value)
+    {
+        this.value = value;
+    }
+
+    public void send()
+    {
+        Object response = RestAPI.getInstance().sendRequest("player/statistic", new Request().addProperty("playerUUID", playerUUID).addProperty("category", game).addProperty("key", stat).addProperty("value", value), StatusResponse.class, "PUT");
+        boolean isErrored = true;
+        if (response instanceof StatusResponse)
+            isErrored = !((StatusResponse) response).getStatus();
+
+        if (isErrored)
+            Bukkit.getLogger().warning("Cannot set key " + stat + " with value " + value + "for uuid " + playerUUID + " (DEBUG: " + response + ")");
     }
 }
