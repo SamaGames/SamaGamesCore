@@ -73,7 +73,7 @@ public class EconomyManager
     public Multiplier getCurrentMultiplier(UUID player, String type, String game)
     {
         PermissionUser user = api.getPermissionsManager().getApi().getUser(player);
-        int groupMultiplier = (user != null && user.getProperty("multiplier") != null) ? Integer.parseInt(user.getProperty("multiplier")) : 1;
+        int groupMultiplier = (user != null && user.getParents().first().getProperty("multiplier") != null) ? Integer.parseInt(user.getProperty("multiplier")) : 1;
         Multiplier result = new Multiplier(1, 0);
         Map<String, Multiplier> data = null;
         switch (type)
@@ -111,6 +111,9 @@ public class EconomyManager
         {
             for (String multCause : multiplier.getCombinedData().keySet())
             {
+                if (multiplier.getCombinedData().get(multCause) == 1)
+                    continue;
+
                 if(multCause.isEmpty())
                 {
                     builder.append(" [* " + multiplier.getCombinedData().get(multCause) + "]");
