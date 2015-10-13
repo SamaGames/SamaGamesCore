@@ -43,6 +43,7 @@ public class EconomyManager
         if (!(result instanceof List))
         {
             Bukkit.getLogger().warning("Error during " + type + " discount reload (" + result + ")");
+            return;
         }
 
         Map<String, Multiplier> newData = new HashMap<>();
