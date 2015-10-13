@@ -39,7 +39,7 @@ public class StatsManager extends AbstractStatsManager
     @Override
     public void increase(final UUID player, final String stat, final int amount)
     {
-        this.setValue(player, stat, getStatValue(player, stat) + amount);
+        this.setValue(player, stat, amount);
     }
 
     @Override
@@ -60,10 +60,7 @@ public class StatsManager extends AbstractStatsManager
     @Override
     public void finish()
     {
-        for (PlayerStat stat : caches.values())
-        {
-            stat.send();
-        }
+        caches.values().forEach(net.samagames.core.api.stats.PlayerStat::send);
     }
 
     @Override

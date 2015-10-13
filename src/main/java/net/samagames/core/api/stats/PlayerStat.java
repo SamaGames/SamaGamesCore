@@ -51,11 +51,10 @@ public class PlayerStat implements IPlayerStat
             String newValue = ((ValueResponse) response).getValue();
             if (newValue == null || newValue.isEmpty())
             {
-                this.value = 0;
                 return false;
             }
             else
-                this.value = Integer.parseInt(newValue);
+                this.value += Integer.parseInt(newValue);
             this.rank = 1L; // TODO: implement Rank into RestAPI
             return true;
         }
@@ -102,6 +101,7 @@ public class PlayerStat implements IPlayerStat
 
     public void send()
     {
+        this.fill();
         Object response = RestAPI.getInstance().sendRequest("player/statistic", new Request().addProperty("playerUUID", playerUUID).addProperty("category", game).addProperty("key", stat).addProperty("value", value), StatusResponse.class, "PUT");
         boolean isErrored = true;
         if (response instanceof StatusResponse)
