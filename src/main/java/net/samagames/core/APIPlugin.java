@@ -5,10 +5,7 @@ import com.google.common.io.ByteStreams;
 import net.samagames.core.database.DatabaseConnector;
 import net.samagames.core.database.RedisServer;
 import net.samagames.core.hook.RestCacheLoader;
-import net.samagames.core.listeners.ChatFormatter;
-import net.samagames.core.listeners.NicknamePacketListener;
-import net.samagames.core.listeners.PlayerDataListener;
-import net.samagames.core.listeners.TabsColorsListener;
+import net.samagames.core.listeners.*;
 import net.samagames.core.rest.RestListener;
 import net.samagames.restfull.RestAPI;
 import org.apache.commons.lang.StringUtils;
@@ -141,6 +138,9 @@ public class APIPlugin extends JavaPlugin implements Listener
 
         // Web
         api.getJoinManager().registerHandler(new RestListener(this), 1000);
+
+        //Invisible fix
+        api.getJoinManager().registerHandler(new InvisiblePlayerFixListener(this), 1000);
 
         api.getPubSub().subscribe("*", debugListener);
         //Nickname
