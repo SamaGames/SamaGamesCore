@@ -27,6 +27,7 @@ public class StatsManager extends AbstractStatsManager
     private final Logger logger;
     private ApiImplementation api;
     private Map<UUID, PlayerStat> caches;
+    private Leaderboard leaderboard;
 
     public StatsManager(String game, ApiImplementation apiImplementation)
     {
@@ -93,17 +94,20 @@ public class StatsManager extends AbstractStatsManager
     @Override
     public Leaderboard getLeaderboard(String stat)
     {
-        Object response = RestAPI.getInstance().sendRequest("statistics/leaderboard", new Request().addProperty("category", game).addProperty("key", stat), new TypeToken<List<LeaderboradElement>>() {}.getType(), "POST");
-
-        if (response instanceof List && ((List) response).size() == 3)
+        if (leaderboard == null)
         {
-            List<LeaderboradElement> responseList = (List<LeaderboradElement>) response;
-            return new Leaderboard(new PlayerStat(game, stat).readResponse(responseList.get(0)), new PlayerStat(game, stat).readResponse(responseList.get(1)), new PlayerStat(game, stat).readResponse(responseList.get(2)));
-        }
-        else if (response instanceof ErrorResponse)
-            logger.warning(String.format("Error during recuperation of leaderboard for category %s and key %s (response: %s)", game, stat, response.toString()));
+            Object response = RestAPI.getInstance().sendRequest("statistics/leaderboard", new Request().addProperty("category", game).addProperty("key", stat), new TypeToken<List<LeaderboradElement>>() {}.getType(), "POST");
 
-        return null;
+            if (response instanceof List && ((List) response).size() == 3)
+            {
+                List<LeaderboradElement> responseList = (List<LeaderboradElement>) response;
+                return new Leaderboard(new PlayerStat(game, stat).readResponse(responseList.get(0)), new PlayerStat(game, stat).readResponse(responseList.get(1)), new PlayerStat(game, stat).readResponse(responseList.get(2)));
+            }
+            else if (response instanceof ErrorResponse)
+                logger.warning(String.format("Error during recuperation of leaderboard for category %s and key %s (response: %s)", game, stat, response.toString()));
+        }
+
+        return leaderboard;
     }
 
     @Override
