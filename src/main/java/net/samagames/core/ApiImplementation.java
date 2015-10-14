@@ -36,6 +36,8 @@ import net.samagames.tools.BarAPI.BarAPI;
 import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
 
+import java.util.HashMap;
+
 /**
  * This file is a part of the SamaGames project
  * This code is absolutely confidential.
@@ -60,12 +62,14 @@ public class ApiImplementation extends SamaGamesAPI
     private final IFriendsManager friendsManager;
     private final BarAPI barAPI;
     private IGameManager gameApi;
+    private HashMap<String, StatsManager> statsManagerCache;
 
     public ApiImplementation(APIPlugin plugin)
     {
         super(plugin);
 
         this.plugin = plugin;
+        this.statsManagerCache = new HashMap<>();
 
         JoinManagerImplement implement = new JoinManagerImplement();
         Bukkit.getServer().getPluginManager().registerEvents(implement, plugin);
@@ -162,7 +166,12 @@ public class ApiImplementation extends SamaGamesAPI
 
     public AbstractStatsManager getStatsManager(String game)
     {
-        return new StatsManager(game, this);
+        if (this.statsManagerCache.containsKey(game))
+            return statsManagerCache.get(game);
+
+        StatsManager statsManager = new StatsManager(game, this);
+        statsManagerCache.put(game, statsManager);
+        return statsManager;
     }
 
     @Override
