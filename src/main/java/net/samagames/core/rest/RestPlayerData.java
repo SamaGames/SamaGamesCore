@@ -219,7 +219,7 @@ public class RestPlayerData extends PlayerData
     {
         String cacheName = category + "." + key;
         if (shopCache.containsKey(cacheName))
-            return shopCache.get(category + "." + key);
+            return shopCache.get(cacheName);
 
         Object response = RestAPI.getInstance().sendRequest("player/shop", new Request().addProperty("playerUUID", playerID).addProperty("category", category).addProperty("key", key), ShopElement.class, "POST");
         if (response instanceof ShopElement)
@@ -235,7 +235,8 @@ public class RestPlayerData extends PlayerData
     public void setShopData(String category, String key, String value)
     {
         String cacheName = category + "." + key;
-        shopCache.remove(cacheName);
+        if (shopCache.containsKey(cacheName))
+            shopCache.get(cacheName).getValue().add(value);
         Object response = RestAPI.getInstance().sendRequest("player/shop", new Request().addProperty("playerUUID", playerID).addProperty("category", category).addProperty("key", key).addProperty("value", value), StatusResponse.class, "PUT");
         if (!(response instanceof StatusResponse) || !((StatusResponse) response).getStatus())
             logger.warning("cannot set player/shop (" + response + ")");
