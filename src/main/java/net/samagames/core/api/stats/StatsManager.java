@@ -27,6 +27,7 @@ public class StatsManager extends AbstractStatsManager
     private final Logger logger;
     private ApiImplementation api;
     private Map<UUID, PlayerStat> caches;
+    private Leaderboard leaderboard;
 
     public StatsManager(String game, ApiImplementation apiImplementation)
     {
@@ -39,7 +40,7 @@ public class StatsManager extends AbstractStatsManager
     @Override
     public void increase(final UUID player, final String stat, final int amount)
     {
-        this.setValue(player, stat, getStatValue(player, stat) + amount);
+        this.setValue(player, stat, amount);
     }
 
     @Override
@@ -50,13 +51,17 @@ public class StatsManager extends AbstractStatsManager
 
     public void setValue(UUID player, String stat, double value)
     {
-        Object response = RestAPI.getInstance().sendRequest("player/statistic", new Request().addProperty("playerUUID", player).addProperty("category", game).addProperty("key", stat).addProperty("value", value), StatusResponse.class, "PUT");
-        boolean isErrored = true;
-        if (response instanceof StatusResponse)
-            isErrored = !((StatusResponse) response).getStatus();
+        PlayerStat stats = caches.get(player);
+        if (stats == null)
+            return;
+        stats.setValue(value);
+    }
 
-        if (isErrored)
-            logger.warning("Cannot set key " + stat + " with value " + value + "for uuid " + player + " (DEBUG: " + response + ")");
+
+    @Override
+    public void finish()
+    {
+        caches.values().forEach(net.samagames.core.api.stats.PlayerStat::send);
     }
 
     @Override
@@ -73,7 +78,6 @@ public class StatsManager extends AbstractStatsManager
         }
     }
 
-    @Override
     public double getRankValue(UUID player, String stat)
     {
         if (caches.containsKey(player))
@@ -90,17 +94,20 @@ public class StatsManager extends AbstractStatsManager
     @Override
     public Leaderboard getLeaderboard(String stat)
     {
-        Object response = RestAPI.getInstance().sendRequest("statistics/leaderboard", new Request().addProperty("category", game).addProperty("key", stat), new TypeToken<List<LeaderboradElement>>() {}.getType(), "POST");
-
-        if (response instanceof List && ((List) response).size() == 3)
+        if (leaderboard == null)
         {
-            List<LeaderboradElement> responseList = (List<LeaderboradElement>) response;
-            return new Leaderboard(new PlayerStat(game, stat).readResponse(responseList.get(0)), new PlayerStat(game, stat).readResponse(responseList.get(1)), new PlayerStat(game, stat).readResponse(responseList.get(2)));
-        }
-        else if (response instanceof ErrorResponse)
-            logger.warning(String.format("Error during recuperation of leaderboard for category %s and key %s (response: %s)", game, stat, response.toString()));
+            Object response = RestAPI.getInstance().sendRequest("statistics/leaderboard", new Request().addProperty("category", game).addProperty("key", stat), new TypeToken<List<LeaderboradElement>>() {}.getType(), "POST");
 
-        return null;
+            if (response instanceof List && ((List) response).size() == 3)
+            {
+                List<LeaderboradElement> responseList = (List<LeaderboradElement>) response;
+                return new Leaderboard(new PlayerStat(game, stat).readResponse(responseList.get(0)), new PlayerStat(game, stat).readResponse(responseList.get(1)), new PlayerStat(game, stat).readResponse(responseList.get(2)));
+            }
+            else if (response instanceof ErrorResponse)
+                logger.warning(String.format("Error during recuperation of leaderboard for category %s and key %s (response: %s)", game, stat, response.toString()));
+        }
+
+        return leaderboard;
     }
 
     @Override

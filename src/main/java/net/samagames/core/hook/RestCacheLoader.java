@@ -55,7 +55,7 @@ public class RestCacheLoader extends CacheLoader<String, GameProfile>
     {
         try
         {
-            Reflection.setFinalStatic(TileEntitySkull.class.getField("skinCache"), CacheBuilder.newBuilder().maximumSize(5000).expireAfterAccess(60, TimeUnit.MINUTES).build(new RestCacheLoader()));
+            Reflection.setFinalStatic(TileEntitySkull.class.getField("skinCache"), CacheBuilder.newBuilder().maximumSize(5000).expireAfterAccess(4, TimeUnit.HOURS).build(new RestCacheLoader()));
         } catch (ReflectiveOperationException e)
         {
             e.printStackTrace();

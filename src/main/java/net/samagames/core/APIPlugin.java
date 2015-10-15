@@ -5,10 +5,7 @@ import com.google.common.io.ByteStreams;
 import net.samagames.core.database.DatabaseConnector;
 import net.samagames.core.database.RedisServer;
 import net.samagames.core.hook.RestCacheLoader;
-import net.samagames.core.listeners.ChatFormatter;
-import net.samagames.core.listeners.NicknamePacketListener;
-import net.samagames.core.listeners.PlayerDataListener;
-import net.samagames.core.listeners.TabsColorsListener;
+import net.samagames.core.listeners.*;
 import net.samagames.core.rest.RestListener;
 import net.samagames.restfull.RestAPI;
 import org.apache.commons.lang.StringUtils;
@@ -18,8 +15,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.Jedis;
 
@@ -141,6 +140,9 @@ public class APIPlugin extends JavaPlugin implements Listener
 
         // Web
         api.getJoinManager().registerHandler(new RestListener(this), 1000);
+
+        //Invisible fix
+        api.getPlugin().getServer().getPluginManager().registerEvents(new InvisiblePlayerFixListener(this), this);
 
         api.getPubSub().subscribe("*", debugListener);
         //Nickname
@@ -315,5 +317,11 @@ public class APIPlugin extends JavaPlugin implements Listener
     public DatabaseConnector getDatabaseConnector()
     {
         return databaseConnector;
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onChunkUnload(final ChunkUnloadEvent event)
+    {
+        event.setCancelled(true);
     }
 }

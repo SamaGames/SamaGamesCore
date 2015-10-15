@@ -40,9 +40,10 @@ public class EconomyManager
     private final void internalGenericReload(String type, Map<String, Multiplier> data)
     {
         Object result = RestAPI.getInstance().sendRequest("promotion/" + type, new Request(), new TypeToken<List<PromotionResponseElement>>() {}.getType(), "POST");
-        if (!(result instanceof PromotionResponseElement))
+        if (!(result instanceof List))
         {
-            Bukkit.getLogger().warning("Error during stars discount reload (" + result + ")");
+            Bukkit.getLogger().warning("Error during " + type + " discount reload (" + result + ")");
+            return;
         }
 
         Map<String, Multiplier> newData = new HashMap<>();

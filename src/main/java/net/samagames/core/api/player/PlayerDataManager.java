@@ -28,7 +28,7 @@ public class PlayerDataManager implements IPlayerDataManager
         this.api = api;
         economyManager = new EconomyManager(api);
         // Run task every 30 minutes
-        discountTask = this.api.getPlugin().getServer().getScheduler().runTaskTimer(this.api.getPlugin(), economyManager::reload, 0L, 36000L);
+        discountTask = this.api.getPlugin().getServer().getScheduler().runTaskTimerAsynchronously(this.api.getPlugin(), economyManager::reload, 0L, 36000L);
     }
 
     public EconomyManager getEconomyManager()

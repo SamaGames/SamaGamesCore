@@ -48,7 +48,7 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver
         String id = args[1];
         UUID uuid = UUID.fromString(id);
 
-        if (SamaGamesAPI.get().getPermissionsManager().hasPermission(uuid, "games.modjoin"))
+        if (SamaGamesAPI.get().getPermissionsManager().hasPermission(uuid, "mod.tp"))
             manager.addModerator(uuid);
 
         if (packet.startsWith("teleport"))
@@ -56,7 +56,7 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver
             try
             {
                 UUID target = UUID.fromString(args[2]);
-                if (SamaGamesAPI.get().getPermissionsManager().hasPermission(uuid, "games.modjoin"))
+                if (SamaGamesAPI.get().getPermissionsManager().hasPermission(uuid, "mod.tp"))
                 {
                     teleportTargets.put(uuid, target);
                 }
