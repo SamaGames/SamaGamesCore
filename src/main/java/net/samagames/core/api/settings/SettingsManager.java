@@ -38,4 +38,10 @@ public class SettingsManager implements ISettingsManager
     {
         api.getPlayerManager().getPlayerData(player).set("settings." + setting, value);
     }
+
+    public void setSetting(UUID player, String setting, String value, Runnable callback)
+    {
+        api.getPlayerManager().getPlayerData(player).set("settings." + setting, value);
+        callback.run();
+    }
 }
