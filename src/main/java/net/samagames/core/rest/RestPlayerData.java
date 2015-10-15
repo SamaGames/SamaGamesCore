@@ -9,9 +9,7 @@ import net.samagames.restfull.response.*;
 import net.samagames.restfull.response.elements.ShopElement;
 import redis.clients.jedis.Jedis;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -225,11 +223,17 @@ public class RestPlayerData extends PlayerData
         if (response instanceof ShopElement)
         {
             ShopElement element = (ShopElement) response;
+            if (element.getValue() == null)
+            {
+                element = new GhostShopElement();
+            }
             shopCache.put(cacheName, element);
             return element;
+        } else {
+            ShopElement ghost = new GhostShopElement();
+            shopCache.put(cacheName, ghost);
+            return ghost;
         }
-
-        return null;
     }
 
     public void setShopData(String category, String key, String value)
@@ -237,6 +241,8 @@ public class RestPlayerData extends PlayerData
         String cacheName = category + "." + key;
         if (shopCache.containsKey(cacheName))
             shopCache.get(cacheName).getValue().add(value);
+        else
+            getShopData(category, key);
         Object response = RestAPI.getInstance().sendRequest("player/shop", new Request().addProperty("playerUUID", playerID).addProperty("category", category).addProperty("key", key).addProperty("value", value), StatusResponse.class, "PUT");
         if (!(response instanceof StatusResponse) || !((StatusResponse) response).getStatus())
             logger.warning("cannot set player/shop (" + response + ")");
@@ -270,5 +276,16 @@ public class RestPlayerData extends PlayerData
         Object response = RestAPI.getInstance().sendRequest("player/equipped", new Request().addProperty("playerUUID", playerID).addProperty("category", gameType).addProperty("key", itemCategory), StatusResponse.class, "DELETE");
         if ((!(response instanceof StatusResponse) || !((StatusResponse) response).getStatus()))
             logger.warning("cannot delete player/equipped (" + response + ")");
+    }
+
+
+    private static final class GhostShopElement extends ShopElement {
+        private List<String> ghosts = new ArrayList<>();
+
+        @Override
+        public List<String> getValue()
+        {
+            return ghosts;
+        }
     }
 }
