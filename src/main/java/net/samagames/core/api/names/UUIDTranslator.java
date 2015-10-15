@@ -179,7 +179,7 @@ public final class UUIDTranslator implements IUUIDTranslator
                 name = NameFetcher.nameHistoryFromUuid(uuid).get(0);
             } catch (Exception e)
             {
-                plugin.getLogger().log(Level.SEVERE, "Unable to fetch name from Mojang for " + uuid, e);
+                plugin.getLogger().log(Level.SEVERE, "Unable to fetch name from Mojang for " + uuid);
                 return null;
             }
 
