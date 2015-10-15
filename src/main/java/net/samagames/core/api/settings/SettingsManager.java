@@ -34,7 +34,7 @@ public class SettingsManager implements ISettingsManager
 
     public void setSetting(UUID player, String setting, String value, Runnable callback)
     {
-        api.getPlayerManager().getPlayerData(player).set("settings." + setting, value);
+        SamaGamesAPI.get().getPlayerManager().getPlayerData(player).set("settings." + setting, value);
         callback.run();
     }
 }
