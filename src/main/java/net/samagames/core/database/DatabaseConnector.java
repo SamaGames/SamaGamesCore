@@ -55,11 +55,11 @@ public class DatabaseConnector
 
         // Init du thread
 
-        if (keeper == null)
+        /*if (keeper == null)
         {
             keeper = new WhiteListRefreshTask(plugin, this);
             Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, keeper, 0, 30 * 20);
-        }
+        }*/
     }
 
 }
