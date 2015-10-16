@@ -3,6 +3,7 @@ package net.samagames.core.api.player;
 import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.api.player.IPlayerDataManager;
 import net.samagames.core.ApiImplementation;
+import net.samagames.core.rest.RestPlayerData;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.UUID;
@@ -51,7 +52,7 @@ public class PlayerDataManager implements IPlayerDataManager
         PlayerData data = cachedData.get(player);
 
         if (data == null)
-            return null;
+            return new RestPlayerData(player, api, (PlayerDataManager) api.getPlayerManager());
 
         if (forceRefresh)
         {
