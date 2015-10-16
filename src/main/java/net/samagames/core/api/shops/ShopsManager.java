@@ -27,7 +27,7 @@ public class ShopsManager extends AbstractShopsManager
     @Override
     public String getItemLevelForPlayer(UUID player, String itemCategory)
     {
-        ValueResponse value = ((RestPlayerData)api.getPlayerManager().getPlayerData(player)).getEquipped(gameType, itemCategory);
+        ValueResponse value = ((RestPlayerData)SamaGamesAPI.get().getPlayerManager().getPlayerData(player)).getEquipped(gameType, itemCategory);
         if (value.getValue() == null || value.getValue().equals("false"))
             return null;
         return value.getValue();
@@ -36,7 +36,7 @@ public class ShopsManager extends AbstractShopsManager
     @Override
     public List<String> getOwnedLevels(UUID player, String itemCategory)
     {
-        ShopElement value = ((RestPlayerData)api.getPlayerManager().getPlayerData(player)).getShopData(gameType, itemCategory);
+        ShopElement value = ((RestPlayerData)SamaGamesAPI.get().getPlayerManager().getPlayerData(player)).getShopData(gameType, itemCategory);
         if (value == null)
             return null;
         return value.getValue();
@@ -45,18 +45,18 @@ public class ShopsManager extends AbstractShopsManager
     @Override
     public void addOwnedLevel(UUID player, String itemCategory, String itemName)
     {
-        ((RestPlayerData)api.getPlayerManager().getPlayerData(player)).setShopData(gameType, itemCategory, itemName);
+        ((RestPlayerData)SamaGamesAPI.get().getPlayerManager().getPlayerData(player)).setShopData(gameType, itemCategory, itemName);
     }
 
     @Override
     public void setCurrentLevel(UUID player, String itemCategory, String itemName)
     {
-        ((RestPlayerData)api.getPlayerManager().getPlayerData(player)).setEquipped(gameType, itemCategory, itemName);
+        ((RestPlayerData)SamaGamesAPI.get().getPlayerManager().getPlayerData(player)).setEquipped(gameType, itemCategory, itemName);
     }
 
     @Override
     public void resetLevel(UUID player, String itemCategory)
     {
-        ((RestPlayerData)api.getPlayerManager().getPlayerData(player)).resetEquipped(gameType, itemCategory);
+        ((RestPlayerData)SamaGamesAPI.get().getPlayerManager().getPlayerData(player)).resetEquipped(gameType, itemCategory);
     }
 }

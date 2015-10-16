@@ -42,23 +42,37 @@ public class InvisiblePlayerFixListener implements Listener
 
     public void sendAllToPlayer(Player current)
     {
+        if (current == null)
+            return;
+        final EntityPlayer currentNMS = ((CraftPlayer) current).getHandle();
         Bukkit.getScheduler().runTaskAsynchronously(pluginAPI, () -> {
 
             for (Player player : Bukkit.getOnlinePlayers()) {
+                if (player == null)
+                    continue;
                 EntityPlayer entity = ((CraftPlayer) player).getHandle();
-                ((CraftPlayer) current).getHandle().playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entity));
+                if (entity == null || currentNMS == null || currentNMS.playerConnection == null)
+                    continue;
+                currentNMS.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entity));
             }
         });
     }
 
-    public void sendPlayerToAll(Player player)
+    public void sendPlayerToAll(Player current)
     {
+        if (current == null)
+            return;
+        final EntityPlayer currentNMS = ((CraftPlayer) current).getHandle();
         Bukkit.getScheduler().runTaskAsynchronously(pluginAPI, () -> {
-            EntityPlayer entity = ((CraftPlayer) player).getHandle();
-            PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entity);
+            PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, currentNMS);
 
             for (Player p : Bukkit.getOnlinePlayers()) {
-                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+                if (p == null)
+                    continue;
+                EntityPlayer entity = ((CraftPlayer) p).getHandle();
+                if (entity == null|| currentNMS == null || entity.playerConnection == null)
+                    continue;
+                entity.playerConnection.sendPacket(packet);
             }
         });
     }
