@@ -143,6 +143,8 @@ public class RestPlayerData extends PlayerData
 
         if (isErrored)
             logger.warning("Cannot set key " + key + " with value " + value + "for uuid " + playerID);
+
+        api.getPubSub().send("playerDataChange", playerID + ":" + key + ":" + value);
     }
 
     @Override
