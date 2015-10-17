@@ -32,7 +32,6 @@ public class StatsManager extends AbstractStatsManager
         super(game);
         this.api = apiImplementation;
         this.caches = new HashMap<>();
-        this.leaderboardCaches = new HashMap<>();
         logger = api.getPlugin().getLogger();
     }
 
