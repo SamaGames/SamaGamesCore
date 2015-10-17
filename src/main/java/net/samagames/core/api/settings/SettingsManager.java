@@ -2,6 +2,7 @@ package net.samagames.core.api.settings;
 
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.settings.ISettingsManager;
+import org.bukkit.Bukkit;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +35,9 @@ public class SettingsManager implements ISettingsManager
 
     public void setSetting(UUID player, String setting, String value, Runnable callback)
     {
-        SamaGamesAPI.get().getPlayerManager().getPlayerData(player).set("settings." + setting, value);
-        callback.run();
+        Bukkit.getServer().getScheduler().runTaskAsynchronously(SamaGamesAPI.get().getPlugin(), () -> {
+            SamaGamesAPI.get().getPlayerManager().getPlayerData(player).set("settings." + setting, value);
+            callback.run();
+        });
     }
 }
