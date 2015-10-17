@@ -7,7 +7,6 @@ import net.samagames.core.ApiImplementation;
 import net.samagames.restfull.RestAPI;
 import net.samagames.restfull.request.Request;
 import net.samagames.restfull.response.ErrorResponse;
-import net.samagames.restfull.response.StatusResponse;
 import net.samagames.restfull.response.elements.LeaderboradElement;
 
 import java.util.HashMap;
@@ -26,14 +25,15 @@ public class StatsManager extends AbstractStatsManager
 {
     private final Logger logger;
     private ApiImplementation api;
-    private Map<UUID, PlayerStat> caches;
-    private Leaderboard leaderboard;
+    private Map<String, PlayerStat> caches;
+    private Map<String, Leaderboard> leaderboardCaches;
 
     public StatsManager(String game, ApiImplementation apiImplementation)
     {
         super(game);
         this.api = apiImplementation;
         this.caches = new HashMap<>();
+        this.leaderboardCaches = new HashMap<>();
         logger = api.getPlugin().getLogger();
     }
 
@@ -67,26 +67,26 @@ public class StatsManager extends AbstractStatsManager
     @Override
     public double getStatValue(UUID player, String stat)
     {
-        if (caches.containsKey(player))
-            return caches.get(player).getValue();
+        if (caches.containsKey(player.toString() + ":" + stat))
+            return caches.get(player.toString() + ":" + stat).getValue();
         else
         {
             PlayerStat playerStat = new PlayerStat(player, game, stat);
             playerStat.fill();
-            caches.put(player, playerStat);
+            caches.put(player.toString() + ":" + stat, playerStat);
             return playerStat.getValue();
         }
     }
 
     public double getRankValue(UUID player, String stat)
     {
-        if (caches.containsKey(player))
-            return caches.get(player).getRank();
+        if (caches.containsKey(player.toString() + ":" + stat))
+            return caches.get(player.toString() + ":" + stat).getRank();
         else
         {
             PlayerStat playerStat = new PlayerStat(player, game, stat);
             playerStat.fill();
-            caches.put(player, playerStat);
+            caches.put(player.toString() + ":" + stat, playerStat);
             return playerStat.getRank();
         }
     }
@@ -94,20 +94,24 @@ public class StatsManager extends AbstractStatsManager
     @Override
     public Leaderboard getLeaderboard(String stat)
     {
-        if (leaderboard == null)
+        if (leaderboardCaches.containsKey(stat))
         {
-            Object response = RestAPI.getInstance().sendRequest("statistics/leaderboard", new Request().addProperty("category", game).addProperty("key", stat), new TypeToken<List<LeaderboradElement>>() {}.getType(), "POST");
+            Object response = RestAPI.getInstance().sendRequest("statistics/leaderboard", new Request().addProperty("category", game).addProperty("key", stat), new TypeToken<List<LeaderboradElement>>()
+            {
+            }.getType(), "POST");
 
             if (response instanceof List && ((List) response).size() == 3)
             {
                 List<LeaderboradElement> responseList = (List<LeaderboradElement>) response;
-                return new Leaderboard(new PlayerStat(game, stat).readResponse(responseList.get(0)), new PlayerStat(game, stat).readResponse(responseList.get(1)), new PlayerStat(game, stat).readResponse(responseList.get(2)));
-            }
-            else if (response instanceof ErrorResponse)
+                Leaderboard leaderboard = new Leaderboard(new PlayerStat(game, stat).readResponse(responseList.get(0)), new PlayerStat(game, stat).readResponse(responseList.get(1)), new PlayerStat(game, stat).readResponse(responseList.get(2)));
+                leaderboardCaches.put(stat, leaderboard);
+                return leaderboard;
+            } else if (response instanceof ErrorResponse)
                 logger.warning(String.format("Error during recuperation of leaderboard for category %s and key %s (response: %s)", game, stat, response.toString()));
+
         }
 
-        return leaderboard;
+        return leaderboardCaches.get(stat);
     }
 
     @Override
