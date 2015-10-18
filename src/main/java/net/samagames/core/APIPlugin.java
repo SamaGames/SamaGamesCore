@@ -172,7 +172,8 @@ public class APIPlugin extends JavaPlugin implements Listener
         api.getJoinManager().registerHandler(debugListener, 0);
 
         // Web
-        api.getJoinManager().registerHandler(new RestListener(this), 1000);
+        getServer().getPluginManager().registerEvents(new RestListener(this), this);
+        //api.getJoinManager().registerHandler(new RestListener(this), 1000);
 
         //Invisible fix
         api.getPlugin().getServer().getPluginManager().registerEvents(new InvisiblePlayerFixListener(this), this);

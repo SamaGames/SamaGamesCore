@@ -11,6 +11,10 @@ import net.samagames.restfull.response.LoginResponse;
 import net.samagames.restfull.response.Response;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 
 import java.util.UUID;
 
@@ -21,7 +25,7 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class RestListener implements IJoinHandler
+public class RestListener implements Listener
 {
     private final PlayerDataManager playerDataManager;
     private final APIPlugin pluginAPI;
@@ -33,7 +37,12 @@ public class RestListener implements IJoinHandler
         playerDataManager = (PlayerDataManager) pluginAPI.getAPI().getPlayerManager();
     }
 
-    @Override
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerPreJoin(AsyncPlayerPreLoginEvent event)
+    {
+        onLogin(event.getUniqueId(), event.getName());
+    }
+
     public void onLogin(UUID player, String username)
     {
         playerDataManager.load(player, new RestPlayerData(player, pluginAPI.getAPI(), playerDataManager), true);
