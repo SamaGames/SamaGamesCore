@@ -101,7 +101,7 @@ public class ApiImplementation extends SamaGamesAPI
         uuidTranslator = new UUIDTranslator(plugin, this);
         proxyDataManager = new ProxyDataManagerImpl(this);
         partiesManager = new PartiesManager(this);
-        permissionsManager = new PermissionsManager();
+        permissionsManager = new PermissionsManager(plugin);
         friendsManager = new FriendsManagement(this);
 
         // Init Group change listener

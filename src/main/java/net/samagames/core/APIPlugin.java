@@ -2,6 +2,7 @@ package net.samagames.core;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import net.samagames.api.permissions.rawtypes.ICacheHandler;
 import net.samagames.core.database.DatabaseConnector;
 import net.samagames.core.database.RedisServer;
 import net.samagames.core.hook.RestCacheLoader;
@@ -23,6 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.Jedis;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
@@ -52,6 +54,7 @@ public class APIPlugin extends JavaPlugin implements Listener
     private String joinPermission = null;
     private ScheduledExecutorService executor;
     private DebugListener debugListener;
+    private ICacheHandler cacheHandler;
 
     private NicknamePacketListener nicknamePacketListener;
 
@@ -111,6 +114,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         if (!conf.exists())
         {
             log(Level.SEVERE, "Cannot find database configuration. Stopping!");
+            this.setEnabled(false);
             Bukkit.shutdown();
             return;
         } else
@@ -127,6 +131,35 @@ public class APIPlugin extends JavaPlugin implements Listener
             String restPass = dataYML.getString("restfull-pass", "test");
             RestAPI.getInstance().setup("http://" + restIP + ":" + restPort + "/", restUser, restPass);
             databaseConnector = new DatabaseConnector(this, bungee);
+            this.cacheHandler = new ICacheHandler()
+            {
+                @Override
+                public void set(String key, String value) throws IOException
+                {
+                    Jedis jedis = databaseConnector.getBungeeResource();
+                    jedis.set(key, value);
+                    jedis.expire(key, 86400); // Expire every 24h
+                    jedis.close();
+                }
+
+                @Override
+                public String get(String key) throws IOException
+                {
+                    Jedis jedis = databaseConnector.getBungeeResource();
+                    String result = jedis.get(key);
+                    jedis.close();
+                    return result;
+                }
+
+                @Override
+                public boolean exist(String key) throws IOException
+                {
+                    Jedis jedis = databaseConnector.getBungeeResource();
+                    boolean result = jedis.exists(key);
+                    jedis.close();
+                    return result;
+                }
+            };
 
         }
 
@@ -323,5 +356,10 @@ public class APIPlugin extends JavaPlugin implements Listener
     public void onChunkUnload(final ChunkUnloadEvent event)
     {
         event.setCancelled(true);
+    }
+
+    public ICacheHandler getCacheHandler()
+    {
+        return cacheHandler;
     }
 }

@@ -32,17 +32,17 @@ public abstract class BasicPermissionManager implements RestfullPlugin, IPermiss
     private final HashMap<UUID, VirtualPlayer> players = new HashMap<>();
     final PermissionsAPI api;
 
-    BasicPermissionManager()
+    BasicPermissionManager(APIPlugin plugin)
     {
         isLobby = SamaGamesAPI.get().getServerName().startsWith("Hub");
         Bukkit.getLogger().info("Lobby mode was set to : " + isLobby);
 
         logInfo(">> LOADING PERMISSIONS API !");
-        api = new PermissionsAPI(this, "Joueur").adaptator(RestfullManager.class).enableRefresh();
+        api = new PermissionsAPI(this, "Joueur").setCacheManager(plugin.getCacheHandler()).adaptator(RestfullManager.class).enableRefresh();
         api.getManager().refreshGroups();
         logInfo(">> LOADED PERMISSIONS API !");
 
-        Bukkit.getServer().getPluginManager().registerEvents(new PlayerListeners(this), APIPlugin.getInstance());
+        plugin.getServer().getPluginManager().registerEvents(new PlayerListeners(this), APIPlugin.getInstance());
     }
 
     public void disable()

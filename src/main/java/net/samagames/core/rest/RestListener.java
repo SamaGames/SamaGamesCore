@@ -36,21 +36,9 @@ public class RestListener implements IJoinHandler
     @Override
     public void onLogin(UUID player, String username)
     {
-        Object response = api.sendRequest("player/login", new Request().addProperty("playerUUID", player).addProperty("playerName", username == null ? "null" : username), LoginResponse.class, "POST");
-
-        if (response instanceof LoginResponse)
-        {
-            LoginResponse repLogin = (LoginResponse) response;
-            RestPlayerData data = new RestPlayerData(player, pluginAPI.getAPI(), playerDataManager);
-            data.onLogin(repLogin);
-            playerDataManager.load(player, data, true);
-            IManager permissionManager = pluginAPI.getAPI().getPermissionsManager().getApi().getManager();
-            if (permissionManager instanceof RestfullManager)
-            {
-                ((RestfullManager) permissionManager).loadUser(repLogin);
-            }
-        }
-        else
-            Bukkit.getLogger().warning("Error in request player/login (" + response + ")");
+        playerDataManager.load(player, new RestPlayerData(player, pluginAPI.getAPI(), playerDataManager), true);
+        IManager permissionManager = pluginAPI.getAPI().getPermissionsManager().getApi().getManager();
+        if (permissionManager instanceof RestfullManager)
+            ((RestfullManager) permissionManager).loadUser(player);
     }
 }

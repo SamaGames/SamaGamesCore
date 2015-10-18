@@ -31,22 +31,6 @@ public class RestPlayerData extends PlayerData
         logger = api.getPlugin().getLogger();
     }
 
-    public void onLogin(LoginResponse response)
-    {
-        if (!playerID.equals(response.getUuid()))
-            return;
-
-        logger.info("Loading " + response);
-
-        if (response.getCoins() < 0)
-            this.set("coins", "0");
-
-        if (response.getStars() < 0)
-            this.set("coins", "0");
-        playerData.put("coins", String.valueOf(response.getCoins()));
-        playerData.put("stars", String.valueOf(response.getStars()));
-    }
-
     @Override
     public void updateData()
     {

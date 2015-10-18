@@ -1,6 +1,7 @@
 package net.samagames.core.api.permissions;
 
 import net.samagames.api.permissions.permissions.PermissionEntity;
+import net.samagames.core.APIPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
@@ -14,6 +15,11 @@ import java.util.UUID;
  */
 public class PermissionsManager extends BasicPermissionManager
 {
+
+    public PermissionsManager(APIPlugin plugin)
+    {
+        super(plugin);
+    }
 
     @Override
     public String getPrefix(PermissionEntity entity)
