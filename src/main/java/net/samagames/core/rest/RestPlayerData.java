@@ -182,6 +182,9 @@ public class RestPlayerData extends PlayerData
             String value = String.valueOf(coinsResponse.getCoins());
             playerData.put("coins", value);
             return value;
+        } else if (response instanceof ErrorResponse)
+        {
+            logger.warning("Can't manage coins of " + getEffectiveUUID() + " " + "(" + response + ")");
         }
         return "0";
     }
@@ -195,6 +198,9 @@ public class RestPlayerData extends PlayerData
             String value = String.valueOf(starsResponse.getStars());
             playerData.put("stars", value);
             return value;
+        } else if (response instanceof ErrorResponse)
+        {
+            logger.warning("Can't manage stars of " + getEffectiveUUID() + " " + "(" + response + ")");
         }
         return "0";
     }
