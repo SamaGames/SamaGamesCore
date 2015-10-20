@@ -54,9 +54,9 @@ public class TabsColorsListener extends APIListener
     public void onPlayerJoin(final PlayerJoinEvent event)
     {
         final Player p = event.getPlayer();
-        plugin.getNPCManager().addReceiver(event.getPlayer());
         manager.playerJoin(p); // Passer ça en sync si crash //
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            plugin.getNPCManager().addReceiver(event.getPlayer());
             PermissionUser user = SamaGamesAPI.get().getPermissionsManager().getApi().getUser(p.getUniqueId());
             final String display = SamaGamesAPI.get().getPermissionsManager().getDisplay(user);
             String prefix = SamaGamesAPI.get().getPermissionsManager().getPrefix(user);

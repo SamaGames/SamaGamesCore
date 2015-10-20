@@ -62,6 +62,7 @@ public class TeamManager
         }
 
         TeamHandler.VTeam npc = teamHandler.createNewTeam("NPC", "");
+        npc.setRealName("NPC");
         npc.setNameVisible(ScoreboardTeamBase.EnumNameTagVisibility.NEVER);
         APIPlugin.log("[TeamRegister] Team NPC ajoutée  --> " + npc.getPrefix() + " / " + npc);
 
@@ -69,7 +70,10 @@ public class TeamManager
 
     private String getTeamName(PermissionGroup group)
     {
-        String teamName = ((group.getLadder()< 10)?"0":"") + group.getLadder() + group.getGroupName();
+        String teamName = ((group.getLadder()< 1000)?"0":"") +
+                ((group.getLadder()< 100)?"0":"") +
+                ((group.getLadder()< 10)?"0":"") +
+                group.getLadder() + group.getGroupName();
         return teamName.substring(0, Math.min(teamName.length(), 16));
     }
 
