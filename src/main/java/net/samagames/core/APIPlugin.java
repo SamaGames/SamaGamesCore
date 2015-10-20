@@ -367,7 +367,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         return cacheHandler;
     }
 
-    public NPCManager getNpcManager() {
+    public NPCManager getNPCManager() {
         return npcManager;
     }
 }

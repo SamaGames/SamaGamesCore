@@ -33,6 +33,7 @@ import net.samagames.core.api.stats.StatsManager;
 import net.samagames.core.listeners.GlobalChannelHandler;
 import net.samagames.core.rest.AchievementManagerRest;
 import net.samagames.tools.BarAPI.BarAPI;
+import net.samagames.tools.npc.NPCManager;
 import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
 
@@ -117,6 +118,11 @@ public class ApiImplementation extends SamaGamesAPI
     public IPermissionsManager getPermissionsManager()
     {
         return permissionsManager;
+    }
+
+    @Override
+    public NPCManager getNPCManager() {
+        return plugin.getNPCManager();
     }
 
     @Override

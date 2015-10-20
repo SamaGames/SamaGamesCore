@@ -4,8 +4,6 @@ import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.tabcolors.TeamManager;
 import net.samagames.api.permissions.permissions.PermissionUser;
-import net.samagames.tools.CallBack;
-import net.samagames.tools.npc.NPCEntity;
 import net.samagames.tools.scoreboards.TeamHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -33,7 +31,7 @@ public class TabsColorsListener extends APIListener
 
         manager = new TeamManager(plugin);
 
-        plugin.getNpcManager().setScoreBoardRegister((data, error) -> {
+        plugin.getNPCManager().setScoreBoardRegister((data, error) -> {
             TeamHandler.VTeam npc = manager.getTeamHandler().getTeamByName("NPC");
             if(npc != null)
             {
@@ -56,7 +54,7 @@ public class TabsColorsListener extends APIListener
     public void onPlayerJoin(final PlayerJoinEvent event)
     {
         final Player p = event.getPlayer();
-        plugin.getNpcManager().addReceiver(event.getPlayer());
+        plugin.getNPCManager().addReceiver(event.getPlayer());
         manager.playerJoin(p); // Passer ça en sync si crash //
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             PermissionUser user = SamaGamesAPI.get().getPermissionsManager().getApi().getUser(p.getUniqueId());
@@ -74,7 +72,7 @@ public class TabsColorsListener extends APIListener
     public void playerQuit(final PlayerQuitEvent event)
     {
         event.setQuitMessage("");
-        plugin.getNpcManager().removeReceiver(event.getPlayer());
+        plugin.getNPCManager().removeReceiver(event.getPlayer());
         manager.playerLeave(event.getPlayer());
         event.getPlayer().setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
     }
@@ -83,7 +81,7 @@ public class TabsColorsListener extends APIListener
     public void playerKick(final PlayerKickEvent event)
     {
         event.setLeaveMessage("");
-        plugin.getNpcManager().removeReceiver(event.getPlayer());
+        plugin.getNPCManager().removeReceiver(event.getPlayer());
         manager.playerLeave(event.getPlayer());
         event.getPlayer().setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
     }
