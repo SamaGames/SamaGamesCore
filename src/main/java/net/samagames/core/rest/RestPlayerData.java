@@ -175,7 +175,7 @@ public class RestPlayerData extends PlayerData
 
     private String getCoinsInternal()
     {
-        Response response = (Response) RestAPI.getInstance().sendRequest("economy/coins", new Request().addProperty("playerUUID", playerID), StarsResponse.class, "POST");
+        Response response = (Response) RestAPI.getInstance().sendRequest("economy/coins", new Request().addProperty("playerUUID", playerID), CoinsResponse.class, "POST");
         if (response instanceof CoinsResponse)
         {
             CoinsResponse coinsResponse = (CoinsResponse) response;
