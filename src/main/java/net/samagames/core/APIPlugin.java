@@ -9,6 +9,7 @@ import net.samagames.core.hook.RestCacheLoader;
 import net.samagames.core.listeners.*;
 import net.samagames.core.rest.RestListener;
 import net.samagames.restfull.RestAPI;
+import net.samagames.tools.npc.NPCManager;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -57,6 +58,7 @@ public class APIPlugin extends JavaPlugin implements Listener
     private ICacheHandler cacheHandler;
 
     private NicknamePacketListener nicknamePacketListener;
+    private NPCManager npcManager;
 
 
     public static APIPlugin getInstance()
@@ -182,6 +184,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         //Nickname
 
         nicknamePacketListener = new NicknamePacketListener(this);
+        npcManager = new NPCManager(api);
 
         Bukkit.getPluginManager().registerEvents(new PlayerDataListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ChatFormatter(this), this);
@@ -362,5 +365,9 @@ public class APIPlugin extends JavaPlugin implements Listener
     public ICacheHandler getCacheHandler()
     {
         return cacheHandler;
+    }
+
+    public NPCManager getNpcManager() {
+        return npcManager;
     }
 }

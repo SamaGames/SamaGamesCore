@@ -1,5 +1,6 @@
 package net.samagames.core.tabcolors;
 
+import net.minecraft.server.v1_8_R3.ScoreboardTeamBase;
 import net.samagames.api.permissions.IPermissionsManager;
 import net.samagames.api.permissions.permissions.PermissionGroup;
 import net.samagames.api.permissions.permissions.PermissionUser;
@@ -59,6 +60,11 @@ public class TeamManager
             teamHandler.addTeam(vt);
             APIPlugin.log("[TeamRegister] Team " + teamName + " ajoutée  --> " + vt.getPrefix() + " / " + vt);
         }
+
+        TeamHandler.VTeam npc = teamHandler.createNewTeam("NPC", "");
+        npc.setNameVisible(ScoreboardTeamBase.EnumNameTagVisibility.NEVER);
+        APIPlugin.log("[TeamRegister] Team NPC ajoutée  --> " + npc.getPrefix() + " / " + npc);
+
     }
 
     private String getTeamName(PermissionGroup group)
@@ -92,6 +98,11 @@ public class TeamManager
 
             teamHandler.addPlayerToTeam(p, vtt);
         });
+    }
+
+    public TeamHandler getTeamHandler()
+    {
+        return teamHandler;
     }
 
 }

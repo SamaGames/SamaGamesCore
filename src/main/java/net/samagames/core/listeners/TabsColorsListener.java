@@ -4,6 +4,9 @@ import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.tabcolors.TeamManager;
 import net.samagames.api.permissions.permissions.PermissionUser;
+import net.samagames.tools.CallBack;
+import net.samagames.tools.npc.NPCEntity;
+import net.samagames.tools.scoreboards.TeamHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -29,6 +32,14 @@ public class TabsColorsListener extends APIListener
         super(plugin);
 
         manager = new TeamManager(plugin);
+
+        plugin.getNpcManager().setScoreBoardRegister((data, error) -> {
+            TeamHandler.VTeam npc = manager.getTeamHandler().getTeamByName("NPC");
+            if(npc != null)
+            {
+                manager.getTeamHandler().addPlayerToTeam(data.getName(), npc);
+            }
+        });
     }
 
     private String replaceColors(String message)
