@@ -9,25 +9,33 @@ import net.samagames.core.hook.RestCacheLoader;
 import net.samagames.core.listeners.*;
 import net.samagames.core.rest.RestListener;
 import net.samagames.restfull.RestAPI;
+import net.samagames.tools.Reflection;
 import net.samagames.tools.npc.NPCManager;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.permissions.DefaultPermissions;
 import redis.clients.jedis.Jedis;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
@@ -59,6 +67,7 @@ public class APIPlugin extends JavaPlugin implements Listener
 
     private NicknamePacketListener nicknamePacketListener;
     private NPCManager npcManager;
+    private BukkitTask startTimer;
 
 
     public static APIPlugin getInstance()
@@ -79,6 +88,13 @@ public class APIPlugin extends JavaPlugin implements Listener
     public ApiImplementation getAPI()
     {
         return api;
+    }
+
+    private void removeCommand(String str) throws NoSuchFieldException, IllegalAccessException
+    {
+        SimpleCommandMap scm = ((CraftServer)Bukkit.getServer()).getCommandMap();
+        Map knownCommands = (Map) Reflection.getValue(scm, true, "knownCommands");
+        knownCommands.remove(str);
     }
 
     public void onEnable()
@@ -224,6 +240,7 @@ public class APIPlugin extends JavaPlugin implements Listener
 
         registerServer();
         allowJoin();
+        this.startTimer = getServer().getScheduler().runTaskTimer(this, this::postInit, 20L, 20L);
     }
 
     public DebugListener getDebugListener()
@@ -234,6 +251,22 @@ public class APIPlugin extends JavaPlugin implements Listener
     public ScheduledExecutorService getExecutor()
     {
         return executor;
+    }
+
+    private void postInit()
+    {
+        this.startTimer.cancel();
+        try
+        {
+            log("Patching /me and /tell...");
+            removeCommand("minecraft:me");
+            removeCommand("minecraft:tell");
+            log("Patched /me and /tell");
+        } catch (ReflectiveOperationException e)
+        {
+            log("Patching error");
+            e.printStackTrace();
+        }
     }
 
     public void onDisable()
