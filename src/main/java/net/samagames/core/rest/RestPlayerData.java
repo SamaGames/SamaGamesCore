@@ -234,7 +234,11 @@ public class RestPlayerData extends PlayerData
         if (shopCache.containsKey(cacheName))
             shopCache.get(cacheName).getValue().add(value);
         else
+        {
             getShopData(category, key);
+            shopCache.get(cacheName).getValue().add(value);
+        }
+
         Object response = RestAPI.getInstance().sendRequest("player/shop", new Request().addProperty("playerUUID", playerID).addProperty("category", category).addProperty("key", key).addProperty("value", value), StatusResponse.class, "PUT");
         if (!(response instanceof StatusResponse) || !((StatusResponse) response).getStatus())
             logger.warning("cannot set player/shop (" + response + ")");
