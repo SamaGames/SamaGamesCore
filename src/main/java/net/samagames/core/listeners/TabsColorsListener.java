@@ -56,6 +56,7 @@ public class TabsColorsListener extends APIListener
     public void onPlayerJoin(final PlayerJoinEvent event)
     {
         final Player p = event.getPlayer();
+        plugin.getNpcManager().addReceiver(event.getPlayer());
         manager.playerJoin(p); // Passer ça en sync si crash //
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             PermissionUser user = SamaGamesAPI.get().getPermissionsManager().getApi().getUser(p.getUniqueId());
@@ -73,6 +74,7 @@ public class TabsColorsListener extends APIListener
     public void playerQuit(final PlayerQuitEvent event)
     {
         event.setQuitMessage("");
+        plugin.getNpcManager().removeReceiver(event.getPlayer());
         manager.playerLeave(event.getPlayer());
         event.getPlayer().setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
     }
@@ -81,6 +83,7 @@ public class TabsColorsListener extends APIListener
     public void playerKick(final PlayerKickEvent event)
     {
         event.setLeaveMessage("");
+        plugin.getNpcManager().removeReceiver(event.getPlayer());
         manager.playerLeave(event.getPlayer());
         event.getPlayer().setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
     }
