@@ -31,6 +31,7 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver
     {
         player.sendMessage(ChatColor.GOLD + "Vous avez rejoint cette arène en mode modération.");
         player.setGameMode(GameMode.SPECTATOR);
+
         if (teleportTargets.containsKey(player.getUniqueId()))
         {
             UUID target = teleportTargets.get(player.getUniqueId());
@@ -39,6 +40,9 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver
                 player.teleport(tar);
             teleportTargets.remove(player.getUniqueId());
         }
+
+        for(Player gamePlayer : Bukkit.getOnlinePlayers())
+            gamePlayer.hidePlayer(player);
     }
 
     @Override
