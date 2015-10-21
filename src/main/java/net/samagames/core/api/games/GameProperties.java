@@ -58,7 +58,7 @@ class GameProperties implements IGameProperties
         {
             e.printStackTrace();
             APIPlugin.log(Level.SEVERE, "Can't open the game properties file. Abort start!");
-
+            APIPlugin.getInstance().disable();
             Bukkit.shutdown();
         }
     }

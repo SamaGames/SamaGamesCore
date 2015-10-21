@@ -133,7 +133,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         {
             log(Level.SEVERE, "Cannot find database configuration. Stopping!");
             this.setEnabled(false);
-            Bukkit.shutdown();
+            this.getServer().shutdown();
             return;
         } else
         {
@@ -243,6 +243,11 @@ public class APIPlugin extends JavaPlugin implements Listener
         this.startTimer = getServer().getScheduler().runTaskTimer(this, this::postInit, 20L, 20L);
     }
 
+    public void disable()
+    {
+        this.setEnabled(false);
+    }
+
     public DebugListener getDebugListener()
     {
         return debugListener;
@@ -282,7 +287,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         databaseConnector.killConnection();
         executor.shutdownNow();
         api.onShutdown();
-        Bukkit.getServer().shutdown();
+        getServer().shutdown();
     }
 
     public boolean canConnect(String ip)
