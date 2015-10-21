@@ -9,6 +9,7 @@ import net.samagames.core.api.games.themachine.CoherenceMachineImpl;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
+import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,8 +90,10 @@ public class GameManagerImpl implements IGameManager
 
         playersDisconnected.add(player.getUniqueId());
 
-        api.getBungeeResource().set("rejoin:" + player.getUniqueId(), api.getServerName());
-        api.getBungeeResource().expire("rejoin:" + player.getUniqueId(), maxReconnectTime * 60);
+        Jedis jedis = api.getBungeeResource();
+        jedis.set("rejoin:" + player.getUniqueId(), api.getServerName());
+        jedis.expire("rejoin:" + player.getUniqueId(), maxReconnectTime * 60);
+        jedis.close();
 
         playerReconnectedTimers.put(player.getUniqueId(), Bukkit.getScheduler().runTaskTimerAsynchronously(APIPlugin.getInstance(), new Runnable()
         {
