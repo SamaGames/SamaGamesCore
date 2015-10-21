@@ -259,7 +259,9 @@ public class APIPlugin extends JavaPlugin implements Listener
         try
         {
             log("Patching /me and /tell...");
+            removeCommand("me");
             removeCommand("minecraft:me");
+            removeCommand("tell");
             removeCommand("minecraft:tell");
             log("Patched /me and /tell");
         } catch (ReflectiveOperationException e)
