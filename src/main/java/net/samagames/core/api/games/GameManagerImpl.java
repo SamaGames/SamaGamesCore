@@ -118,17 +118,11 @@ public class GameManagerImpl implements IGameManager
                     if (playerReconnected == null)
                     {
                         GameManagerImpl.this.onPlayerReconnectTimeOut(player);
-                        BukkitTask task = playerReconnectedTimers.get(player.getUniqueId());
-                        if (task != null)
-                            task.cancel();
-                    }
-                    else
-                    {
-                        BukkitTask task = playerReconnectedTimers.get(player.getUniqueId());
-                        if (task != null)
-                            task.cancel();
                     }
 
+                    BukkitTask task = playerReconnectedTimers.get(player.getUniqueId());
+                    if (task != null)
+                        task.cancel();
                 }
 
                 before++;
@@ -144,6 +138,7 @@ public class GameManagerImpl implements IGameManager
     @Override
     public void onPlayerReconnect(Player player)
     {
+        game.handleReconnect(player);
         if (playerReconnectedTimers.containsKey(player.getUniqueId()))
         {
             BukkitTask task = playerReconnectedTimers.get(player.getUniqueId());
@@ -154,23 +149,12 @@ public class GameManagerImpl implements IGameManager
             playerReconnectedTimers.remove(player.getUniqueId());
         }
 
-        game.handleReconnect(player);
         refreshArena();
     }
 
     @Override
     public void onPlayerReconnectTimeOut(Player player)
     {
-        if (playerReconnectedTimers.containsKey(player.getUniqueId()))
-        {
-            BukkitTask task = playerReconnectedTimers.get(player.getUniqueId());
-
-            if (task != null)
-                task.cancel();
-
-            playerReconnectedTimers.remove(player.getUniqueId());
-        }
-
         game.handleReconnectTimeOut(player);
     }
 
