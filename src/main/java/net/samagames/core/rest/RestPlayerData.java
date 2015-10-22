@@ -133,8 +133,7 @@ public class RestPlayerData extends PlayerData
             playerData.put("settings."+key, value);
         }
 
-
-        api.getPubSub().send("playerDataChange", playerID + ":" + key + ":" + value);
+        api.getPubSub().send("playerDataChange", playerID + ":" + "settings." + key + ":" + value);
     }
 
     @Override
