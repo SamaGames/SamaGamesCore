@@ -62,14 +62,13 @@ public class RestPlayerData extends PlayerData
         return result;
     }
 
-
     private String getSetting(String key)
     {
         Response response = (Response) RestAPI.getInstance().sendRequest("player/setting", new Request().addProperty("playerUUID", playerID).addProperty("key", key), ValueResponse.class, "POST");
         if (response instanceof ValueResponse)
         {
             String value = ((ValueResponse) response).getValue();
-            playerData.put(key, value);
+            playerData.put("settings."+key, value);
             return value;
         }
         return null;
@@ -126,7 +125,13 @@ public class RestPlayerData extends PlayerData
             isErrored = !((StatusResponse) response).getStatus();
 
         if (isErrored)
+        {
             logger.warning("Cannot set key " + key + " with value " + value + "for uuid " + playerID);
+        }else
+        {
+            playerData.put("settings."+key, value);
+        }
+
 
         api.getPubSub().send("playerDataChange", playerID + ":" + key + ":" + value);
     }
