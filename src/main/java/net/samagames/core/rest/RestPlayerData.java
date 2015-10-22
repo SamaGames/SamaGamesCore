@@ -68,6 +68,7 @@ public class RestPlayerData extends PlayerData
         if (response instanceof ValueResponse)
         {
             String value = ((ValueResponse) response).getValue();
+            if(value == null)value = "false";
             playerData.put("settings."+key, value);
             return value;
         }
