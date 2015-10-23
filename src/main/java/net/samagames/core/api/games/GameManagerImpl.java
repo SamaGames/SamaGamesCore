@@ -90,12 +90,17 @@ public class GameManagerImpl implements IGameManager
 
         playersDisconnected.add(player.getUniqueId());
 
+        long startTime = game.getStartTime();
+        int diff = (int) (System.currentTimeMillis() - startTime);
+        if (diff > (maxReconnectTime * 60000))
+            return;
+
         Jedis jedis = api.getBungeeResource();
         jedis.set("rejoin:" + player.getUniqueId(), api.getServerName());
-        jedis.expire("rejoin:" + player.getUniqueId(), maxReconnectTime * 60);
+        jedis.expire("rejoin:" + player.getUniqueId(), (diff / 1000));
         jedis.close();
 
-        playerReconnectedTimers.put(player.getUniqueId(), Bukkit.getScheduler().runTaskTimerAsynchronously(APIPlugin.getInstance(), new Runnable()
+        playerReconnectedTimers.put(player.getUniqueId(), Bukkit.getScheduler().runTaskTimer(APIPlugin.getInstance(), new Runnable()
         {
             int before;
             int now;
@@ -120,7 +125,7 @@ public class GameManagerImpl implements IGameManager
                         GameManagerImpl.this.onPlayerReconnectTimeOut(player);
                     }
 
-                    BukkitTask task = playerReconnectedTimers.get(player.getUniqueId());
+                    BukkitTask task = playerReconnectedTimers.remove(player.getUniqueId());
                     if (task != null)
                         task.cancel();
                 }
