@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver
 {
@@ -51,8 +52,9 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver
         String[] args = StringUtils.split(packet, " ");
         String id = args[1];
         UUID uuid = UUID.fromString(id);
+        boolean isModo = SamaGamesAPI.get().getPermissionsManager().hasPermission(uuid, "mod.tp");
 
-        if (SamaGamesAPI.get().getPermissionsManager().hasPermission(uuid, "mod.tp"))
+        if (isModo)
             manager.addModerator(uuid);
 
         if (packet.startsWith("teleport"))
@@ -60,7 +62,7 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver
             try
             {
                 UUID target = UUID.fromString(args[2]);
-                if (SamaGamesAPI.get().getPermissionsManager().hasPermission(uuid, "mod.tp"))
+                if (isModo)
                 {
                     teleportTargets.put(uuid, target);
                 }
@@ -69,6 +71,7 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver
             }
         }
 
-        api.getProxyDataManager().getProxiedPlayer(uuid).connect(SamaGamesAPI.get().getServerName());
+        //On attend un peu avant de tp
+        api.getPlugin().getExecutor().schedule(() -> api.getProxyDataManager().getProxiedPlayer(uuid).connect(SamaGamesAPI.get().getServerName()), 100, TimeUnit.MILLISECONDS);
     }
 }

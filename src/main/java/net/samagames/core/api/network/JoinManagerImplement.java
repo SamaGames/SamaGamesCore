@@ -200,10 +200,15 @@ public class JoinManagerImplement implements IJoinManager
     public void onLogout(PlayerQuitEvent event)
     {
         if (moderatorsExpected.contains(event.getPlayer().getUniqueId()))
+        {
             moderatorsExpected.remove(event.getPlayer().getUniqueId());
+            return;
+        }
 
         for (IJoinHandler handler : handlerTreeMap.values())
+        {
             handler.onLogout(event.getPlayer());
+        }
 
         APIPlugin.getInstance().getExecutor().execute(() -> {
             Jedis jedis = SamaGamesAPI.get().getBungeeResource();
