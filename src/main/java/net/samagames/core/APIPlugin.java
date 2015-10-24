@@ -336,23 +336,19 @@ public class APIPlugin extends JavaPlugin implements Listener
 
 
             Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
-                Jedis jedis = databaseConnector.getBungeeResource();
-                jedis.hset("servers", bungeename, this.getServer().getIp() + ":" + this.getServer().getPort());
-                jedis.close();
-
                 try
                 {
-                    for (Player player : Bukkit.getOnlinePlayers())
-                    {
-                        jedis.sadd("connectedonserv:" + bungeename, player.getUniqueId().toString());
-                    }
-                } catch (Exception ignored)
+                    Jedis jedis = databaseConnector.getBungeeResource();
+                    jedis.hset("servers", bungeename, this.getServer().getIp() + ":" + this.getServer().getPort());
+                    jedis.close();
+                }catch (Exception e)
                 {
+                    e.printStackTrace();
                 }
 
-                api.getPubSub().send("servers", "heartbeat " + bungeename + " " + this.getServer().getIp() + " " + this.getServer().getPort());
+                api.getPubSub().send("servers", "heartbeat " + getServerName() + " " + this.getServer().getIp() + " " + this.getServer().getPort());
 
-            }, 30 * 20, 30 * 20);
+            }, 3 * 20, 30 * 20);
         } catch (Exception ignore)
         {
             ignore.printStackTrace();

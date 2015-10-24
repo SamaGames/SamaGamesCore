@@ -49,16 +49,16 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver
     @Override
     public void receive(String channel, String packet)
     {
-        String[] args = StringUtils.split(packet, " ");
-        String id = args[1];
-        UUID uuid = UUID.fromString(id);
-        boolean isModo = SamaGamesAPI.get().getPermissionsManager().hasPermission(uuid, "mod.tp");
-
-        if (isModo)
-            manager.addModerator(uuid);
-
         if (packet.startsWith("teleport"))
         {
+            String[] args = StringUtils.split(packet, " ");
+            String id = args[1];
+            UUID uuid = UUID.fromString(id);
+            boolean isModo = SamaGamesAPI.get().getPermissionsManager().hasPermission(uuid, "mod.tp");
+
+            if (isModo)
+                manager.addModerator(uuid);
+
             try
             {
                 UUID target = UUID.fromString(args[2]);
@@ -69,9 +69,10 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver
             } catch (Exception ignored)
             {
             }
-        }
 
-        //On attend un peu avant de tp
-        api.getPlugin().getExecutor().schedule(() -> api.getProxyDataManager().getProxiedPlayer(uuid).connect(SamaGamesAPI.get().getServerName()), 100, TimeUnit.MILLISECONDS);
+
+            //On attend un peu avant de tp
+            api.getPlugin().getExecutor().schedule(() -> api.getProxyDataManager().getProxiedPlayer(uuid).connect(SamaGamesAPI.get().getServerName()), 100, TimeUnit.MILLISECONDS);
+        }
     }
 }
