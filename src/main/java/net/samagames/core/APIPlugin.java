@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 /**
@@ -335,20 +336,18 @@ public class APIPlugin extends JavaPlugin implements Listener
             api.getPubSub().send("servers", "heartbeat " + bungeename + " " + this.getServer().getIp() + " " + this.getServer().getPort());
 
 
-            Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
-                try
-                {
+            getExecutor().scheduleAtFixedRate(() -> {
+                try {
                     Jedis jedis = databaseConnector.getBungeeResource();
-                    jedis.hset("servers", bungeename, this.getServer().getIp() + ":" + this.getServer().getPort());
+                    jedis.hset("servers", bungeename, getServer().getIp() + ":" + getServer().getPort());
                     jedis.close();
+
+                    api.getPubSub().send("servers", "heartbeat " + getServerName() + " " + getServer().getIp() + " " + getServer().getPort());
                 }catch (Exception e)
                 {
                     e.printStackTrace();
                 }
-
-                api.getPubSub().send("servers", "heartbeat " + getServerName() + " " + this.getServer().getIp() + " " + this.getServer().getPort());
-
-            }, 3 * 20, 30 * 20);
+            }, 30, 20, TimeUnit.SECONDS);
         } catch (Exception ignore)
         {
             ignore.printStackTrace();
