@@ -157,16 +157,6 @@ public class JoinManagerImplement implements IJoinManager
         if (moderatorsExpected.contains(player)) // On traite après
             return;
 
-        if (!playersExpected.contains(player))
-        {
-            JoinResponse response = requestJoin(event.getUniqueId(), true);
-            if (!response.isAllowed())
-            {
-                event.disallow(Result.KICK_OTHER, ChatColor.RED + response.getReason());
-                return;
-            }
-        }
-
         playersExpected.remove(player);
 
         for (IJoinHandler handler : handlerTreeMap.values())
