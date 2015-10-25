@@ -97,7 +97,7 @@ public class GameManagerImpl implements IGameManager
 
         Jedis jedis = api.getBungeeResource();
         jedis.set("rejoin:" + player.getUniqueId(), api.getServerName());
-        jedis.expire("rejoin:" + player.getUniqueId(), (diff / 1000));
+        jedis.expire("rejoin:" + player.getUniqueId(), (maxReconnectTime * 60) - (diff / 1000));
         jedis.close();
 
         playerReconnectedTimers.put(player.getUniqueId(), Bukkit.getScheduler().runTaskTimer(APIPlugin.getInstance(), new Runnable()
