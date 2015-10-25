@@ -6,6 +6,8 @@ import net.samagames.api.games.themachine.messages.Message;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.concurrent.TimeUnit;
+
 public class MessageManagerImpl implements IMessageManager
 {
     private final ICoherenceMachine machine;
@@ -63,7 +65,7 @@ public class MessageManagerImpl implements IMessageManager
     @Override
     public Message writePlayerDisconnected(Player player, int remainingTime)
     {
-        return new Message(ChatColor.RED + player.getName() + " s'est déconnecté ! Il a " + remainingTime + " minutes pour revenir.", this.machine.getGameTag()).displayToAll();
+        return new Message(ChatColor.RED + player.getName() + " s'est déconnecté ! Il a " + formatTime(remainingTime) + " pour revenir.", this.machine.getGameTag()).displayToAll();
     }
 
     @Override
@@ -82,5 +84,34 @@ public class MessageManagerImpl implements IMessageManager
     public Message getArenaFull()
     {
         return new Message(ChatColor.RED + "L'arène est pleine.");
+    }
+
+    private String formatTime(long time)
+    {
+        long days = TimeUnit.MILLISECONDS.toDays(time);
+        time -= TimeUnit.DAYS.toMillis(days);
+        long hours = TimeUnit.MILLISECONDS.toHours(time);
+        time -= TimeUnit.HOURS.toMillis(hours);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(time);
+        time -= TimeUnit.MINUTES.toMillis(minutes);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(time);
+
+        String ret = "";
+        if (days > 0)
+            ret += days + " jours ";
+
+        if (hours > 0)
+            ret += hours + " heures ";
+
+        if (minutes > 0)
+            ret += minutes + " minutes ";
+
+        if (seconds > 0)
+            ret += seconds + " secondes";
+
+        if (ret.isEmpty() && minutes == 0)
+            ret += "moins d'une minute";
+
+        return ret;
     }
 }
