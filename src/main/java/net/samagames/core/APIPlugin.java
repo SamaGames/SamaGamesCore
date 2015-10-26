@@ -345,7 +345,6 @@ public class APIPlugin extends JavaPlugin implements Listener
 
             api.getPubSub().send("servers", "heartbeat " + bungeename + " " + this.getServer().getIp() + " " + this.getServer().getPort());
 
-
             getExecutor().scheduleAtFixedRate(() -> {
                 try {
                     Jedis jedis = databaseConnector.getBungeeResource();
