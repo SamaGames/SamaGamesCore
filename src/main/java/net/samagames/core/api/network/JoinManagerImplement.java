@@ -13,13 +13,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import redis.clients.jedis.Jedis;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * How does that work ?
@@ -40,7 +38,7 @@ public class JoinManagerImplement implements IJoinManager
 {
 
     private final TreeMap<Integer, IJoinHandler> handlerTreeMap = new TreeMap<>();
-    private final HashSet<UUID> moderatorsExpected = new HashSet<>();
+    private final List<UUID> moderatorsExpected = new ArrayList<>();
     private final HashSet<UUID> playersExpected = new HashSet<>();
     private final boolean isPartyLimited;
 
@@ -170,7 +168,9 @@ public class JoinManagerImplement implements IJoinManager
         if (moderatorsExpected.contains(player.getUniqueId()))
         {
             for (IJoinHandler handler : handlerTreeMap.values())
+            {
                 handler.onModerationJoin(player);
+            }
 
             return;
         }
@@ -187,22 +187,33 @@ public class JoinManagerImplement implements IJoinManager
     }
 
     @EventHandler
-    public void onLogout(PlayerQuitEvent event)
+    public void onPlayerKick(PlayerKickEvent event)
     {
-        if (moderatorsExpected.contains(event.getPlayer().getUniqueId()))
+        onLogout(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onPlayerDisconnect(PlayerQuitEvent event)
+    {
+        onLogout(event.getPlayer());
+    }
+
+    public void onLogout(Player player)
+    {
+        if (moderatorsExpected.contains(player.getUniqueId()))
         {
-            moderatorsExpected.remove(event.getPlayer().getUniqueId());
+            moderatorsExpected.remove(player.getUniqueId());
             return;
         }
 
         for (IJoinHandler handler : handlerTreeMap.values())
         {
-            handler.onLogout(event.getPlayer());
+            handler.onLogout(player);
         }
 
         APIPlugin.getInstance().getExecutor().execute(() -> {
             Jedis jedis = SamaGamesAPI.get().getBungeeResource();
-            jedis.srem("connectedonserv:" + APIPlugin.getInstance().getServerName(), event.getPlayer().getUniqueId().toString());
+            jedis.srem("connectedonserv:" + APIPlugin.getInstance().getServerName(), player.getUniqueId().toString());
             jedis.close();
         });
     }

@@ -54,25 +54,20 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver
             String[] args = StringUtils.split(packet, " ");
             String id = args[1];
             UUID uuid = UUID.fromString(id);
-            boolean isModo = SamaGamesAPI.get().getPermissionsManager().hasPermission(uuid, "mod.tp");
-
-            if (isModo)
-                manager.addModerator(uuid);
+            manager.addModerator(uuid);
 
             try
             {
                 UUID target = UUID.fromString(args[2]);
-                if (isModo)
-                {
-                    teleportTargets.put(uuid, target);
-                }
+                teleportTargets.put(uuid, target);
+
             } catch (Exception ignored)
             {
             }
 
 
             //On attend un peu avant de tp
-            api.getPlugin().getExecutor().schedule(() -> api.getProxyDataManager().getProxiedPlayer(uuid).connect(SamaGamesAPI.get().getServerName()), 100, TimeUnit.MILLISECONDS);
+            api.getPlugin().getExecutor().schedule(() -> api.getProxyDataManager().getProxiedPlayer(uuid).connect(SamaGamesAPI.get().getServerName()), 50, TimeUnit.MILLISECONDS);
         }
     }
 }
