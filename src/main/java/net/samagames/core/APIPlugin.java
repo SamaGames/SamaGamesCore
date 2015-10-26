@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -69,6 +70,8 @@ public class APIPlugin extends JavaPlugin implements Listener
     private NicknamePacketListener nicknamePacketListener;
     private NPCManager npcManager;
     private BukkitTask startTimer;
+
+    private ChatHandleListener chatHandleListener;
 
 
     public static APIPlugin getInstance()
@@ -187,6 +190,8 @@ public class APIPlugin extends JavaPlugin implements Listener
         Loading listeners
 		 */
 
+        chatHandleListener = new ChatHandleListener(this);
+
         debugListener = new DebugListener();
         api.getJoinManager().registerHandler(debugListener, 0);
 
@@ -200,11 +205,16 @@ public class APIPlugin extends JavaPlugin implements Listener
         api.getPubSub().subscribe("*", debugListener);
         //Nickname
 
+        //Mute
+        api.getPubSub().subscribe("mute.add", chatHandleListener);
+        api.getPubSub().subscribe("mute.remove", chatHandleListener);
+
         nicknamePacketListener = new NicknamePacketListener(this);
         npcManager = new NPCManager(api);
 
         Bukkit.getPluginManager().registerEvents(new PlayerDataListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ChatFormatter(this), this);
+        Bukkit.getPluginManager().registerEvents(chatHandleListener, this);
         Bukkit.getPluginManager().registerEvents(new TabsColorsListener(this), this);
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "WDL|CONTROL");
         Bukkit.getMessenger().registerIncomingPluginChannel(this, "WDL|INIT", (s, player, bytes) -> {

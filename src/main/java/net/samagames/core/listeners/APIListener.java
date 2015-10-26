@@ -18,6 +18,6 @@ abstract class APIListener implements Listener
     APIListener(APIPlugin plugin)
     {
         this.plugin = plugin;
-        api = plugin.getAPI();
+        this.api = plugin.getAPI();
     }
 }
