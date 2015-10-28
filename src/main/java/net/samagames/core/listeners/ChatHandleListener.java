@@ -58,7 +58,7 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             AbstractPlayerData playerData = api.getPlayerManager().getPlayerData(event.getPlayer().getUniqueId());
             String isMute = playerData.get("redis.isMute");
-            if (isMute.equals("true")) {
+            if (isMute != null && isMute.equals("true")) {
                 Date expiration = new Date(Long.valueOf(playerData.get("redis.muteExpiration")));
                 String reason = playerData.get("redis.muteReason");
                 addMute(event.getPlayer().getUniqueId(), expiration, reason);
