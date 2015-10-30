@@ -97,12 +97,11 @@ public class JoinManagerImplement implements IJoinManager
         if (response.isAllowed())
         {
             members.removeAll(dontMove);
-            for (UUID player : members)
-            {
+            members.stream().filter(player -> Bukkit.getPlayer(player) == null).forEach(player -> {
                 playersExpected.add(player);
                 Bukkit.getScheduler().runTaskLater(APIPlugin.getInstance(), () -> playersExpected.remove(player), 20 * 15L);
                 SamaGamesAPI.get().getProxyDataManager().getProxiedPlayer(player).connect(SamaGamesAPI.get().getServerName());
-            }
+            });
 
             new Thread(() -> {
                 Jedis jedis = SamaGamesAPI.get().getBungeeResource();
@@ -154,6 +153,16 @@ public class JoinManagerImplement implements IJoinManager
 
         if (moderatorsExpected.contains(player)) // On traite après
             return;
+
+        if(!playersExpected.contains(player))
+        {
+            JoinResponse response = requestJoin(event.getUniqueId(), true);
+            if (!response.isAllowed())
+            {
+                event.disallow(Result.KICK_OTHER, ChatColor.RED + response.getReason());
+                return;
+            }
+        }
 
         playersExpected.remove(player);
 

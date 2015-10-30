@@ -49,12 +49,19 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver
     @Override
     public void receive(String channel, String packet)
     {
-        if (packet.startsWith("teleport"))
+        if(packet.startsWith("moderator"))
         {
             String[] args = StringUtils.split(packet, " ");
             String id = args[1];
             UUID uuid = UUID.fromString(id);
             manager.addModerator(uuid);
+        }
+
+        if (packet.startsWith("teleport"))
+        {
+            String[] args = StringUtils.split(packet, " ");
+            String id = args[1];
+            UUID uuid = UUID.fromString(id);
 
             try
             {
