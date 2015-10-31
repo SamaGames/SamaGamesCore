@@ -10,7 +10,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -33,6 +35,12 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver
         player.sendMessage(ChatColor.GOLD + "Vous avez rejoint cette arène en mode modération.");
         player.setGameMode(GameMode.SPECTATOR);
 
+        List<Player> players = new ArrayList<>();
+        players.addAll(Bukkit.getOnlinePlayers());
+        players.stream().filter(gamePlayer -> !gamePlayer.getName().equals(player.getName())).forEach(gamePlayer -> {
+            gamePlayer.hidePlayer(player);
+        });
+
         if (teleportTargets.containsKey(player.getUniqueId()))
         {
             UUID target = teleportTargets.get(player.getUniqueId());
@@ -41,9 +49,6 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver
                 player.teleport(tar);
             teleportTargets.remove(player.getUniqueId());
         }
-
-        for(Player gamePlayer : Bukkit.getOnlinePlayers())
-            gamePlayer.hidePlayer(player);
     }
 
     @Override
