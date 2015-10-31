@@ -74,7 +74,7 @@ public class DatabaseConnector
     private void connect()
     {
         JedisPoolConfig config = new JedisPoolConfig();
-        config.setMaxTotal(-1);
+        config.setMaxTotal(16);
         config.setJmxEnabled(false);
 
         this.cachePool = new JedisPool(config, this.bungee.getIp(), this.bungee.getPort(), 0, this.bungee.getPassword());

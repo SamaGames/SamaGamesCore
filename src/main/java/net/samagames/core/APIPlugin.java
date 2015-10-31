@@ -30,6 +30,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.permissions.DefaultPermissions;
 import redis.clients.jedis.Jedis;
+import sun.misc.GC;
 
 import java.io.File;
 import java.io.IOException;
@@ -335,11 +336,14 @@ public class APIPlugin extends JavaPlugin implements Listener
             return;
 
         log("Trying to register server to the proxy");
-        try
+        //now done by hydro
+        /*try
         {
             String bungeename = getServerName();
+
             Jedis rb_jedis = databaseConnector.getBungeeResource();
             rb_jedis.hset("servers", bungeename, this.getServer().getIp() + ":" + this.getServer().getPort());
+
             rb_jedis.close();
 
 
@@ -361,7 +365,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         {
             ignore.printStackTrace();
             return;
-        }
+        }*/
 
         serverRegistered = true;
     }
