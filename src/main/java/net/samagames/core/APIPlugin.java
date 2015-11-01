@@ -337,13 +337,12 @@ public class APIPlugin extends JavaPlugin implements Listener
 
         log("Trying to register server to the proxy");
         //now done by hydro
-        /*try
+        try
         {
             String bungeename = getServerName();
 
             Jedis rb_jedis = databaseConnector.getBungeeResource();
             rb_jedis.hset("servers", bungeename, this.getServer().getIp() + ":" + this.getServer().getPort());
-
             rb_jedis.close();
 
 
@@ -365,7 +364,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         {
             ignore.printStackTrace();
             return;
-        }*/
+        }
 
         serverRegistered = true;
     }
