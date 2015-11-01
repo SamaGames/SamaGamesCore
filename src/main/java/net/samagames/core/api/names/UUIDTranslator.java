@@ -83,7 +83,8 @@ public final class UUIDTranslator implements IUUIDTranslator
         }
 
         // Let's try Redis.
-        try (Jedis jedis = api.getBungeeResource())
+        Jedis jedis = api.getBungeeResource();
+        try
         {
             String stored = jedis.hget("uuid-cache", name.toLowerCase());
             if (stored != null)
@@ -99,13 +100,17 @@ public final class UUIDTranslator implements IUUIDTranslator
                 {
                     nameToUuidMap.put(name.toLowerCase(), entry);
                     uuidToNameMap.put(entry.getUuid(), entry);
+                    jedis.close();
                     return entry.getUuid();
                 }
             }
 
             // That didn't work. Let's ask Mojang.
             if (!allowMojangCheck)
+            {
+                jedis.close();
                 return null;
+            }
 
             Map<String, UUID> uuidMap1;
             try
@@ -114,6 +119,7 @@ public final class UUIDTranslator implements IUUIDTranslator
             } catch (Exception e)
             {
                 plugin.getLogger().log(Level.SEVERE, "Unable to fetch UUID from Mojang for " + name, e);
+                jedis.close();
                 return null;
             }
             for (Map.Entry<String, UUID> entry : uuidMap1.entrySet())
@@ -121,12 +127,15 @@ public final class UUIDTranslator implements IUUIDTranslator
                 if (entry.getKey().equalsIgnoreCase(name))
                 {
                     persistInfo(entry.getKey(), entry.getValue(), jedis);
+                    jedis.close();
                     return entry.getValue();
                 }
             }
         } catch (JedisException e)
         {
             plugin.getLogger().log(Level.SEVERE, "Unable to fetch UUID for " + name, e);
+        }finally {
+            jedis.close();
         }
 
         return null; // Nope, game over!
@@ -149,7 +158,8 @@ public final class UUIDTranslator implements IUUIDTranslator
         }
 
         // Okay, it wasn't locally cached. Let's try Redis.
-        try (Jedis jedis = api.getBungeeResource())
+        Jedis jedis = api.getBungeeResource();
+        try
         {
             String stored = jedis.hget("uuid-cache", uuid.toString());
             if (stored != null)
@@ -165,12 +175,16 @@ public final class UUIDTranslator implements IUUIDTranslator
                 {
                     nameToUuidMap.put(entry.getName().toLowerCase(), entry);
                     uuidToNameMap.put(uuid, entry);
+                    jedis.close();
                     return entry.getName();
                 }
             }
 
             if (!allowMojangCheck)
+            {
+                jedis.close();
                 return null;
+            }
 
             // That didn't work. Let's ask Mojang. This call may fail, because Mojang is insane.
             String name;
@@ -180,20 +194,26 @@ public final class UUIDTranslator implements IUUIDTranslator
             } catch (Exception e)
             {
                 plugin.getLogger().log(Level.SEVERE, "Unable to fetch name from Mojang for " + uuid);
+                jedis.close();
                 return null;
             }
 
             if (name != null)
             {
                 persistInfo(name, uuid, jedis);
+                jedis.close();
                 return name;
             }
 
+            jedis.close();
             return null;
         } catch (JedisException e)
         {
             plugin.getLogger().log(Level.SEVERE, "Unable to fetch name for " + uuid, e);
+            jedis.close();
             return null;
+        }finally {
+            jedis.close();
         }
     }
 

@@ -294,8 +294,8 @@ public class APIPlugin extends JavaPlugin implements Listener
         String bungeename = getServerName();
         Jedis rb_jedis = databaseConnector.getBungeeResource();
         rb_jedis.hdel("servers", bungeename);
-        api.getPubSub().send("servers", "stop " + bungeename);
         rb_jedis.close();
+        api.getPubSub().send("servers", "stop " + bungeename);
         nicknamePacketListener.close();
         databaseConnector.killConnection();
         executor.shutdownNow();

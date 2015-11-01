@@ -30,7 +30,10 @@ public class PartiesManager implements IPartiesManager
     {
         Jedis jedis = api.getBungeeResource();
         if (!jedis.exists("currentparty:" + player))
+        {
+            jedis.close();
             return null;
+        }
         String val = jedis.get("currentparty:" + player);
         jedis.close();
         return (val != null) ? UUID.fromString(val) : null;
