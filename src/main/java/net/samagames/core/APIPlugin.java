@@ -405,12 +405,6 @@ public class APIPlugin extends JavaPlugin implements Listener
         return databaseConnector;
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onChunkUnload(final ChunkUnloadEvent event)
-    {
-        event.setCancelled(true);
-    }
-
     public ICacheHandler getCacheHandler()
     {
         return cacheHandler;
