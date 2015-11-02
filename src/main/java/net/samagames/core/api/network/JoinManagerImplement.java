@@ -154,7 +154,7 @@ public class JoinManagerImplement implements IJoinManager
         if (moderatorsExpected.contains(player)) // On traite après
             return;
 
-        /*if(!playersExpected.contains(player))
+        if(!playersExpected.contains(player))
         {
             JoinResponse response = requestJoin(event.getUniqueId(), true);
             if (!response.isAllowed())
@@ -162,7 +162,7 @@ public class JoinManagerImplement implements IJoinManager
                 event.disallow(Result.KICK_OTHER, ChatColor.RED + response.getReason());
                 return;
             }
-        }*/
+        }
 
         playersExpected.remove(player);
 
