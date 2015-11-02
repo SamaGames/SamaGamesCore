@@ -100,7 +100,6 @@ public final class UUIDTranslator implements IUUIDTranslator
                 {
                     nameToUuidMap.put(name.toLowerCase(), entry);
                     uuidToNameMap.put(entry.getUuid(), entry);
-                    jedis.close();
                     return entry.getUuid();
                 }
             }
@@ -108,7 +107,6 @@ public final class UUIDTranslator implements IUUIDTranslator
             // That didn't work. Let's ask Mojang.
             if (!allowMojangCheck)
             {
-                jedis.close();
                 return null;
             }
 
@@ -119,7 +117,6 @@ public final class UUIDTranslator implements IUUIDTranslator
             } catch (Exception e)
             {
                 plugin.getLogger().log(Level.SEVERE, "Unable to fetch UUID from Mojang for " + name, e);
-                jedis.close();
                 return null;
             }
             for (Map.Entry<String, UUID> entry : uuidMap1.entrySet())
@@ -127,7 +124,6 @@ public final class UUIDTranslator implements IUUIDTranslator
                 if (entry.getKey().equalsIgnoreCase(name))
                 {
                     persistInfo(entry.getKey(), entry.getValue(), jedis);
-                    jedis.close();
                     return entry.getValue();
                 }
             }
@@ -175,14 +171,12 @@ public final class UUIDTranslator implements IUUIDTranslator
                 {
                     nameToUuidMap.put(entry.getName().toLowerCase(), entry);
                     uuidToNameMap.put(uuid, entry);
-                    jedis.close();
                     return entry.getName();
                 }
             }
 
             if (!allowMojangCheck)
             {
-                jedis.close();
                 return null;
             }
 
@@ -194,23 +188,18 @@ public final class UUIDTranslator implements IUUIDTranslator
             } catch (Exception e)
             {
                 plugin.getLogger().log(Level.SEVERE, "Unable to fetch name from Mojang for " + uuid);
-                jedis.close();
                 return null;
             }
 
             if (name != null)
             {
                 persistInfo(name, uuid, jedis);
-                jedis.close();
                 return name;
             }
-
-            jedis.close();
             return null;
         } catch (JedisException e)
         {
             plugin.getLogger().log(Level.SEVERE, "Unable to fetch name for " + uuid, e);
-            jedis.close();
             return null;
         }finally {
             jedis.close();
