@@ -231,4 +231,9 @@ public class JoinManagerImplement implements IJoinManager
     {
         moderatorsExpected.add(moderator);
     }
+
+    public List<UUID> getModeratorsExpected()
+    {
+        return moderatorsExpected;
+    }
 }

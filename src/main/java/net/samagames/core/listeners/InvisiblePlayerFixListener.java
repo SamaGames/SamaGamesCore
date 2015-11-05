@@ -31,12 +31,16 @@ public class InvisiblePlayerFixListener implements Listener
     @EventHandler
     public void onPlayerJoin(PlayerLoginEvent event)
     {
-        try{
-            sendPlayerToAll(event.getPlayer());
-            sendAllToPlayer(event.getPlayer());
-        }catch (Exception e)
+        //Don't force if player is hided moderator
+        if(!pluginAPI.getAPI().getJoinManager().getModeratorsExpected().contains(event.getPlayer().getUniqueId()))
         {
-            e.printStackTrace();
+            try{
+                sendPlayerToAll(event.getPlayer());
+                sendAllToPlayer(event.getPlayer());
+            }catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 
