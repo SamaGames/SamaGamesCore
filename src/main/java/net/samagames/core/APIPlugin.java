@@ -391,12 +391,12 @@ public class APIPlugin extends JavaPlugin implements Listener
             event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, "Vous n'avez pas la permission de rejoindre ce serveur.");
         }
 
-        /*if (!ipWhiteList.contains(event.getRealAddress().getHostAddress()))
+        if (!ipWhiteList.contains(event.getRealAddress().getHostAddress()))
         {
             event.setResult(PlayerLoginEvent.Result.KICK_WHITELIST);
             event.setKickMessage(ChatColor.RED + "Erreur de connexion vers le serveur... Merci de bien vouloir ré-essayer plus tard.");
             Bukkit.getLogger().log(Level.WARNING, "An user tried to connect from IP " + event.getRealAddress().getHostAddress());
-        }*/
+        }
     }
 
     public DatabaseConnector getDatabaseConnector()
