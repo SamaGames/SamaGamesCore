@@ -1,6 +1,7 @@
 package net.samagames.core.database;
 
 import net.samagames.core.APIPlugin;
+import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -64,11 +65,11 @@ public class DatabaseConnector
         }, 0, 10, TimeUnit.SECONDS);
         // Init du thread
 
-        /*if (keeper == null)
+        if (keeper == null)
         {
             keeper = new WhiteListRefreshTask(plugin, this);
             Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, keeper, 0, 30 * 20);
-        }*/
+        }
     }
 
     private void connect()
