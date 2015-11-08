@@ -21,6 +21,7 @@ public class GameManagerImpl implements IGameManager
 {
     private final ApiImplementation api;
 
+    private final ArrayList<GameHook> gameHooks;
     private final ArrayList<UUID> playersDisconnected;
     private final HashMap<UUID, Integer> playerDisconnectTime;
     private final HashMap<UUID, BukkitTask> playerReconnectedTimers;
@@ -33,6 +34,7 @@ public class GameManagerImpl implements IGameManager
         this.api = api;
         this.game = null;
 
+        this.gameHooks = new ArrayList<>();
         this.playersDisconnected = new ArrayList<>();
         this.playerDisconnectTime = new HashMap<>();
         this.playerReconnectedTimers = new HashMap<>();
@@ -59,6 +61,12 @@ public class GameManagerImpl implements IGameManager
         game.handlePostRegistration();
 
         APIPlugin.log(Level.INFO, "Registered game '" + game.getGameName() + "' successfuly!");
+    }
+
+    @Override
+    public void registerGameHook(GameHook gameHook)
+    {
+        this.gameHooks.add(gameHook);
     }
 
     @Override
@@ -100,28 +108,23 @@ public class GameManagerImpl implements IGameManager
         jedis.expire("rejoin:" + player.getUniqueId(), (maxReconnectTime * 60) - (diff / 1000));
         jedis.close();
 
-        playerReconnectedTimers.put(player.getUniqueId(), Bukkit.getScheduler().runTaskTimer(APIPlugin.getInstance(), new Runnable()
-        {
+        playerReconnectedTimers.put(player.getUniqueId(), Bukkit.getScheduler().runTaskTimer(APIPlugin.getInstance(), new Runnable() {
             int before;
             int now;
             boolean bool;
 
             @Override
-            public void run()
-            {
-                if (!bool)
-                {
+            public void run() {
+                if (!bool) {
                     if (GameManagerImpl.this.playerDisconnectTime.containsKey(player.getUniqueId()))
                         before = GameManagerImpl.this.playerDisconnectTime.get(player.getUniqueId());
 
                     bool = true;
                 }
 
-                if (before == GameManagerImpl.this.maxReconnectTime * 60 * 2 || now == GameManagerImpl.this.maxReconnectTime * 60)
-                {
+                if (before == GameManagerImpl.this.maxReconnectTime * 60 * 2 || now == GameManagerImpl.this.maxReconnectTime * 60) {
                     Player playerReconnected = Bukkit.getPlayer(player.getUniqueId());
-                    if (playerReconnected == null)
-                    {
+                    if (playerReconnected == null) {
                         GameManagerImpl.this.onPlayerReconnectTimeOut(player);
                     }
 
@@ -175,6 +178,18 @@ public class GameManagerImpl implements IGameManager
     public Game getGame()
     {
         return game;
+    }
+
+    @Override
+    public ArrayList<GameHook> getGameHooksByType(GameHook.Type type)
+    {
+        ArrayList<GameHook> temp = new ArrayList<>();
+
+        for (GameHook gameHook : this.gameHooks)
+            if (gameHook.getType() == type)
+                temp.add(gameHook);
+
+        return temp;
     }
 
     @Override
