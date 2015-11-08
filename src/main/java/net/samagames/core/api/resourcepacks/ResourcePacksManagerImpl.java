@@ -151,8 +151,11 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
         killers.clear();
     }
 
-    void removeKillerFor(UUID player)
-    {
-        killers.remove(player);
+    void removeKillerFor(UUID player) {
+        if (killers.containsKey(player))
+        {
+            killers.get(player).cancel();
+            killers.remove(player);
+        }
     }
 }

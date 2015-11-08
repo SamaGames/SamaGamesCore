@@ -25,6 +25,8 @@ class KillerTask extends BukkitRunnable
         this.player = player;
         this.callback = callback;
         this.impl = impl;
+
+        remaining = 60;
     }
 
     public void changeState(PacketPlayInResourcePackStatus.EnumResourcePackStatus state)
