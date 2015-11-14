@@ -128,18 +128,19 @@ public class JoinManagerImplement implements IJoinManager
         UUID party = SamaGamesAPI.get().getPartiesManager().getPlayerParty(player);
         if (party != null && isPartyLimited())
         {
-            if (!SamaGamesAPI.get().getPartiesManager().getLeader(party).equals(player))
+            /*if (!SamaGamesAPI.get().getPartiesManager().getLeader(party).equals(player))
             {
                 JoinResponse response = new JoinResponse();
                 response.disallow("Seul le chef de partie peur rejoindre un jeu.");
                 return response;
             } else
             {
-                HashSet<UUID> dontMove = new HashSet<>();
-                if (alreadyConnected)
-                    dontMove.add(player);
-                return requestPartyJoin(party, dontMove);
-            }
+
+            }*/
+            HashSet<UUID> dontMove = new HashSet<>();
+            if (alreadyConnected)
+                dontMove.add(player);
+            return requestPartyJoin(party, dontMove);
         }
 
         return requestSoloJoin(player);
