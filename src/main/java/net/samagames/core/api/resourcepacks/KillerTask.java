@@ -1,7 +1,9 @@
 package net.samagames.core.api.resourcepacks;
 
 import net.minecraft.server.v1_8_R3.PacketPlayInResourcePackStatus;
+import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.resourcepacks.IResourceCallback;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -42,7 +44,9 @@ class KillerTask extends BukkitRunnable
         {
             this.cancel();
             if (callback == null || callback.automaticKick(player))
-                player.kickPlayer(ChatColor.RED + "Il est nécessaire d'accepter le ressource pack pour jouer.");
+            {
+                Bukkit.getScheduler().runTask(SamaGamesAPI.get().getPlugin(), () -> player.kickPlayer(ChatColor.RED + "Il est nécessaire d'accepter le ressource pack pour jouer."));
+            }
 
             impl.removeKillerFor(player.getUniqueId());
         }
@@ -55,7 +59,9 @@ class KillerTask extends BukkitRunnable
         if (remaining <= 0)
         {
             if (callback == null || callback.automaticKick(player))
-                player.kickPlayer(ChatColor.RED + "Il est nécessaire d'accepter le ressource pack pour jouer.");
+            {
+                Bukkit.getScheduler().runTask(SamaGamesAPI.get().getPlugin(), () -> player.kickPlayer(ChatColor.RED + "Il est nécessaire d'accepter le ressource pack pour jouer."));
+            }
 
             impl.removeKillerFor(player.getUniqueId());
         }
