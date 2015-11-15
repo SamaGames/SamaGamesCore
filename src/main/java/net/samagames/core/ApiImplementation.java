@@ -8,6 +8,7 @@ import net.samagames.api.gui.IGuiManager;
 import net.samagames.api.names.IUUIDTranslator;
 import net.samagames.api.network.IJoinManager;
 import net.samagames.api.network.IProxyDataManager;
+import net.samagames.api.options.ServerOptions;
 import net.samagames.api.parties.IPartiesManager;
 import net.samagames.api.permissions.IPermissionsManager;
 import net.samagames.api.player.IPlayerDataManager;
@@ -21,6 +22,7 @@ import net.samagames.core.api.games.GameManagerImpl;
 import net.samagames.core.api.gui.GuiManager;
 import net.samagames.core.api.names.UUIDTranslator;
 import net.samagames.core.api.network.*;
+import net.samagames.core.api.options.IServerOptions;
 import net.samagames.core.api.parties.PartiesManager;
 import net.samagames.core.api.permissions.BasicPermissionManager;
 import net.samagames.core.api.permissions.PermissionsManager;
@@ -34,6 +36,7 @@ import net.samagames.core.listeners.GlobalChannelHandler;
 import net.samagames.core.rest.AchievementManagerRest;
 import net.samagames.tools.BarAPI.BarAPI;
 import net.samagames.tools.npc.NPCManager;
+import org.apache.logging.log4j.core.jmx.Server;
 import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
 
@@ -65,11 +68,16 @@ public class ApiImplementation extends SamaGamesAPI
     private IGameManager gameApi;
     private HashMap<String, StatsManager> statsManagerCache;
 
+    private IServerOptions serverOptions;
+
     public ApiImplementation(APIPlugin plugin)
     {
         super(plugin);
 
         this.plugin = plugin;
+
+        serverOptions = new IServerOptions();
+
         this.statsManagerCache = new HashMap<>();
 
         JoinManagerImplement implement = new JoinManagerImplement();
@@ -123,6 +131,11 @@ public class ApiImplementation extends SamaGamesAPI
     @Override
     public NPCManager getNPCManager() {
         return plugin.getNPCManager();
+    }
+
+    @Override
+    public ServerOptions getServerOptions() {
+        return serverOptions;
     }
 
     @Override

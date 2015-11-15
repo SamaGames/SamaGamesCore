@@ -91,6 +91,7 @@ public class TeamManager
         executor.execute(() -> {
             teamHandler.addReceiver(p);
 
+
             final PermissionUser user = manager.getApi().getUser(p.getUniqueId());
             final String prefix = user.getParents().last().getGroupName();
 
