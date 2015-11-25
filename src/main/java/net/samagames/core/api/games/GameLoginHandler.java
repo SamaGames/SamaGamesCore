@@ -60,7 +60,7 @@ class GameLoginHandler implements IJoinHandler
             else if (game.getConnectedPlayers() >= api.getGameProperties().getMaxSlots())
                 response.disallow(ResponseType.DENY_FULL);
 
-            if (api.isReconnectAllowed() && api.isWaited(player))
+            if (api.isReconnectAllowed(player) && api.isWaited(player))
             {
                 response.allow();
                 return response;

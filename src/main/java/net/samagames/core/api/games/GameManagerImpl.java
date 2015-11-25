@@ -234,6 +234,12 @@ public class GameManagerImpl implements IGameManager
     @Override
     public boolean isReconnectAllowed(Player player)
     {
+        return this.isReconnectAllowed(player.getUniqueId());
+    }
+
+    @Override
+    public boolean isReconnectAllowed(UUID player)
+    {
         if (this.maxReconnectTime == -1)
             return false;
 
