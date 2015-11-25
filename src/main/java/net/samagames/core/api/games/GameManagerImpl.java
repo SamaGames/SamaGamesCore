@@ -21,7 +21,6 @@ public class GameManagerImpl implements IGameManager
 {
     private final ApiImplementation api;
 
-    private final ArrayList<GameHook> gameHooks;
     private final ArrayList<UUID> playersDisconnected;
     private final HashMap<UUID, Integer> playerDisconnectTime;
     private final HashMap<UUID, BukkitTask> playerReconnectedTimers;
@@ -34,7 +33,6 @@ public class GameManagerImpl implements IGameManager
         this.api = api;
         this.game = null;
 
-        this.gameHooks = new ArrayList<>();
         this.playersDisconnected = new ArrayList<>();
         this.playerDisconnectTime = new HashMap<>();
         this.playerReconnectedTimers = new HashMap<>();
@@ -51,22 +49,17 @@ public class GameManagerImpl implements IGameManager
 
         this.game = game;
 
-        api.getJoinManager().registerHandler(new GameLoginHandler(this), 100);
+        this.api.getJoinManager().registerHandler(new GameLoginHandler(this), 100);
 
         APIPlugin.getInstance().getExecutor().scheduleAtFixedRate(() ->
         {
-            if (game != null) this.refreshArena();
+            if (game != null)
+                this.refreshArena();
         }, 1L, 3 * 30L, TimeUnit.SECONDS);
 
         game.handlePostRegistration();
 
         APIPlugin.log(Level.INFO, "Registered game '" + game.getGameName() + "' successfuly!");
-    }
-
-    @Override
-    public void registerGameHook(GameHook gameHook)
-    {
-        this.gameHooks.add(gameHook);
     }
 
     @Override
@@ -81,62 +74,68 @@ public class GameManagerImpl implements IGameManager
         if (!p.isOnline())
             return;
 
-        api.getProxyDataManager().apiexec("connect", p.getUniqueId().toString(), "lobby");
-
+        this.api.getProxyDataManager().apiexec("connect", p.getUniqueId().toString(), "lobby");
     }
 
     @Override
     public void onPlayerDisconnect(Player player)
     {
-        game.handleLogout(player);
+        this.game.handleLogout(player);
 
-        if (!isReconnectAllowed())
+        if (!this.isReconnectAllowed(player))
             return;
 
-        if (game.getStatus() != Status.IN_GAME)
+        if (this.game.getStatus() != Status.IN_GAME)
             return;
 
-        playersDisconnected.add(player.getUniqueId());
+        if (this.playerDisconnectTime.containsKey(player.getUniqueId()))
+        {
+            if (this.playerDisconnectTime.get(player.getUniqueId()) >= this.maxReconnectTime * 60 * 2)
+            {
+                this.game.handleReconnectTimeOut(player, true);
+                return;
+            }
+        }
 
-        long startTime = game.getStartTime();
-        int diff = (int) (System.currentTimeMillis() - startTime);
-        if (diff > (maxReconnectTime * 60000))
-            return;
+        this.playersDisconnected.add(player.getUniqueId());
 
         Jedis jedis = api.getBungeeResource();
-        jedis.set("rejoin:" + player.getUniqueId(), api.getServerName());
-        jedis.expire("rejoin:" + player.getUniqueId(), (maxReconnectTime * 60) - (diff / 1000));
+        jedis.set("rejoin:" + player.getUniqueId(), this.api.getServerName());
+        jedis.expire("rejoin:" + player.getUniqueId(), (this.maxReconnectTime * 60));
         jedis.close();
 
-        playerReconnectedTimers.put(player.getUniqueId(), Bukkit.getScheduler().runTaskTimer(APIPlugin.getInstance(), new Runnable() {
-            int before;
-            int now;
+        this.playerReconnectedTimers.put(player.getUniqueId(), Bukkit.getScheduler().runTaskTimer(APIPlugin.getInstance(), new Runnable()
+        {
+            int time;
             boolean bool;
 
             @Override
-            public void run() {
-                if (!bool) {
+            public void run()
+            {
+                if (!this.bool)
+                {
                     if (GameManagerImpl.this.playerDisconnectTime.containsKey(player.getUniqueId()))
-                        before = GameManagerImpl.this.playerDisconnectTime.get(player.getUniqueId());
+                        this.time = GameManagerImpl.this.playerDisconnectTime.get(player.getUniqueId());
 
-                    bool = true;
+                    this.bool = true;
                 }
 
-                if (before == GameManagerImpl.this.maxReconnectTime * 60 * 2 || now == GameManagerImpl.this.maxReconnectTime * 60) {
+                if (this.time == GameManagerImpl.this.maxReconnectTime * 60 )
+                {
                     Player playerReconnected = Bukkit.getPlayer(player.getUniqueId());
-                    if (playerReconnected == null) {
-                        GameManagerImpl.this.onPlayerReconnectTimeOut(player);
-                    }
+
+                    if (playerReconnected == null)
+                        GameManagerImpl.this.onPlayerReconnectTimeOut(player, false);
 
                     BukkitTask task = playerReconnectedTimers.remove(player.getUniqueId());
+
                     if (task != null)
                         task.cancel();
                 }
 
-                before++;
-                now++;
+                this.time++;
 
-                GameManagerImpl.this.playerDisconnectTime.put(player.getUniqueId(), this.before);
+                GameManagerImpl.this.playerDisconnectTime.put(player.getUniqueId(), this.time);
             }
         }, 20L, 20L));
 
@@ -146,50 +145,39 @@ public class GameManagerImpl implements IGameManager
     @Override
     public void onPlayerReconnect(Player player)
     {
-        game.handleReconnect(player);
-        if (playerReconnectedTimers.containsKey(player.getUniqueId()))
+        this.game.handleReconnect(player);
+
+        if (this.playerReconnectedTimers.containsKey(player.getUniqueId()))
         {
             BukkitTask task = playerReconnectedTimers.get(player.getUniqueId());
 
             if (task != null)
                 task.cancel();
 
-            playerReconnectedTimers.remove(player.getUniqueId());
+            this.playerReconnectedTimers.remove(player.getUniqueId());
         }
 
-        refreshArena();
+        this.refreshArena();
     }
 
     @Override
-    public void onPlayerReconnectTimeOut(Player player)
+    public void onPlayerReconnectTimeOut(Player player, boolean silent)
     {
-        game.handleReconnectTimeOut(player);
+        this.game.handleReconnectTimeOut(player, silent);
     }
 
     public void refreshArena()
     {
-        if (game == null)
+        if (this.game == null)
             throw new IllegalStateException("Can't refresh arena because the arena is null!");
 
-        new ServerStatus(SamaGamesAPI.get().getServerName(), game.getGameName(), gameProperties.getMapName(), game.getStatus(), game.getConnectedPlayers(), gameProperties.getMaxSlots()).sendToHubs();
+        new ServerStatus(SamaGamesAPI.get().getServerName(), this.game.getGameName(), this.gameProperties.getMapName(), this.game.getStatus(), this.game.getConnectedPlayers(), this.gameProperties.getMaxSlots()).sendToHubs();
     }
 
     @Override
     public Game getGame()
     {
-        return game;
-    }
-
-    @Override
-    public ArrayList<GameHook> getGameHooksByType(GameHook.Type type)
-    {
-        ArrayList<GameHook> temp = new ArrayList<>();
-
-        for (GameHook gameHook : this.gameHooks)
-            if (gameHook.getType() == type)
-                temp.add(gameHook);
-
-        return temp;
+        return this.game;
     }
 
     @Override
@@ -216,7 +204,7 @@ public class GameManagerImpl implements IGameManager
     @Override
     public IGameProperties getGameProperties()
     {
-        return gameProperties;
+        return this.gameProperties;
     }
 
     @Override
@@ -228,24 +216,27 @@ public class GameManagerImpl implements IGameManager
     @Override
     public int getMaxReconnectTime()
     {
-        return maxReconnectTime;
+        return this.maxReconnectTime;
     }
 
     @Override
     public void setMaxReconnectTime(int minutes)
     {
-        maxReconnectTime = minutes;
+        this.maxReconnectTime = minutes;
     }
 
     @Override
     public boolean isWaited(UUID uuid)
     {
-        return playersDisconnected.contains(uuid);
+        return this.playersDisconnected.contains(uuid);
     }
 
     @Override
-    public boolean isReconnectAllowed()
+    public boolean isReconnectAllowed(Player player)
     {
-        return maxReconnectTime != -1;
+        if (this.maxReconnectTime == -1)
+            return false;
+
+        return (!this.playerDisconnectTime.containsKey(player) || this.playerDisconnectTime.get(player) < this.maxReconnectTime * 60);
     }
 }
