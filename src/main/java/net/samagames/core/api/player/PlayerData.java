@@ -96,8 +96,6 @@ public abstract class PlayerData extends AbstractPlayerData
             {
                 e.printStackTrace();
             }
-
-
         });
     }
 

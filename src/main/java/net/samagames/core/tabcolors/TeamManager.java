@@ -1,10 +1,10 @@
 package net.samagames.core.tabcolors;
 
 import net.minecraft.server.v1_8_R3.ScoreboardTeamBase;
+import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.permissions.IPermissionsManager;
 import net.samagames.api.permissions.permissions.PermissionGroup;
 import net.samagames.api.permissions.permissions.PermissionUser;
-import net.samagames.api.permissions.rawtypes.IManager;
 import net.samagames.api.permissions.restfull.RestfullManager;
 import net.samagames.core.APIPlugin;
 import net.samagames.tools.scoreboards.TeamHandler;
@@ -91,17 +91,19 @@ public class TeamManager
         executor.execute(() -> {
             teamHandler.addReceiver(p);
 
-
-            final PermissionUser user = manager.getApi().getUser(p.getUniqueId());
-            final String prefix = user.getParents().last().getGroupName();
-
-            TeamHandler.VTeam vtt = teamHandler.getTeamByName(prefix);
-            if (vtt == null)
+            if(SamaGamesAPI.get().getServerOptions().hasRankTabColor())
             {
-                vtt = teamHandler.getTeamByName("joueur");
-            }
+                final PermissionUser user = manager.getApi().getUser(p.getUniqueId());
+                final String prefix = user.getParents().last().getGroupName();
 
-            teamHandler.addPlayerToTeam(p, vtt);
+                TeamHandler.VTeam vtt = teamHandler.getTeamByName(prefix);
+                if (vtt == null)
+                {
+                    vtt = teamHandler.getTeamByName("joueur");
+                }
+
+                teamHandler.addPlayerToTeam(p, vtt);
+            }
         });
     }
 

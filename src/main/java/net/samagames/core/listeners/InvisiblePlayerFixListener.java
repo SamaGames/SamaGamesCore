@@ -2,19 +2,13 @@ package net.samagames.core.listeners;
 
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
-import net.samagames.api.network.IJoinHandler;
 import net.samagames.core.APIPlugin;
-import net.samagames.core.api.player.PlayerDataManager;
-import net.samagames.restfull.RestAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
-
-import java.util.UUID;
 
 /**
  * Created by Silva on 13/10/2015.
@@ -32,16 +26,18 @@ public class InvisiblePlayerFixListener implements Listener
     public void onPlayerJoin(PlayerLoginEvent event)
     {
         //Don't force if player is hided moderator
-        if(!pluginAPI.getAPI().getJoinManager().getModeratorsExpected().contains(event.getPlayer().getUniqueId()))
-        {
-            try{
-                sendPlayerToAll(event.getPlayer());
-                sendAllToPlayer(event.getPlayer());
-            }catch (Exception e)
+        Bukkit.getScheduler().runTaskLater(pluginAPI, () -> {
+            if(!pluginAPI.getAPI().getJoinManager().getModeratorsExpected().contains(event.getPlayer().getUniqueId()))
             {
-                e.printStackTrace();
+                try{
+                    sendPlayerToAll(event.getPlayer());
+                    sendAllToPlayer(event.getPlayer());
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
-        }
+        }, 5L);
     }
 
     public void sendAllToPlayer(Player current)
