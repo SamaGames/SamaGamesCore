@@ -120,17 +120,7 @@ public class GameManagerImpl implements IGameManager
                     this.bool = true;
                 }
 
-                if (this.time == -1)
-                {
-                    GameManagerImpl.this.onPlayerReconnectTimeOut(player, false);
-
-                    BukkitTask task = playerReconnectedTimers.remove(player.getUniqueId());
-
-                    if (task != null)
-                        task.cancel();
-                }
-
-                if (this.time == GameManagerImpl.this.maxReconnectTime * 60 )
+                if (this.time >= GameManagerImpl.this.maxReconnectTime * 60 )
                 {
                     Player playerReconnected = Bukkit.getPlayer(player.getUniqueId());
 
