@@ -7,7 +7,9 @@ import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.games.themachine.CoherenceMachineImpl;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import redis.clients.jedis.Jedis;
 
@@ -104,40 +106,39 @@ public class GameManagerImpl implements IGameManager
         jedis.expire("rejoin:" + player.getUniqueId(), (this.maxReconnectTime * 60));
         jedis.close();
 
-        this.playerReconnectedTimers.put(player.getUniqueId(), Bukkit.getScheduler().runTaskTimer(APIPlugin.getInstance(), new Runnable()
-        {
+
+        BukkitTask bukkitTask = new BukkitRunnable() {
             int time;
             boolean bool;
+            final UUID uuid = player.getUniqueId();
 
             @Override
-            public void run()
-            {
-                if (!this.bool)
-                {
-                    if (GameManagerImpl.this.playerDisconnectTime.containsKey(player.getUniqueId()))
-                        this.time = GameManagerImpl.this.playerDisconnectTime.get(player.getUniqueId());
+            public void run() {
+                if (!this.bool) {
+                    if (GameManagerImpl.this.playerDisconnectTime.containsKey(uuid))
+                        this.time = GameManagerImpl.this.playerDisconnectTime.get(uuid);
 
                     this.bool = true;
                 }
 
-                if (this.time >= GameManagerImpl.this.maxReconnectTime * 60 )
-                {
-                    Player playerReconnected = Bukkit.getPlayer(player.getUniqueId());
+                if (this.time >= GameManagerImpl.this.maxReconnectTime * 60) {
+                    Player playerReconnected = Bukkit.getPlayer(uuid);
 
-                    if (playerReconnected == null)
-                        GameManagerImpl.this.onPlayerReconnectTimeOut(player, false);
+                    if (playerReconnected == null && !playerReconnected.isOnline())
+                        GameManagerImpl.this.onPlayerReconnectTimeOut(Bukkit.getOfflinePlayer(uuid), false);
 
-                    BukkitTask task = playerReconnectedTimers.remove(player.getUniqueId());
+                    playerReconnectedTimers.remove(uuid);
 
-                    if (task != null)
-                        task.cancel();
+                    this.cancel();
                 }
 
                 this.time++;
 
-                GameManagerImpl.this.playerDisconnectTime.put(player.getUniqueId(), this.time);
+                GameManagerImpl.this.playerDisconnectTime.put(uuid, this.time);
             }
-        }, 20L, 20L));
+        }.runTaskTimer(APIPlugin.getInstance(), 20, 20);
+
+        this.playerReconnectedTimers.put(player.getUniqueId(), bukkitTask);
 
         refreshArena();
     }
@@ -161,7 +162,7 @@ public class GameManagerImpl implements IGameManager
     }
 
     @Override
-    public void onPlayerReconnectTimeOut(Player player, boolean silent)
+    public void onPlayerReconnectTimeOut(OfflinePlayer player, boolean silent)
     {
         this.game.handleReconnectTimeOut(player, silent);
     }
