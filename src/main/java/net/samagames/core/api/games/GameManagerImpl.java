@@ -107,24 +107,28 @@ public class GameManagerImpl implements IGameManager
         jedis.close();
 
 
-        BukkitTask bukkitTask = new BukkitRunnable() {
+        BukkitTask bukkitTask = new BukkitRunnable()
+        {
             int time;
             boolean bool;
             final UUID uuid = player.getUniqueId();
 
             @Override
-            public void run() {
-                if (!this.bool) {
+            public void run()
+            {
+                if (!this.bool)
+                {
                     if (GameManagerImpl.this.playerDisconnectTime.containsKey(uuid))
                         this.time = GameManagerImpl.this.playerDisconnectTime.get(uuid);
 
                     this.bool = true;
                 }
 
-                if (this.time >= GameManagerImpl.this.maxReconnectTime * 60) {
+                if (this.time >= GameManagerImpl.this.maxReconnectTime * 60)
+                {
                     Player playerReconnected = Bukkit.getPlayer(uuid);
 
-                    if (playerReconnected == null && !playerReconnected.isOnline())
+                    if (playerReconnected == null || !playerReconnected.isOnline())
                         GameManagerImpl.this.onPlayerReconnectTimeOut(Bukkit.getOfflinePlayer(uuid), false);
 
                     playerReconnectedTimers.remove(uuid);
