@@ -36,13 +36,13 @@ public class AchievementManagerRest implements IAchievementManager
     }
 
     @Override
-    public Achievement getAchievementByName(String s)
+    public Achievement getAchievementByID(String id)
     {
         return null;
     }
 
     @Override
-    public AchievementCategory getAchievementCategoryByName(String s)
+    public AchievementCategory getAchievementCategoryByID(String id)
     {
         return null;
     }
