@@ -4,6 +4,7 @@ import net.samagames.api.games.themachine.ICoherenceMachine;
 import net.samagames.api.games.themachine.messages.IMessageManager;
 import net.samagames.api.games.themachine.messages.Message;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.concurrent.TimeUnit;
@@ -45,7 +46,7 @@ public class MessageManagerImpl implements IMessageManager
     }
 
     @Override
-    public Message writeNotEnougthPlayersToStart()
+    public Message writeNotEnoughPlayersToStart()
     {
         return new Message(ChatColor.RED + "Il n'y a plus assez de joueurs pour commencer.", this.machine.getGameTag()).displayToAll();
     }
@@ -75,15 +76,9 @@ public class MessageManagerImpl implements IMessageManager
     }
 
     @Override
-    public Message writePlayerReconnectTimeOut(Player player)
+    public Message writePlayerReconnectTimeOut(OfflinePlayer player)
     {
         return new Message(ChatColor.RED + player.getName() + " ne s'est pas reconnecté à temps !");
-    }
-
-    @Override
-    public Message getArenaFull()
-    {
-        return new Message(ChatColor.RED + "L'arène est pleine.");
     }
 
     private String formatTime(long time)
