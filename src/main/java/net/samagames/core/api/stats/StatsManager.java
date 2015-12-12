@@ -1,7 +1,7 @@
 package net.samagames.core.api.stats;
 
 import com.google.gson.reflect.TypeToken;
-import net.samagames.api.stats.AbstractStatsManager;
+import net.samagames.api.stats.IStatsManager;
 import net.samagames.api.stats.Leaderboard;
 import net.samagames.core.ApiImplementation;
 import net.samagames.restfull.RestAPI;
@@ -21,15 +21,16 @@ import java.util.logging.Logger;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class StatsManager extends AbstractStatsManager
+public class StatsManager implements IStatsManager
 {
     private final Logger logger;
+    private final String game;
     private ApiImplementation api;
     private Map<String, PlayerStat> caches;
 
     public StatsManager(String game, ApiImplementation apiImplementation)
     {
-        super(game);
+        this.game = game;
         this.api = apiImplementation;
         this.caches = new HashMap<>();
         logger = api.getPlugin().getLogger();
