@@ -28,10 +28,10 @@ public abstract class PlayerData extends AbstractPlayerData
         super(playerID);
         this.api = api;
         this.manager = manager;
-        lastRefresh = new Date();
+        this.lastRefresh = new Date();
     }
 
-    public void creditStars(long famount, String reason, boolean applyMultiplier, IFinancialCallback<Long> financialCallback)
+    public void creditStars(long famount, String reason, boolean applyMultiplier, IFinancialCallback financialCallback)
     {
         APIPlugin.getInstance().getExecutor().execute(() -> {
             try
@@ -66,7 +66,7 @@ public abstract class PlayerData extends AbstractPlayerData
     }
 
     @Override
-    public void creditCoins(long famount, String reason, boolean applyMultiplier, IFinancialCallback<Long> financialCallback)
+    public void creditCoins(long famount, String reason, boolean applyMultiplier, IFinancialCallback financialCallback)
     {
         APIPlugin.getInstance().getExecutor().execute(() -> {
             try
@@ -100,7 +100,7 @@ public abstract class PlayerData extends AbstractPlayerData
     }
 
     @Override
-    public void withdrawStars(long amount, IFinancialCallback<Long> financialCallback)
+    public void withdrawStars(long amount, IFinancialCallback financialCallback)
     {
         APIPlugin.getInstance().getExecutor().execute(() -> {
             long result = decreaseStars(amount);
@@ -112,7 +112,7 @@ public abstract class PlayerData extends AbstractPlayerData
     }
 
     @Override
-    public void withdrawCoins(long famount, IFinancialCallback<Long> financialCallback)
+    public void withdrawCoins(long famount, IFinancialCallback financialCallback)
     {
         APIPlugin.getInstance().getExecutor().execute(() -> {
             long result = decreaseCoins(famount);

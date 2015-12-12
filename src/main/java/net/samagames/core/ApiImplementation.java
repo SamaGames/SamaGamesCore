@@ -16,7 +16,7 @@ import net.samagames.api.pubsub.IPubSubAPI;
 import net.samagames.api.resourcepacks.IResourcePacksManager;
 import net.samagames.api.settings.ISettingsManager;
 import net.samagames.api.shops.AbstractShopsManager;
-import net.samagames.api.stats.AbstractStatsManager;
+import net.samagames.api.stats.IStatsManager;
 import net.samagames.core.api.friends.FriendsManagement;
 import net.samagames.core.api.games.GameManagerImpl;
 import net.samagames.core.api.gui.GuiManager;
@@ -36,7 +36,6 @@ import net.samagames.core.listeners.GlobalChannelHandler;
 import net.samagames.core.rest.AchievementManagerRest;
 import net.samagames.tools.BarAPI.BarAPI;
 import net.samagames.tools.npc.NPCManager;
-import org.apache.logging.log4j.core.jmx.Server;
 import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
 
@@ -183,7 +182,7 @@ public class ApiImplementation extends SamaGamesAPI
         return joinManager;
     }
 
-    public AbstractStatsManager getStatsManager(String game)
+    public IStatsManager getStatsManager(String game)
     {
         if (this.statsManagerCache.containsKey(game))
             return statsManagerCache.get(game);
