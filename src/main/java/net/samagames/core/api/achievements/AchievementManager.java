@@ -23,13 +23,13 @@ public class AchievementManager implements IAchievementManager
     }
 
     @Override
-    public Achievement getAchievementByName(String name)
+    public Achievement getAchievementByID(String id)
     {
         return null;
     }
 
     @Override
-    public AchievementCategory getAchievementCategoryByName(String name)
+    public AchievementCategory getAchievementCategoryByID(String id)
     {
         return null;
     }

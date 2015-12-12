@@ -65,14 +65,4 @@ public class ProxyDataManagerImpl implements IProxyDataManager
     {
         api.getPubSub().send("apiexec." + command, StringUtils.join(args, " "));
     }
-
-    @Override
-    public Map<String, String> getServers()
-    {
-        Jedis jedis = api.getBungeeResource();
-        Map<String, String> servers = jedis.hgetAll("servers");
-        jedis.close();
-
-        return servers;
-    }
 }

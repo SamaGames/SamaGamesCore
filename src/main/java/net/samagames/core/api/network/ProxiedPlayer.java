@@ -75,12 +75,6 @@ class ProxiedPlayer implements IProxiedPlayer
     }
 
     @Override
-    public void connectGame(String game)
-    {
-        SamaGamesAPI.get().getPubSub().send("join." + game, playerId + "");
-    }
-
-    @Override
     public void sendMessage(TextComponent component)
     {
         SamaGamesAPI.get().getPubSub().send("apiexec.message", playerId + " " + new Gson().toJson(component));
