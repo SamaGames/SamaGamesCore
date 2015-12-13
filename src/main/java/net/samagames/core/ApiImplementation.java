@@ -35,6 +35,7 @@ import net.samagames.core.api.stats.StatsManager;
 import net.samagames.core.listeners.GlobalChannelHandler;
 import net.samagames.core.rest.AchievementManagerRest;
 import net.samagames.tools.BarAPI.BarAPI;
+import net.samagames.tools.SkyFactory;
 import net.samagames.tools.npc.NPCManager;
 import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
@@ -64,10 +65,11 @@ public class ApiImplementation extends SamaGamesAPI
     private final BasicPermissionManager permissionsManager;
     private final IFriendsManager friendsManager;
     private final BarAPI barAPI;
+    private final SkyFactory skyFactory;
+    private final HashMap<String, StatsManager> statsManagerCache;
     private IGameManager gameApi;
-    private HashMap<String, StatsManager> statsManagerCache;
 
-    private IServerOptions serverOptions;
+    private final IServerOptions serverOptions;
 
     public ApiImplementation(APIPlugin plugin)
     {
@@ -84,6 +86,7 @@ public class ApiImplementation extends SamaGamesAPI
         this.joinManager = implement;
 
         barAPI = new BarAPI(plugin);
+        skyFactory = new SkyFactory(plugin);
 
         guiManager = new GuiManager(plugin);
 
@@ -174,6 +177,12 @@ public class ApiImplementation extends SamaGamesAPI
     public BarAPI getBarAPI()
     {
         return barAPI;
+    }
+
+    @Override
+    public SkyFactory getSkyFactory()
+    {
+        return skyFactory;
     }
 
     @Override
