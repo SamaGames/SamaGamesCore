@@ -31,7 +31,7 @@ public class TabsColorsListener extends APIListener
 
         manager = new TeamManager(plugin);
 
-        plugin.getNPCManager().setScoreboardRegister((data, error) -> {
+        plugin.getNPCManager().setScoreBoardRegister((data, error) -> {
             TeamHandler.VTeam npc = manager.getTeamHandler().getTeamByName("NPC");
             if(npc != null)
             {
