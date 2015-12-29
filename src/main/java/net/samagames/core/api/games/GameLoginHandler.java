@@ -53,7 +53,7 @@ class GameLoginHandler implements IJoinHandler
                 return response;
             }
 
-            if (game.getStatus() == Status.IN_GAME)
+            if (game.getStatus() == Status.IN_GAME || game.getStatus() == Status.FINISHED)
                 response.disallow(ResponseType.DENY_IN_GAME);
             else if (game.getStatus() == Status.STARTING)
                 response.disallow(ResponseType.DENY_NOT_READY);
@@ -88,7 +88,7 @@ class GameLoginHandler implements IJoinHandler
                 return response;
             }
 
-            if (game.getStatus() == Status.IN_GAME)
+            if (game.getStatus() == Status.IN_GAME || game.getStatus() == Status.FINISHED)
                 response.disallow(ResponseType.DENY_IN_GAME);
             else if (game.getStatus() == Status.STARTING)
                 response.disallow(ResponseType.DENY_NOT_READY);
