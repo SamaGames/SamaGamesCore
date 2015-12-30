@@ -227,7 +227,7 @@ public class APIPlugin extends JavaPlugin implements Listener
             out.writeBoolean(false);
             out.writeBoolean(false);
             out.writeBoolean(false);
-            Bukkit.getLogger().info("Blocking WorldDownloader for " + player.getDisplayName());
+            Bukkit.getLogger().info("Blocked WorldDownloader of " + player.getDisplayName());
             player.sendPluginMessage(this, "WDL|CONTROL", out.toByteArray());
         });
         RestCacheLoader.hook();
@@ -273,16 +273,20 @@ public class APIPlugin extends JavaPlugin implements Listener
     private void postInit()
     {
         this.startTimer.cancel();
+        
         try
         {
-            log("Patching /me and /tell...");
+            log("Removing private commands...");
             removeCommand("me");
             removeCommand("minecraft:me");
             removeCommand("tell");
             removeCommand("minecraft:tell");
             removeCommand("bukkit:help");
-            log("Patched /me and /tell");
-        } catch (ReflectiveOperationException e)
+            removeCommand("pl");
+            removeCommand("plugins");
+            log("Removed private commands.");
+        }
+        catch (ReflectiveOperationException e)
         {
             log("Patching error");
             e.printStackTrace();
