@@ -74,14 +74,21 @@ public class JoinManagerImplement implements IJoinManager
     private JoinResponse requestSoloJoin(UUID player)
     {
         JoinResponse response = new JoinResponse();
+
         for (IJoinHandler handler : handlerTreeMap.values())
+        {
             response = handler.requestJoin(player, response);
+
+            if (!response.isAllowed())
+                break;
+        }
 
         if (response.isAllowed())
         {
             playersExpected.add(player);
             Bukkit.getScheduler().runTaskLater(APIPlugin.getInstance(), () -> playersExpected.remove(player), 20 * 15L);
         }
+
         return response;
     }
 
@@ -91,8 +98,14 @@ public class JoinManagerImplement implements IJoinManager
         Set<UUID> members = SamaGamesAPI.get().getPartiesManager().getPlayersInParty(partyID).keySet();
 
         JoinResponse response = new JoinResponse();
+
         for (IJoinHandler handler : handlerTreeMap.values())
+        {
             response = handler.requestPartyJoin(leader, members, response);
+
+            if (!response.isAllowed())
+                break;
+        }
 
         if (response.isAllowed())
         {
