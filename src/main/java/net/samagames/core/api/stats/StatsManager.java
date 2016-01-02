@@ -25,8 +25,8 @@ public class StatsManager implements IStatsManager
 {
     private final Logger logger;
     private final String game;
-    private ApiImplementation api;
-    private Map<String, PlayerStat> caches;
+    private final ApiImplementation api;
+    private final Map<String, PlayerStat> caches;
 
     public StatsManager(String game, ApiImplementation apiImplementation)
     {
@@ -50,9 +50,11 @@ public class StatsManager implements IStatsManager
 
     public void setValue(UUID player, String stat, double value)
     {
-        PlayerStat stats = caches.get(player);
+        PlayerStat stats = caches.get(player.toString() + ":" + stat);
+
         if (stats == null)
             return;
+
         stats.setValue(value);
     }
 
