@@ -38,7 +38,7 @@ public abstract class BasicPermissionManager implements RestfullPlugin, IPermiss
         Bukkit.getLogger().info("Lobby mode was set to : " + isLobby);
 
         logInfo(">> LOADING PERMISSIONS API !");
-        api = new PermissionsAPI(this, "Joueur").setCacheManager(plugin.getCacheHandler()).adaptator(RestfullManager.class).enableRefresh();
+        api = new PermissionsAPI(this, "Joueur").setCacheManager(plugin.getCacheHandler()).adaptator(RestfullManager.class);
         api.getManager().refreshGroups();
         logInfo(">> LOADED PERMISSIONS API !");
 
