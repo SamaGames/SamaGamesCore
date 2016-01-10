@@ -1,11 +1,14 @@
 package net.samagames.core.api.games;
 
+import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.games.Game;
 import net.samagames.api.games.IGameManager;
 import net.samagames.api.games.Status;
 import net.samagames.api.network.IJoinHandler;
 import net.samagames.api.network.JoinResponse;
 import net.samagames.api.network.ResponseType;
+import net.samagames.core.ApiImplementation;
+import net.samagames.core.api.network.JoinManagerImplement;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.entity.Player;
 
@@ -16,9 +19,12 @@ class GameLoginHandler implements IJoinHandler
 {
     private final IGameManager api;
 
+    private JoinManagerImplement joinManager;
+
     public GameLoginHandler(IGameManager api)
     {
         this.api = api;
+        this.joinManager = (JoinManagerImplement) ApiImplementation.get().getJoinManager();
     }
 
     @Override
@@ -53,12 +59,7 @@ class GameLoginHandler implements IJoinHandler
                 return response;
             }
 
-            if (game.getStatus() == Status.IN_GAME || game.getStatus() == Status.FINISHED)
-                response.disallow(ResponseType.DENY_IN_GAME);
-            else if (game.getStatus() == Status.STARTING)
-                response.disallow(ResponseType.DENY_NOT_READY);
-            else if (game.getConnectedPlayers() >= api.getGameProperties().getMaxSlots())
-                response.disallow(ResponseType.DENY_FULL);
+            response = checkState(game, response);
 
             if (response.isAllowed() && api.isReconnectAllowed(player) && api.isWaited(player))
             {
@@ -88,13 +89,20 @@ class GameLoginHandler implements IJoinHandler
                 return response;
             }
 
-            if (game.getStatus() == Status.IN_GAME || game.getStatus() == Status.FINISHED)
-                response.disallow(ResponseType.DENY_IN_GAME);
-            else if (game.getStatus() == Status.STARTING)
-                response.disallow(ResponseType.DENY_NOT_READY);
-            else if (game.getConnectedPlayers() >= api.getGameProperties().getMaxSlots())
-                response.disallow(ResponseType.DENY_FULL);
+            response = checkState(game, response);
         }
+
+        return response;
+    }
+
+    public JoinResponse checkState(Game game, JoinResponse response)
+    {
+        if (game.getStatus() == Status.IN_GAME || game.getStatus() == Status.FINISHED)
+            response.disallow(ResponseType.DENY_IN_GAME);
+        else if (game.getStatus() == Status.STARTING)
+            response.disallow(ResponseType.DENY_NOT_READY);
+        else if (joinManager.countExpectedPlayers() + game.getConnectedPlayers() >= api.getGameProperties().getMaxSlots())
+            response.disallow(ResponseType.DENY_FULL);
 
         return response;
     }
