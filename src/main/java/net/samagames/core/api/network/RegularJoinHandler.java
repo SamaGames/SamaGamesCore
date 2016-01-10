@@ -38,6 +38,7 @@ public class RegularJoinHandler implements IPacketsReceiver
         } else
         {
             SamaGamesAPI.get().getProxyDataManager().getProxiedPlayer(player).connect(SamaGamesAPI.get().getServerName());
+            SamaGamesAPI.get().getGameManager().refreshArena();
         }
     }
 }
