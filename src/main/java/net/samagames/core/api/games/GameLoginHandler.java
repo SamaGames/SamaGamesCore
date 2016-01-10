@@ -59,13 +59,7 @@ class GameLoginHandler implements IJoinHandler
                 return response;
             }
 
-            response = checkState(game, response);
-
-            if (response.isAllowed() && api.isReconnectAllowed(player) && api.isWaited(player))
-            {
-                response.allow();
-                return response;
-            }
+            response = checkState(game, response, player);
         }
 
         return response;
@@ -89,13 +83,13 @@ class GameLoginHandler implements IJoinHandler
                 return response;
             }
 
-            response = checkState(game, response);
+            response = checkState(game, response, partyLeader);
         }
 
         return response;
     }
 
-    public JoinResponse checkState(Game game, JoinResponse response)
+    public JoinResponse checkState(Game game, JoinResponse response, UUID player)
     {
         if (game.getStatus() == Status.IN_GAME || game.getStatus() == Status.FINISHED)
             response.disallow(ResponseType.DENY_IN_GAME);
@@ -103,6 +97,12 @@ class GameLoginHandler implements IJoinHandler
             response.disallow(ResponseType.DENY_NOT_READY);
         else if (joinManager.countExpectedPlayers() + game.getConnectedPlayers() >= api.getGameProperties().getMaxSlots())
             response.disallow(ResponseType.DENY_FULL);
+
+        if (response.isAllowed() && api.isReconnectAllowed(player) && api.isWaited(player))
+        {
+            response.allow();
+            return response;
+        }
 
         return response;
     }
