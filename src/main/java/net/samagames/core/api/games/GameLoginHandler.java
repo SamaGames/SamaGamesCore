@@ -66,13 +66,14 @@ class GameLoginHandler implements IJoinHandler
     }
 
     @Override
-    public JoinResponse requestPartyJoin(UUID partyLeader, Set<UUID> partyMembers, JoinResponse response)
+    public JoinResponse requestPartyJoin(UUID party, UUID player, JoinResponse response)
     {
         if (api.getGame() != null)
         {
             Game game = api.getGame();
-
-            Pair<Boolean, String> gameResponse = game.canPartyJoinGame(partyMembers);
+            //Hope for cache
+            Set<UUID> members = SamaGamesAPI.get().getPartiesManager().getPlayersInParty(party).keySet();
+            Pair<Boolean, String> gameResponse = game.canPartyJoinGame(members);
 
             if (gameResponse.getKey())
             {
@@ -83,7 +84,7 @@ class GameLoginHandler implements IJoinHandler
                 return response;
             }
 
-            response = checkState(game, response, partyLeader);
+            response = checkState(game, response, player);
         }
 
         return response;

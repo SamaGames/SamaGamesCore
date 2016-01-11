@@ -92,7 +92,7 @@ public class JoinManagerImplement implements IJoinManager
         return response;
     }
 
-    private JoinResponse requestPartyJoin(UUID partyID, HashSet<UUID> dontMove)
+    private JoinResponse requestPartyJoin(UUID partyID, UUID joiningPlayer, boolean alreadyConnected)
     {
         UUID leader = SamaGamesAPI.get().getPartiesManager().getLeader(partyID);
         Set<UUID> members = SamaGamesAPI.get().getPartiesManager().getPlayersInParty(partyID).keySet();
@@ -101,7 +101,7 @@ public class JoinManagerImplement implements IJoinManager
 
         for (IJoinHandler handler : handlerTreeMap.values())
         {
-            response = handler.requestPartyJoin(leader, members, response);
+            response = handler.requestPartyJoin(leader, joiningPlayer, response);
 
             if (!response.isAllowed())
                 break;
@@ -109,12 +109,17 @@ public class JoinManagerImplement implements IJoinManager
 
         if (response.isAllowed())
         {
-            members.removeAll(dontMove);
-            members.stream().filter(player -> Bukkit.getPlayer(player) == null).forEach(player -> {
-                playersExpected.add(player);
-                Bukkit.getScheduler().runTaskLater(APIPlugin.getInstance(), () -> playersExpected.remove(player), 20 * 15L);
-                SamaGamesAPI.get().getProxyDataManager().getProxiedPlayer(player).connect(SamaGamesAPI.get().getServerName());
-            });
+            if(leader.equals(joiningPlayer))
+            {
+                members.stream().filter(player -> Bukkit.getPlayer(player) == null).forEach(player -> {
+                    if(!player.equals(joiningPlayer) || !alreadyConnected)
+                    {
+                        playersExpected.add(player);
+                        Bukkit.getScheduler().runTaskLater(APIPlugin.getInstance(), () -> playersExpected.remove(player), 20 * 15L);
+                        SamaGamesAPI.get().getProxyDataManager().getProxiedPlayer(player).connect(SamaGamesAPI.get().getServerName());
+                    }
+                });
+            }
 
             new Thread(() -> {
                 Jedis jedis = SamaGamesAPI.get().getBungeeResource();
@@ -128,7 +133,8 @@ public class JoinManagerImplement implements IJoinManager
 
     public JoinResponse requestPartyJoin(UUID partyID)
     {
-        return requestPartyJoin(partyID, new HashSet<>());
+        UUID leader = SamaGamesAPI.get().getPartiesManager().getLeader(partyID);
+        return requestPartyJoin(partyID, leader, false);
     }
 
     public JoinResponse requestJoin(UUID player)
@@ -141,19 +147,8 @@ public class JoinManagerImplement implements IJoinManager
         UUID party = SamaGamesAPI.get().getPartiesManager().getPlayerParty(player);
         if (party != null && isPartyLimited())
         {
-            /*if (!SamaGamesAPI.get().getPartiesManager().getLeader(party).equals(player))
-            {
-                JoinResponse response = new JoinResponse();
-                response.disallow("Seul le chef de partie peur rejoindre un jeu.");
-                return response;
-            } else
-            {
 
-            }*/
-            HashSet<UUID> dontMove = new HashSet<>();
-            if (alreadyConnected)
-                dontMove.add(player);
-            return requestPartyJoin(party, dontMove);
+            return requestPartyJoin(party, player, alreadyConnected);
         }
 
         return requestSoloJoin(player);
