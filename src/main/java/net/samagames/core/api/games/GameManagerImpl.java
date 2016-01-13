@@ -249,6 +249,6 @@ public class GameManagerImpl implements IGameManager
         if (this.maxReconnectTime == -1)
             return false;
 
-        return (!this.playerDisconnectTime.containsKey(player) || this.playerDisconnectTime.get(player) < this.maxReconnectTime * 60);
+        return (this.playerDisconnectTime.containsKey(player) && this.playerDisconnectTime.get(player) < this.maxReconnectTime * 60);
     }
 }
