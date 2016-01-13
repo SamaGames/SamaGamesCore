@@ -168,6 +168,7 @@ public class GameManagerImpl implements IGameManager
     @Override
     public void onPlayerReconnectTimeOut(OfflinePlayer player, boolean silent)
     {
+        this.playersDisconnected.remove(player.getUniqueId());
         this.game.handleReconnectTimeOut(player, silent);
     }
 
