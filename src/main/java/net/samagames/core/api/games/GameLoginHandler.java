@@ -32,10 +32,14 @@ class GameLoginHandler implements IJoinHandler
     {
         if (api.getGame() != null)
         {
-            if (api.isWaited(player.getUniqueId()))
-                api.onPlayerReconnect(player);
-            else
+            if(api.getGame().isGameStarted())
+            {
+                if (api.isReconnectAllowed(player.getUniqueId())
+                        && api.isWaited(player.getUniqueId()))
+                    api.onPlayerReconnect(player);
+            }else{
                 api.getGame().handleLogin(player);
+            }
 
             api.refreshArena();
         }
