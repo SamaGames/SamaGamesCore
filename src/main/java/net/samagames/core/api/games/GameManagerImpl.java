@@ -168,6 +168,7 @@ public class GameManagerImpl implements IGameManager
     @Override
     public void onPlayerReconnectTimeOut(OfflinePlayer player, boolean silent)
     {
+        this.playersDisconnected.remove(player.getUniqueId());
         this.game.handleReconnectTimeOut(player, silent);
     }
 
@@ -245,9 +246,9 @@ public class GameManagerImpl implements IGameManager
     @Override
     public boolean isReconnectAllowed(UUID player)
     {
-        if (this.maxReconnectTime == -1)
+        if (this.maxReconnectTime <= 0)
             return false;
 
-        return (!this.playerDisconnectTime.containsKey(player) || this.playerDisconnectTime.get(player) < this.maxReconnectTime * 60);
+        return !this.playerDisconnectTime.containsKey(player) || this.playerDisconnectTime.get(player) < this.maxReconnectTime * 60;
     }
 }

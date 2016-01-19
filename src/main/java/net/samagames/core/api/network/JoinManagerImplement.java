@@ -147,7 +147,6 @@ public class JoinManagerImplement implements IJoinManager
         UUID party = SamaGamesAPI.get().getPartiesManager().getPlayerParty(player);
         if (party != null && isPartyLimited())
         {
-
             return requestPartyJoin(party, player, alreadyConnected);
         }
 
