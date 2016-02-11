@@ -2,13 +2,13 @@ package net.samagames.core;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.samagames.persistanceapi.GameServiceManager;
 import net.samagames.api.permissions.rawtypes.ICacheHandler;
 import net.samagames.core.database.DatabaseConnector;
 import net.samagames.core.database.RedisServer;
 import net.samagames.core.hook.RestCacheLoader;
 import net.samagames.core.listeners.*;
 import net.samagames.core.rest.RestListener;
-import net.samagames.restfull.RestAPI;
 import net.samagames.tools.Reflection;
 import net.samagames.tools.npc.NPCManager;
 import org.apache.commons.lang.StringUtils;
@@ -18,25 +18,17 @@ import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.world.ChunkUnloadEvent;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.util.permissions.DefaultPermissions;
 import redis.clients.jedis.Jedis;
-import sun.misc.GC;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -73,6 +65,8 @@ public class APIPlugin extends JavaPlugin implements Listener
     private BukkitTask startTimer;
 
     private ChatHandleListener chatHandleListener;
+
+    private GameServiceManager gameServiceManager;
 
 
     public static APIPlugin getInstance()
@@ -148,11 +142,15 @@ public class APIPlugin extends JavaPlugin implements Listener
             int bungeePort = dataYML.getInt("redis-bungee-port", 4242);
             String bungeePassword = dataYML.getString("redis-bungee-password", "passw0rd");
             RedisServer bungee = new RedisServer(bungeeIp, bungeePort, bungeePassword);
-            String restIP = dataYML.getString("restfull-ip", "127.0.0.1");
-            int restPort = dataYML.getInt("restfull-port", 80);
-            String restUser = dataYML.getString("restfull-user", "test");
-            String restPass = dataYML.getString("restfull-pass", "test");
-            RestAPI.getInstance().setup("http://" + restIP + ":" + restPort + "/", restUser, restPass);
+
+            String sqlUrl = dataYML.getString("sql-url", "127.0.0.1");
+            String sqlUsername = dataYML.getString("sql-username", "root");
+            String sqlPassword = dataYML.getString("sql-password", "passw0rd");
+            int sqlMinPoolSize = dataYML.getInt("sql-minpoolsize", 1);
+            int sqlMaxPoolSize = dataYML.getInt("sql-maxpoolsize", 10);
+
+            gameServiceManager = new GameServiceManager(sqlUrl, sqlUsername, sqlPassword, sqlMinPoolSize, sqlMaxPoolSize);
+
             databaseConnector = new DatabaseConnector(this, bungee);
             this.cacheHandler = new ICacheHandler()
             {
@@ -198,7 +196,6 @@ public class APIPlugin extends JavaPlugin implements Listener
 
         // Web
         getServer().getPluginManager().registerEvents(new RestListener(this), this);
-        //api.getJoinManager().registerHandler(new RestListener(this), 1000);
 
         //Invisible fix
         api.getPlugin().getServer().getPluginManager().registerEvents(new InvisiblePlayerFixListener(this), this);

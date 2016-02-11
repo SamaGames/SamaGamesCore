@@ -1,36 +1,110 @@
 package net.samagames.core.api.player;
 
+import com.samagames.persistanceapi.beans.PlayerBean;
 import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.api.player.IFinancialCallback;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_8_R3.Overridden;
 
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 /**
  * This file is a part of the SamaGames project
  * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
+ * Created by silvanosky
+ * (C) Copyright Elydra Network 2016
  * All rights reserved.
  */
-public abstract class PlayerData extends AbstractPlayerData
+public class PlayerData extends AbstractPlayerData
 {
     protected final ApiImplementation api;
     protected final PlayerDataManager manager;
 
+    private Logger logger;
+
+    private PlayerBean playerBean;
+
+    private long lastRefresh;
+    private UUID playerUUID;
+
     protected PlayerData(UUID playerID, ApiImplementation api, PlayerDataManager manager)
     {
-        super(playerID);
+        this.playerUUID = playerID;
         this.api = api;
         this.manager = manager;
-        this.lastRefresh = new Date();
+        this.lastRefresh = System.currentTimeMillis();
+
+        logger = api.getPlugin().getLogger();
+
     }
 
+    public void updateData()
+    {
+        lastRefresh = System.currentTimeMillis();
+
+    }
+
+    @Override
+    public long getCoins()
+    {
+        //TODO update when needed
+        return playerBean.getCoins();
+    }
+
+    @Override
+    public String get(String key)
+    {
+        if ("stars".equalsIgnoreCase(key) && !playerData.containsKey(key))
+            return Integer.toString(playerBean.getStars());
+        else if ("coins".equalsIgnoreCase(key) && !playerData.containsKey(key))
+            return Integer.toString(playerBean.getCoins());
+        else if (key.startsWith("settings.") && !playerData.containsKey(key))
+            return getSetting(key.substring(key.indexOf(".") + 1));
+        else if (key.startsWith("redis."))
+            return getFromRedis(key.substring(key.indexOf(".") + 1));
+        else if (!playerData.containsKey(key))
+            logger.warning("Can't manage get " + key);
+
+        return super.get(key);
+    }
+
+    @Override
+    public void set(String key, String value)
+    {
+        if (key.equalsIgnoreCase("coins"))
+        {
+            String oldValue = playerData.get("coins");
+            int toRemove = 0;
+            if (oldValue != null)
+                toRemove = Integer.parseInt(oldValue);
+            increaseCoins((-toRemove) + Integer.parseInt(value));
+        } else if (key.equalsIgnoreCase("stars"))
+        {
+            String oldValue = playerData.get("stars");
+            int toRemove = 0;
+            if (oldValue != null)
+                toRemove = Integer.parseInt(oldValue);
+            increaseStars((-toRemove) + Integer.parseInt(value));
+        } else if (key.startsWith("settings."))
+            setSetting(key.substring(key.indexOf(".") + 1), value);
+        else if (key.startsWith("redis."))
+            setFromRedis(key.substring(key.indexOf(".") + 1), value);
+        else
+            logger.warning("Can't manage set " + key + " for value: " + value);
+
+        playerData.put(key, value);
+
+        // Waiting for Raesta to implement it
+        logger.info("Set (" + key + ": " + value + ")");
+    }
+
+    @Override
     public void creditStars(long famount, String reason, boolean applyMultiplier, IFinancialCallback financialCallback)
     {
         APIPlugin.getInstance().getExecutor().execute(() -> {
@@ -41,7 +115,7 @@ public abstract class PlayerData extends AbstractPlayerData
 
                 if (applyMultiplier)
                 {
-                    Multiplier multiplier = manager.getEconomyManager().getCurrentMultiplier(playerID, "stars", ApiImplementation.get().getGameManager().getGame().getGameCodeName());
+                    Multiplier multiplier = manager.getEconomyManager().getCurrentMultiplier(getPlayerID(), "stars", ApiImplementation.get().getGameManager().getGame().getGameCodeName());
                     amount *= multiplier.getGlobalAmount();
 
                     message = manager.getEconomyManager().getCreditMessage(amount, "stars", reason, multiplier);
@@ -50,8 +124,8 @@ public abstract class PlayerData extends AbstractPlayerData
                     message = manager.getEconomyManager().getCreditMessage(amount, "stars", reason, null);
                 }
 
-                if (Bukkit.getPlayer(playerID) != null)
-                    Bukkit.getPlayer(playerID).sendMessage(message);
+                if (Bukkit.getPlayer(getPlayerID()) != null)
+                    Bukkit.getPlayer(getPlayerID()).sendMessage(message);
 
                 long result = increaseStars(amount);
 
@@ -66,6 +140,22 @@ public abstract class PlayerData extends AbstractPlayerData
     }
 
     @Override
+    public String getCustomName() {
+        //TODO not implemented
+        return null;
+    }
+
+    @Override
+    public UUID getPlayerID() {
+        return playerUUID;
+    }
+
+    @Override
+    public Date getLastRefresh() {
+        return new Date(lastRefresh);
+    }
+
+    @Override
     public void creditCoins(long famount, String reason, boolean applyMultiplier, IFinancialCallback financialCallback)
     {
         APIPlugin.getInstance().getExecutor().execute(() -> {
@@ -76,7 +166,7 @@ public abstract class PlayerData extends AbstractPlayerData
 
                 if (applyMultiplier)
                 {
-                    Multiplier multiplier = manager.getEconomyManager().getCurrentMultiplier(playerID, "coins", ApiImplementation.get().getGameManager().getGame().getGameCodeName());
+                    Multiplier multiplier = manager.getEconomyManager().getCurrentMultiplier(getPlayerID(), "coins", ApiImplementation.get().getGameManager().getGame().getGameCodeName());
                     amount *= multiplier.getGlobalAmount();
 
                     message = manager.getEconomyManager().getCreditMessage(amount, "coins", reason, multiplier);
@@ -85,8 +175,8 @@ public abstract class PlayerData extends AbstractPlayerData
                     message = manager.getEconomyManager().getCreditMessage(amount, "coins", reason, null);
                 }
 
-                if (Bukkit.getPlayer(playerID) != null)
-                    Bukkit.getPlayer(playerID).sendMessage(message);
+                if (Bukkit.getPlayer(getPlayerID()) != null)
+                    Bukkit.getPlayer(getPlayerID()).sendMessage(message);
 
                 long result = increaseCoins(amount);
 
@@ -112,6 +202,13 @@ public abstract class PlayerData extends AbstractPlayerData
     }
 
     @Override
+    public long increaseStars(long incrBy) {
+        int result = (int) (playerBean.getStars() + incrBy);
+        playerBean.setStars(result);
+        return result;
+    }
+
+    @Override
     public void withdrawCoins(long famount, IFinancialCallback financialCallback)
     {
         APIPlugin.getInstance().getExecutor().execute(() -> {
@@ -123,9 +220,21 @@ public abstract class PlayerData extends AbstractPlayerData
     }
 
     @Override
+    public long increaseCoins(long incrBy) {
+        int result = (int) (playerBean.getCoins() + incrBy);
+        playerBean.setCoins(result);
+        return result;
+    }
+
+    @Override
     public long decreaseStars(long decrBy)
     {
         return increaseStars(-decrBy);
+    }
+
+    @Override
+    public long getStars() {
+        return playerBean.getStars();
     }
 
     @Override
@@ -134,64 +243,10 @@ public abstract class PlayerData extends AbstractPlayerData
         return increaseCoins(-decrBy);
     }
 
-    @Override
-    public void setInt(String key, int value)
-    {
-        set(key, String.valueOf(value));
-    }
-
-    @Override
-    public void setBoolean(String key, boolean value)
-    {
-        set(key, String.valueOf(value));
-    }
-
-    @Override
-    public void setDouble(String key, double value)
-    {
-        set(key, String.valueOf(value));
-    }
-
-    @Override
-    public void setLong(String key, long value)
-    {
-        set(key, String.valueOf(value));
-    }
-
     public void refreshIfNeeded()
     {
-        if (lastRefresh.getTime() + 1000 * 60 < System.currentTimeMillis())
+        if (lastRefresh + 1000 * 60 < System.currentTimeMillis())
             updateData();
-    }
-
-    public abstract void updateData();
-
-    @Override
-    public String get(String key)
-    {
-        refreshIfNeeded();
-        return super.get(key);
-    }
-
-    @Override
-    public Set<String> getKeys()
-    {
-        refreshIfNeeded();
-        return super.getKeys();
-    }
-
-    @Override
-    public Map<String, String> getValues()
-    {
-        refreshIfNeeded();
-        return super.getValues();
-    }
-
-    @Override
-    public boolean contains(String key)
-    {
-        refreshIfNeeded();
-        return super.contains(key);
     }
 
 }

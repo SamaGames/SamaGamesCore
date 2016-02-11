@@ -31,29 +31,6 @@ public class RestPlayerData extends PlayerData
         logger = api.getPlugin().getLogger();
     }
 
-    @Override
-    public void updateData()
-    {
-        lastRefresh = new Date();
-        // Waiting for Raesta to implement it
-    }
-
-    @Override
-    public String get(String key)
-    {
-        if (key.equalsIgnoreCase("stars") && !playerData.containsKey(key))
-            return getStarsInternal();
-        else if (key.equalsIgnoreCase("coins") && !playerData.containsKey(key))
-            return getCoinsInternal();
-        else if (key.startsWith("settings.") && !playerData.containsKey(key))
-            return getSetting(key.substring(key.indexOf(".") + 1));
-        else if (key.startsWith("redis."))
-            return getFromRedis(key.substring(key.indexOf(".") + 1));
-        else if (!playerData.containsKey(key))
-            logger.warning("Can't manage get " + key);
-        return super.get(key);
-    }
-
     private String getFromRedis(String key)
     {
         Jedis jedis = api.getBungeeResource();
@@ -79,36 +56,6 @@ public class RestPlayerData extends PlayerData
     public Boolean getBoolean(String key)
     {
         return super.getBoolean(key);
-    }
-
-    @Override
-    public void set(String key, String value)
-    {
-        if (key.equalsIgnoreCase("coins"))
-        {
-            String oldValue = playerData.get("coins");
-            int toRemove = 0;
-            if (oldValue != null)
-                toRemove = Integer.parseInt(oldValue);
-            increaseCoins((-toRemove) + Integer.parseInt(value));
-        } else if (key.equalsIgnoreCase("stars"))
-        {
-            String oldValue = playerData.get("stars");
-            int toRemove = 0;
-            if (oldValue != null)
-                toRemove = Integer.parseInt(oldValue);
-            increaseStars((-toRemove) + Integer.parseInt(value));
-        } else if (key.startsWith("settings."))
-            setSetting(key.substring(key.indexOf(".") + 1), value);
-        else if (key.startsWith("redis."))
-            setFromRedis(key.substring(key.indexOf(".") + 1), value);
-        else
-            logger.warning("Can't manage set " + key + " for value: " + value);
-
-        playerData.put(key, value);
-
-        // Waiting for Raesta to implement it
-        logger.info("Set (" + key + ": " + value + ")");
     }
 
     private void setFromRedis(String key, String value)

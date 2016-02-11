@@ -78,8 +78,8 @@
         </dependency>
 
         <dependency>
-            <groupId>net.samagames</groupId>
-            <artifactId>RestfullAPI</artifactId>
+            <groupId>com.samagames</groupId>
+            <artifactId>PersistanceAPI</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
