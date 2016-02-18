@@ -78,7 +78,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.samagames</groupId>
+            <groupId>net.samagames</groupId>
             <artifactId>PersistanceAPI</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>

@@ -2,7 +2,7 @@ package net.samagames.core;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import com.samagames.persistanceapi.GameServiceManager;
+import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.api.permissions.rawtypes.ICacheHandler;
 import net.samagames.core.database.DatabaseConnector;
 import net.samagames.core.database.RedisServer;
@@ -185,7 +185,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         }
 
         api = new ApiImplementation(this);
-		/*
+        /*
         Loading listeners
 		 */
 
@@ -229,7 +229,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         });
         RestCacheLoader.hook();
 
-		/*
+        /*
         Loading commands
 		 */
 
@@ -371,7 +371,7 @@ public class APIPlugin extends JavaPlugin implements Listener
     }
 
 
-	/*
+    /*
     Listen for join
 	 */
 
@@ -412,5 +412,9 @@ public class APIPlugin extends JavaPlugin implements Listener
 
     public NPCManager getNPCManager() {
         return npcManager;
+    }
+
+    public GameServiceManager getGameServiceManager() {
+        return gameServiceManager;
     }
 }

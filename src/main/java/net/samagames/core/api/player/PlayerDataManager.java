@@ -52,7 +52,7 @@ public class PlayerDataManager implements IPlayerDataManager
         PlayerData data = cachedData.get(player);
 
         if (data == null)
-            return new RestPlayerData(player, api, (PlayerDataManager) api.getPlayerManager());
+            return new PlayerData(player, api, (PlayerDataManager) api.getPlayerManager());
 
         if (forceRefresh)
         {
@@ -75,6 +75,8 @@ public class PlayerDataManager implements IPlayerDataManager
     @Override
     public void unload(UUID player)
     {
+        if(cachedData.contains(player))
+            cachedData.get(player).updateData();
         cachedData.remove(player);
     }
 

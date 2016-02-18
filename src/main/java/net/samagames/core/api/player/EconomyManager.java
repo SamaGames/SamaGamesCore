@@ -1,12 +1,8 @@
 package net.samagames.core.api.player;
 
-import com.google.gson.reflect.TypeToken;
 import net.md_5.bungee.api.ChatColor;
 import net.samagames.api.permissions.permissions.PermissionUser;
 import net.samagames.core.ApiImplementation;
-import net.samagames.restfull.RestAPI;
-import net.samagames.restfull.request.Request;
-import net.samagames.restfull.response.elements.PromotionResponseElement;
 import org.bukkit.Bukkit;
 
 import java.util.*;

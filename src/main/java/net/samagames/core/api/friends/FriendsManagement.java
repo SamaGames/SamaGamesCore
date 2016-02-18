@@ -1,11 +1,7 @@
 package net.samagames.core.api.friends;
 
-import com.google.common.reflect.TypeToken;
 import net.samagames.api.friends.IFriendsManager;
 import net.samagames.core.ApiImplementation;
-import net.samagames.restfull.RestAPI;
-import net.samagames.restfull.request.Request;
-import net.samagames.restfull.response.StatusResponse;
 
 import java.util.*;
 
@@ -13,7 +9,7 @@ import java.util.*;
  * This file is a part of the SamaGames project
  * This code is absolutely confidential.
  * (C) Copyright Elydra Network 2015
- * Created by Thog
+ * Created by Silvanosky
  * All rights reserved.
  */
 public class FriendsManagement implements IFriendsManager
@@ -21,103 +17,108 @@ public class FriendsManagement implements IFriendsManager
 
     private final ApiImplementation api;
 
+    private HashMap<UUID, FriendPlayer> cache;
+
     public FriendsManagement(ApiImplementation api)
     {
         this.api = api;
+        this.cache = new HashMap<>();
     }
 
     @Override
     public boolean areFriends(UUID from, UUID isFriend)
     {
-        Object result = RestAPI.getInstance().sendRequest("player/isfriend", new Request().addProperty("playerUUID", from).addProperty("friendUUID", isFriend), StatusResponse.class, "POST");
-        if (result instanceof StatusResponse)
-            return ((StatusResponse) result).getStatus();
-        api.getPlugin().getLogger().warning("Error in player/isfriend (" + result + ")");
-        return false;
+        if (cache.containsKey(from))
+        {
+            FriendPlayer friendPlayer = cache.get(from);
+            return friendPlayer.areFriend(isFriend);
+        }else
+        {
+            //TODO update player
+            return false;
+        }
     }
 
     @Override
     public List<String> namesFriendsList(UUID asking)
     {
-        List<String> playerNames = new ArrayList<>();
-
-        for (UUID id : uuidFriendsList(asking))
+        if (cache.containsKey(asking))
         {
-            String name = api.getUUIDTranslator().getName(id, false);
-            if (name == null)
+            List<String> names = new ArrayList<>();
+            FriendPlayer friendPlayer = cache.get(asking);
+
+            for (UUID uuid : friendPlayer.getFriends())
             {
-                continue;
+                names.add(api.getUUIDTranslator().getName(uuid, false));
             }
-            playerNames.add(name);
+
+            return names;
+        }else
+        {
+            //TODO update player
+            return null;
         }
-        return playerNames;
     }
 
     @Override
     public List<UUID> uuidFriendsList(UUID asking)
     {
-        Object friendsResponse = RestAPI.getInstance().sendRequest("player/friends", new Request().addProperty("playerUUID", asking), new TypeToken<List<UUID>>() {}.getType(), "POST");
-        if (friendsResponse instanceof List)
+        if (cache.containsKey(asking))
         {
-            //noinspection unchecked
-            return (List<UUID>) friendsResponse;
+            FriendPlayer friendPlayer = cache.get(asking);
+
+            return friendPlayer.getFriends();
+        }else
+        {
+            //TODO update player
+            return null;
         }
-        else
-            api.getPlugin().getLogger().warning("Error in player/requester (" + friendsResponse + ")");
-        return new ArrayList<>();
     }
 
     public Map<UUID, String> associatedFriendsList(UUID asking)
     {
-        HashMap<UUID, String> ret = new HashMap<>();
-
-        for (UUID id : uuidFriendsList(asking))
+        if (cache.containsKey(asking))
         {
-            String name = api.getUUIDTranslator().getName(id, true);
-            if (name == null)
+            HashMap<UUID, String> names = new HashMap<>();
+            FriendPlayer friendPlayer = cache.get(asking);
+
+            for (UUID uuid : friendPlayer.getFriends())
             {
-                continue;
+                String name;
+                if((name = api.getUUIDTranslator().getName(uuid, false)) != null)
+                {
+                    continue;
+                }
+
+                names.put(uuid, name);
             }
-            ret.put(id, name);
+
+            return names;
+        }else
+        {
+            //TODO update player
+            return null;
         }
-        return ret;
     }
 
     @Override
     public List<String> requests(UUID asking)
     {
-        Object friendsResponse = RestAPI.getInstance().sendRequest("player/requester", new Request().addProperty("playerUUID", asking), List.class, "POST");
-        if (friendsResponse instanceof List)
-        {
-            //noinspection unchecked
-            return (List<String>) friendsResponse;
-        }
-        else
-            api.getPlugin().getLogger().warning("Error in player/requester (" + friendsResponse + ")");
-        return new ArrayList<>();
+        //TODO get request to player
+        return null;
     }
 
     @Override
     public List<String> sentRequests(UUID asking)
     {
-
-        Object friendsResponse = RestAPI.getInstance().sendRequest("player/requested", new Request().addProperty("playerUUID", asking), List.class, "POST");
-        if (friendsResponse instanceof List)
-        {
-            //noinspection unchecked
-            return (List<String>) friendsResponse;
-        }
-        else
-            api.getPlugin().getLogger().warning("Error in player/requester (" + friendsResponse + ")");
-        return new ArrayList<>();
+        //TODO get request from player
+        return null;
     }
 
     @Override
     public boolean removeFriend(UUID asking, UUID target)
     {
-        Object result = RestAPI.getInstance().sendRequest("player/friend", new Request().addProperty("playerUUID", asking).addProperty("friendUUID", target), StatusResponse.class, "DELETE");
-        if (result instanceof StatusResponse)
-            return ((StatusResponse) result).getStatus();
+        //TODO update player in db and cache
         return false;
     }
 

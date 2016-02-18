@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
-class NameFetcher
+public class NameFetcher
 {
     private static final JsonParser parser = new JsonParser();
 

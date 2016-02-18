@@ -1,12 +1,11 @@
 package net.samagames.core.api.player;
 
-import com.samagames.persistanceapi.beans.PlayerBean;
+import net.samagames.persistanceapi.beans.PlayerBean;
 import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.api.player.IFinancialCallback;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_8_R3.Overridden;
 
 import java.util.Date;
 import java.util.Map;
@@ -47,7 +46,7 @@ public class PlayerData extends AbstractPlayerData
     public void updateData()
     {
         lastRefresh = System.currentTimeMillis();
-
+        api.getGameServiceManager()
     }
 
     @Override
@@ -203,6 +202,7 @@ public class PlayerData extends AbstractPlayerData
 
     @Override
     public long increaseStars(long incrBy) {
+        //TODO update when needed
         int result = (int) (playerBean.getStars() + incrBy);
         playerBean.setStars(result);
         return result;
@@ -221,6 +221,7 @@ public class PlayerData extends AbstractPlayerData
 
     @Override
     public long increaseCoins(long incrBy) {
+        //TODO update when needed
         int result = (int) (playerBean.getCoins() + incrBy);
         playerBean.setCoins(result);
         return result;
@@ -234,6 +235,7 @@ public class PlayerData extends AbstractPlayerData
 
     @Override
     public long getStars() {
+        //TODO update when needed
         return playerBean.getStars();
     }
 

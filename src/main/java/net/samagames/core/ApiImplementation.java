@@ -1,5 +1,6 @@
 package net.samagames.core;
 
+import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.achievements.IAchievementManager;
 import net.samagames.api.friends.IFriendsManager;
@@ -245,6 +246,11 @@ public class ApiImplementation extends SamaGamesAPI
     public Jedis getBungeeResource()
     {
         return plugin.getDatabaseConnector().getBungeeResource();
+    }
+
+    public GameServiceManager getGameServiceManager()
+    {
+        return plugin.getGameServiceManager();
     }
 
     @Override

@@ -14,8 +14,8 @@ import java.util.UUID;
 /**
  * This file is a part of the SamaGames project
  * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
+ * Created by Silvanosky
+ * (C) Copyright Elydra Network 2016
  * All rights reserved.
  */
 class ProxiedPlayer implements IProxiedPlayer
@@ -35,18 +35,21 @@ class ProxiedPlayer implements IProxiedPlayer
     @Override
     public String getServer()
     {
+        //Todo redis implement
         return playerData.get("redis.server", "Inconnu");
     }
 
     @Override
     public String getProxy()
     {
+        //Todo redis implement
         return playerData.get("redis.proxy", "Inconnu");
     }
 
     @Override
     public String getIp()
     {
+        //Todo redis implement
         return playerData.get("redis.ip", "0.0.0.0");
     }
 
