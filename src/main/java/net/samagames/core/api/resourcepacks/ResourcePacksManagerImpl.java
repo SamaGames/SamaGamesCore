@@ -1,14 +1,14 @@
 package net.samagames.core.api.resourcepacks;
 
-import net.minecraft.server.v1_8_R3.PacketPlayInResourcePackStatus;
-import net.minecraft.server.v1_8_R3.PacketPlayOutResourcePackSend;
+import net.minecraft.server.v1_9_R1.PacketPlayInResourcePackStatus;
+import net.minecraft.server.v1_9_R1.PacketPlayOutResourcePackSend;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.resourcepacks.IResourceCallback;
 import net.samagames.api.resourcepacks.IResourcePacksManager;
 import net.samagames.core.APIPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
