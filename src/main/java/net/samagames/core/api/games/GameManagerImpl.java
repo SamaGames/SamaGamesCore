@@ -30,6 +30,7 @@ public class GameManagerImpl implements IGameManager
     private Game game;
     private int maxReconnectTime;
     private boolean freeMode;
+    private boolean legacyPvP;
 
     public GameManagerImpl(ApiImplementation api)
     {
@@ -42,6 +43,8 @@ public class GameManagerImpl implements IGameManager
 
         this.maxReconnectTime = -1;
         this.freeMode = false;
+        this.legacyPvP = false;
+
         this.gameProperties = new GameProperties();
     }
 
@@ -240,6 +243,12 @@ public class GameManagerImpl implements IGameManager
     }
 
     @Override
+    public void setLegacyPvP(boolean legacyPvP)
+    {
+        this.legacyPvP = legacyPvP;
+    }
+
+    @Override
     public boolean isWaited(UUID uuid)
     {
         return this.playersDisconnected.contains(uuid);
@@ -249,6 +258,12 @@ public class GameManagerImpl implements IGameManager
     public boolean isFreeMode()
     {
         return this.freeMode;
+    }
+
+    @Override
+    public boolean isLegacyPvP()
+    {
+        return this.legacyPvP;
     }
 
     @Override
