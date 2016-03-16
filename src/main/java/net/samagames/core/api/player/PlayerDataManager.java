@@ -12,8 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * This file is a part of the SamaGames project
  * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
+ * Created by Silvanosky
+ * (C) Copyright Elydra Network 2016-2017
  * All rights reserved.
  */
 public class PlayerDataManager implements IPlayerDataManager

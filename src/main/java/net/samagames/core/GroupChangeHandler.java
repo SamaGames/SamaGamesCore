@@ -6,8 +6,7 @@ import com.google.gson.JsonSyntaxException;
 import net.samagames.api.permissions.permissions.PermissionGroup;
 import net.samagames.api.permissions.permissions.PermissionUser;
 import net.samagames.api.pubsub.IPacketsReceiver;
-import net.samagames.api.pubsub.IPatternReceiver;
-import net.samagames.core.api.permissions.BasicPermissionManager;
+import net.samagames.core.api.permissions.PermissionManager;
 
 import java.util.UUID;
 
@@ -20,10 +19,10 @@ import java.util.UUID;
  */
 public class GroupChangeHandler implements IPacketsReceiver
 {
-    private final BasicPermissionManager permissionsManager;
+    private final PermissionManager permissionsManager;
     private final Gson gson;
 
-    public GroupChangeHandler(BasicPermissionManager manager)
+    public GroupChangeHandler(PermissionManager manager)
     {
         this.permissionsManager = manager;
         this.gson = new GsonBuilder().create();

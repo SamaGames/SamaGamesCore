@@ -9,7 +9,7 @@ import redis.clients.jedis.Jedis;
 /**
  * This file is a part of the SamaGames project
  * This code is absolutely confidential.
- * Created by zyuiop
+ * Created by .....
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */

@@ -1,5 +1,6 @@
 package net.samagames.core;
 
+import net.samagames.core.api.options.ServerOptions;
 import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.achievements.IAchievementManager;
@@ -9,7 +10,7 @@ import net.samagames.api.gui.IGuiManager;
 import net.samagames.api.names.IUUIDTranslator;
 import net.samagames.api.network.IJoinManager;
 import net.samagames.api.network.IProxyDataManager;
-import net.samagames.api.options.ServerOptions;
+import net.samagames.api.options.IServerOptions;
 import net.samagames.api.parties.IPartiesManager;
 import net.samagames.api.permissions.IPermissionsManager;
 import net.samagames.api.player.IPlayerDataManager;
@@ -23,10 +24,8 @@ import net.samagames.core.api.games.GameManagerImpl;
 import net.samagames.core.api.gui.GuiManager;
 import net.samagames.core.api.names.UUIDTranslator;
 import net.samagames.core.api.network.*;
-import net.samagames.core.api.options.IServerOptions;
 import net.samagames.core.api.parties.PartiesManager;
-import net.samagames.core.api.permissions.BasicPermissionManager;
-import net.samagames.core.api.permissions.PermissionsManager;
+import net.samagames.core.api.permissions.PermissionManager;
 import net.samagames.core.api.player.PlayerDataManager;
 import net.samagames.core.api.pubsub.PubSubAPI;
 import net.samagames.core.api.resourcepacks.ResourcePacksManagerImpl;
@@ -35,6 +34,7 @@ import net.samagames.core.api.shops.ShopsManager;
 import net.samagames.core.api.stats.StatsManager;
 import net.samagames.core.listeners.GlobalChannelHandler;
 import net.samagames.core.rest.AchievementManagerRest;
+import net.samagames.persistanceapi.datamanager.PermissionsManager;
 import net.samagames.tools.BarAPI.BarAPI;
 import net.samagames.tools.SkyFactory;
 import net.samagames.tools.npc.NPCManager;
@@ -46,7 +46,6 @@ import java.util.HashMap;
 /**
  * This file is a part of the SamaGames project
  * This code is absolutely confidential.
- * Created by zyuiop
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
@@ -63,14 +62,14 @@ public class ApiImplementation extends SamaGamesAPI
     private final IProxyDataManager proxyDataManager;
     private final IPartiesManager partiesManager;
     private final IResourcePacksManager resourcePacksManager;
-    private final BasicPermissionManager permissionsManager;
+    private final PermissionManager permissionsManager;
     private final IFriendsManager friendsManager;
     private final BarAPI barAPI;
     private final SkyFactory skyFactory;
     private final HashMap<String, StatsManager> statsManagerCache;
     private IGameManager gameApi;
 
-    private final IServerOptions serverOptions;
+    private final ServerOptions serverOptions;
 
     public ApiImplementation(APIPlugin plugin)
     {
@@ -78,7 +77,7 @@ public class ApiImplementation extends SamaGamesAPI
 
         this.plugin = plugin;
 
-        serverOptions = new IServerOptions();
+        serverOptions = new ServerOptions();
 
         this.statsManagerCache = new HashMap<>();
 
@@ -92,7 +91,7 @@ public class ApiImplementation extends SamaGamesAPI
         guiManager = new GuiManager(plugin);
 
         resourcePacksManager = new ResourcePacksManagerImpl(this);
-        settingsManager = new SettingsManager();
+        settingsManager = new SettingsManager(this);
         playerDataManager = new PlayerDataManager(this);
         achievementManager = new AchievementManagerRest(this);
 
@@ -113,7 +112,7 @@ public class ApiImplementation extends SamaGamesAPI
         uuidTranslator = new UUIDTranslator(plugin, this);
         proxyDataManager = new ProxyDataManagerImpl(this);
         partiesManager = new PartiesManager(this);
-        permissionsManager = new PermissionsManager(plugin);
+        permissionsManager = new PermissionManager(plugin);
         friendsManager = new FriendsManagement(this);
 
         // Init Group change listener
@@ -137,7 +136,7 @@ public class ApiImplementation extends SamaGamesAPI
     }
 
     @Override
-    public ServerOptions getServerOptions() {
+    public IServerOptions getServerOptions() {
         return serverOptions;
     }
 

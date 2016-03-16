@@ -1,5 +1,6 @@
 package net.samagames.core.api.friends;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

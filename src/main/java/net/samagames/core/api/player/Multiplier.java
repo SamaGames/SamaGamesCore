@@ -28,6 +28,7 @@ public class Multiplier
         this.globalAmount = globalAmount;
         this.endTime = endTime;
     }
+
     public int getGlobalAmount()
     {
         return (globalAmount >= 1) ? globalAmount : 1;
@@ -35,7 +36,7 @@ public class Multiplier
 
     public boolean isValid()
     {
-        return endTime < System.currentTimeMillis();
+        return endTime > System.currentTimeMillis();
     }
     
     public String getMessage()

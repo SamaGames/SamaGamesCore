@@ -1,7 +1,10 @@
 package net.samagames.core.api.friends;
 
 import net.samagames.api.friends.IFriendsManager;
+import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.core.ApiImplementation;
+import net.samagames.core.api.player.PlayerData;
+import net.samagames.persistanceapi.beans.FriendshipBean;
 
 import java.util.*;
 
@@ -25,6 +28,14 @@ public class FriendsManagement implements IFriendsManager
         this.cache = new HashMap<>();
     }
 
+    public void loadFriends(UUID player)
+    {
+        PlayerData playerData = (PlayerData) api.getPlayerManager().getPlayerData(player);
+        ArrayList<FriendshipBean> friendshipList = api.getGameServiceManager().getFriendshipList(playerData.getPlayerBean());
+        //FriendPlayer friendPlayer = new FriendPlayer(player)
+        //TODO do with satch because brain fuck
+    }
+
     @Override
     public boolean areFriends(UUID from, UUID isFriend)
     {
@@ -34,7 +45,7 @@ public class FriendsManagement implements IFriendsManager
             return friendPlayer.areFriend(isFriend);
         }else
         {
-            //TODO update player
+
             return false;
         }
     }
@@ -104,7 +115,6 @@ public class FriendsManagement implements IFriendsManager
     @Override
     public List<String> requests(UUID asking)
     {
-        //TODO get request to player
         return null;
     }
 

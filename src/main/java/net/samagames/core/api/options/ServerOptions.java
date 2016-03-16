@@ -1,16 +1,16 @@
 package net.samagames.core.api.options;
 
-import net.samagames.api.options.ServerOptions;
+import net.samagames.api.options.IServerOptions;
 
 /**
  * Created by Silva on 15/11/2015.
  */
-public class IServerOptions implements ServerOptions {
+public class ServerOptions implements IServerOptions {
 
     private boolean displayRanks;
     private boolean activeNature;
 
-    public IServerOptions()
+    public ServerOptions()
     {
         displayRanks = true;
         activeNature = true;
