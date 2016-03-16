@@ -10,6 +10,8 @@ import net.samagames.api.network.ResponseType;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.network.JoinManagerImplement;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 
 import java.util.Set;
@@ -32,6 +34,16 @@ class GameLoginHandler implements IJoinHandler
     {
         if (api.getGame() != null)
         {
+            if (api.isLegacyPvP())
+            {
+                AttributeInstance genericAttackSpeedAttribute = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
+
+                if (genericAttackSpeedAttribute != null)
+                    genericAttackSpeedAttribute.setBaseValue(16.0D);
+            }
+
+            player.spigot().setCollidesWithEntities(false);
+
             if(api.getGame().isGameStarted())
             {
                 if (api.isReconnectAllowed(player.getUniqueId())

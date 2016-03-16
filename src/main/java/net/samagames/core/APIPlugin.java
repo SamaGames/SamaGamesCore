@@ -17,7 +17,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_9_R1.CraftServer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -53,6 +53,7 @@ public class APIPlugin extends JavaPlugin implements Listener
     private String serverName;
     private FileConfiguration configuration;
     private boolean allowJoin;
+    private boolean disableWhitelist;
     private final String denyJoinReason = ChatColor.RED + "Serveur non initialisé.";
     private boolean serverRegistered;
     private String joinPermission = null;
@@ -125,6 +126,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         }
 
         joinPermission = getConfig().getString("join-permission");
+        disableWhitelist = getConfig().getBoolean("disable-whitelist", false);
 
         File conf = new File(getDataFolder().getAbsoluteFile().getParentFile().getParentFile(), "data.yml");
         this.getLogger().info("Searching data.yml in " + conf.getAbsolutePath());
@@ -392,10 +394,10 @@ public class APIPlugin extends JavaPlugin implements Listener
             event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, "Vous n'avez pas la permission de rejoindre ce serveur.");
         }
 
-        if (!ipWhiteList.contains(event.getRealAddress().getHostAddress()))
+        if (!ipWhiteList.contains(event.getRealAddress().getHostAddress()) && !disableWhitelist)
         {
             event.setResult(PlayerLoginEvent.Result.KICK_WHITELIST);
-            event.setKickMessage(ChatColor.RED + "Erreur de connexion vers le serveur... Merci de bien vouloir ré-essayer plus tard.");
+            event.setKickMessage(ChatColor.RED + "Vous n'avez pas la permission de rejoindre ce serveur.");
             Bukkit.getLogger().log(Level.WARNING, "An user tried to connect from IP " + event.getRealAddress().getHostAddress());
         }
     }

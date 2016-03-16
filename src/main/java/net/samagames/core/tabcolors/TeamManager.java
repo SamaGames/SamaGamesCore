@@ -1,6 +1,6 @@
 package net.samagames.core.tabcolors;
 
-import net.minecraft.server.v1_8_R3.ScoreboardTeamBase;
+import net.minecraft.server.v1_9_R1.ScoreboardTeamBase;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.permissions.IPermissionsManager;
 import net.samagames.api.permissions.permissions.PermissionGroup;
