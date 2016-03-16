@@ -42,6 +42,8 @@ class GameLoginHandler implements IJoinHandler
                     genericAttackSpeedAttribute.setBaseValue(16.0D);
             }
 
+            player.spigot().setCollidesWithEntities(false);
+
             if(api.getGame().isGameStarted())
             {
                 if (api.isReconnectAllowed(player.getUniqueId())
