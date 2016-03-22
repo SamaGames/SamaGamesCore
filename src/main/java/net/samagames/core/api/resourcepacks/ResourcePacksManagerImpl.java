@@ -86,27 +86,24 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
 
         if (forceUrl != null)
         {
-            Bukkit.getScheduler().runTaskLater(APIPlugin.getInstance(), () -> {
-                currentlyDownloading.add(player.getUniqueId());
-                sendPack(player, forceUrl);
+            currentlyDownloading.add(player.getUniqueId());
+            sendPack(player, forceUrl);
 
-                //Kick if still downloading after 5 minutes
-                Bukkit.getScheduler().runTaskLater(SamaGamesAPI.get().getPlugin(),
-                        () -> {
-                            if(currentlyDownloading.contains(player.getUniqueId()))
+            //Kick if still downloading after 5 minutes
+            Bukkit.getScheduler().runTaskLater(SamaGamesAPI.get().getPlugin(),
+                    () -> {
+                        if(currentlyDownloading.contains(player.getUniqueId()))
+                        {
+                            if (callback == null || callback.automaticKick(player))
                             {
-                                if (callback == null || callback.automaticKick(player))
-                                {
-                                    player.kickPlayer(rejectMessage);
-                                }
-                                currentlyDownloading.remove(player.getUniqueId());
-                                APIPlugin.getInstance().getLogger().info("Player " + player.getName() + " timed out resource pack");
+                                player.kickPlayer(rejectMessage);
                             }
-                        }, 2400L);
-            }, 100);
+                            currentlyDownloading.remove(player.getUniqueId());
+                            APIPlugin.getInstance().getLogger().info("Player " + player.getName() + " timed out resource pack");
+                        }
+                    }, 2400L);
         } else
         {
-            Bukkit.getScheduler().runTaskLaterAsynchronously(APIPlugin.getInstance(), () -> {
                 Jedis jedis = api.getBungeeResource();
                 Long l = jedis.srem("playersWithPack", player.getUniqueId().toString());
                 jedis.close();
@@ -116,7 +113,6 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
                     player.setResourcePack(resetUrl);
                     APIPlugin.getInstance().getLogger().info("Sending pack to " + player.getName() + " : " + resetUrl);
                 }
-            }, 100);
         }
     }
 
