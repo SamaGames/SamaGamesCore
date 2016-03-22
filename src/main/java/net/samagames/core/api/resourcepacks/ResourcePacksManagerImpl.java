@@ -93,7 +93,14 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
                 Bukkit.getScheduler().runTaskLater(SamaGamesAPI.get().getPlugin(),
                         () -> {
                             if(currentlyDownloading.contains(player.getUniqueId()))
-                                player.kickPlayer(rejectMessage);
+                            {
+                                if (callback == null || callback.automaticKick(player))
+                                {
+                                    player.kickPlayer(rejectMessage);
+                                }
+                                currentlyDownloading.remove(player.getUniqueId());
+                                APIPlugin.getInstance().getLogger().info("Player " + player.getName() + " timed out resource pack");
+                            }
                         }, 2400L);
             }, 100);
         } else
@@ -130,6 +137,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
             {
                 Bukkit.getScheduler().runTask(SamaGamesAPI.get().getPlugin(), () -> player.kickPlayer(rejectMessage));
             }
+            APIPlugin.getInstance().getLogger().info("Player " + player.getName() + " rejected resource pack");
             currentlyDownloading.remove(player.getUniqueId());
 
         }else if(event.getStatus().equals(PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED))
