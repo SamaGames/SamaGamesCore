@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import redis.clients.jedis.Jedis;
 
@@ -79,7 +80,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onJoin(PlayerJoinEvent event)
+    public void onJoin(PlayerLoginEvent event)
     {
         final Player player = event.getPlayer();
 
@@ -129,8 +130,8 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
 
         if (callback != null)
             callback.callback(player, event.getStatus());
-
-        if (event.getStatus().equals(PlayerResourcePackStatusEvent.Status.DECLINED)
+        //False positive
+        /*if (event.getStatus().equals(PlayerResourcePackStatusEvent.Status.DECLINED)
                 || event.getStatus().equals(PlayerResourcePackStatusEvent.Status.FAILED_DOWNLOAD))
         {
             if (callback == null || callback.automaticKick(player))
@@ -140,7 +141,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
             APIPlugin.getInstance().getLogger().info("Player " + player.getName() + " rejected resource pack");
             currentlyDownloading.remove(player.getUniqueId());
 
-        }else if(event.getStatus().equals(PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED))
+        }else */if(event.getStatus().equals(PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED))
         {
             currentlyDownloading.remove(player.getUniqueId());
             APIPlugin.getInstance().getLogger().info("Player " + player.getName() + " successfully downloaded resource pack");
