@@ -29,6 +29,7 @@ public class GameManagerImpl implements IGameManager
     private final IGameProperties gameProperties;
     private Game game;
     private int maxReconnectTime;
+    private boolean freeMode;
 
     public GameManagerImpl(ApiImplementation api)
     {
@@ -40,6 +41,7 @@ public class GameManagerImpl implements IGameManager
         this.playerReconnectedTimers = new HashMap<>();
 
         this.maxReconnectTime = -1;
+        this.freeMode = false;
         this.gameProperties = new GameProperties();
     }
 
@@ -232,9 +234,21 @@ public class GameManagerImpl implements IGameManager
     }
 
     @Override
+    public void setFreeMode(boolean freeMode)
+    {
+        this.freeMode = freeMode;
+    }
+
+    @Override
     public boolean isWaited(UUID uuid)
     {
         return this.playersDisconnected.contains(uuid);
+    }
+
+    @Override
+    public boolean isFreeMode()
+    {
+        return this.freeMode;
     }
 
     @Override
