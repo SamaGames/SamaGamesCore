@@ -124,8 +124,6 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
         if (forceUrl == null)
             return;
 
-        if (callback != null)
-            callback.callback(player, event.getStatus());
         if (event.getStatus().equals(PlayerResourcePackStatusEvent.Status.DECLINED)
                 || event.getStatus().equals(PlayerResourcePackStatusEvent.Status.FAILED_DOWNLOAD))
         {
@@ -145,6 +143,9 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
                 jedis.sadd("playersWithPack", player.getUniqueId().toString());
                 jedis.close();
             });
+            //Call when it's done
+            if (callback != null)
+                callback.callback(player, event.getStatus());
         }
     }
 
