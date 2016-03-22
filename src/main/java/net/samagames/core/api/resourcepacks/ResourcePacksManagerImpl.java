@@ -98,13 +98,16 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
             }, 100);
         } else
         {
-            Bukkit.getScheduler().runTaskLater(APIPlugin.getInstance(), () -> {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(APIPlugin.getInstance(), () -> {
                 Jedis jedis = api.getBungeeResource();
                 Long l = jedis.srem("playersWithPack", player.getUniqueId().toString());
                 jedis.close();
 
                 if (l > 0)
+                {
                     player.setResourcePack(resetUrl);
+                    APIPlugin.getInstance().getLogger().info("Sending pack to " + player.getName() + " : " + resetUrl);
+                }
             }, 100);
         }
     }
@@ -128,9 +131,11 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
                 Bukkit.getScheduler().runTask(SamaGamesAPI.get().getPlugin(), () -> player.kickPlayer(rejectMessage));
             }
             currentlyDownloading.remove(player.getUniqueId());
+
         }else if(event.getStatus().equals(PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED))
         {
             currentlyDownloading.remove(player.getUniqueId());
+            APIPlugin.getInstance().getLogger().info("Player " + player.getName() + " successfully downloaded resource pack");
             Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
                 Jedis jedis = api.getBungeeResource();
                 jedis.sadd("playersWithPack", player.getUniqueId().toString());
