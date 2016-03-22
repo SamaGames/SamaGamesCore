@@ -5,10 +5,13 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.samagames.api.player.AbstractPlayerData;
+import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.pubsub.IPacketsReceiver;
 import net.samagames.api.pubsub.PendingMessage;
 import net.samagames.core.APIPlugin;
+import net.samagames.core.api.permissions.PermissionEntity;
+import net.samagames.core.api.player.PlayerData;
+import net.samagames.persistanceapi.beans.SanctionBean;
 import net.samagames.tools.Misc;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
@@ -56,12 +59,10 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
     public void onJoin(PlayerJoinEvent event)
     {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            AbstractPlayerData playerData = api.getPlayerManager().getPlayerData(event.getPlayer().getUniqueId());
-            String isMute = playerData.get("redis.isMute");
-            if (isMute != null && isMute.equals("true")) {
-                Date expiration = new Date(Long.valueOf(playerData.get("redis.muteExpiration")));
-                String reason = playerData.get("redis.muteReason");
-                addMute(event.getPlayer().getUniqueId(), expiration, reason);
+            PlayerData playerData = api.getPlayerManager().getPlayerData(event.getPlayer().getUniqueId());
+            SanctionBean mute = playerData.getMuteSanction();
+            if (mute != null && !mute.isDeleted()) {
+                addMute(event.getPlayer().getUniqueId(), mute.getExpirationTime(), mute.getReason());
             }
         });
     }
@@ -83,6 +84,44 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
         removeMute(p.getUniqueId());
     }
 
+    private String replaceColors(String message)
+    {
+        String s = message;
+        for (org.bukkit.ChatColor color : org.bukkit.ChatColor.values())
+        {
+            s = s.replaceAll("(?i)&" + color.getChar(), "" + color);
+        }
+        return s;
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onChatFormat(AsyncPlayerChatEvent event)
+    {
+        Player p = event.getPlayer();
+        PermissionEntity user = api.getPermissionsManager().getPlayer(p.getUniqueId());
+        String format = "<display><prefix><name><suffix>: ";
+
+        String display = replaceColors(user.getTag());
+        String prefix = replaceColors(user.getPrefix());
+        String suffix = replaceColors(user.getSuffix());
+
+        String tmp = format;
+        tmp = tmp.replaceAll("<display>", "" + display + org.bukkit.ChatColor.WHITE);
+        tmp = tmp.replaceAll("<prefix>", "" + prefix);
+        tmp = tmp.replaceAll("<name>", "" + p.getName());
+        tmp = tmp.replaceAll("<suffix>", "" + suffix);
+
+        if (p.hasPermission("bungeefilter.bypass"))
+        {
+            tmp += replaceColors(event.getMessage());
+        } else
+        {
+            tmp += event.getMessage().replaceAll("&r", "");
+        }
+
+        event.setFormat(tmp.replace("%", "%%"));
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onChat(AsyncPlayerChatEvent event)
     {
@@ -93,6 +132,7 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
         long time = System.currentTimeMillis();
         Player player = event.getPlayer();
 
+        //TODO rewrite mute system
         if (mutedPlayers.containsKey(player.getUniqueId()))
         {
             Date end = mutedPlayers.get(player.getUniqueId());
@@ -121,14 +161,14 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
                 return;
             }
         }
-
-        if (api.getPermissionsManager().getApi().getUser(player.getUniqueId()).hasPermission("chatrestrict.ignore"))
+        PermissionEntity user = api.getPermissionsManager().getPlayer(player.getUniqueId());
+        if (user.hasPermission("chatrestrict.ignore"))
             return;
 
         MessageData last = lastMessages.get(player.getUniqueId());
         if (last != null)
         {
-            if (!api.getPermissionsManager().getApi().getUser(player.getUniqueId()).hasPermission("chat.bypass"))
+            if (!user.hasPermission("chat.bypass"))
             {
                 if (last.isTooEarly(time))
                 {

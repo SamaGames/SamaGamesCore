@@ -2,7 +2,6 @@ package net.samagames.core.api.shops;
 
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.shops.AbstractShopsManager;
-import net.samagames.core.rest.RestPlayerData;
 import net.samagames.restfull.response.ValueResponse;
 import net.samagames.restfull.response.elements.ShopElement;
 

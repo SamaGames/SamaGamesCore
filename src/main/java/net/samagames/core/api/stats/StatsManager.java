@@ -8,6 +8,8 @@ import net.samagames.api.stats.Leaderboard;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.player.PlayerData;
 import net.samagames.core.api.stats.games.*;
+import net.samagames.persistanceapi.GameServiceManager;
+import net.samagames.persistanceapi.beans.statistics.LeaderboardBean;
 import net.samagames.persistanceapi.beans.statistics.PlayerStatisticsBean;
 import net.samagames.restfull.RestAPI;
 import net.samagames.restfull.request.Request;
@@ -22,42 +24,19 @@ import static net.samagames.core.api.stats.StatsManager.StatsNames.*;
 /**
  * This file is a part of the SamaGames project
  * This code is absolutely confidential.
- * (C) Copyright Elydra Network 2015
+ * (C) Copyright Elydra Network 2016 & 2017
  * All rights reserved.
  */
 public class StatsManager implements IStatsManager
 {
     private final Logger logger;
-    private final String game;
     private ApiImplementation api;
     private Map<UUID, PlayerStats> caches;
 
     private boolean[] statsToLoad;
 
-    public enum StatsNames{
-        GLOBAL(0),
-        DIMENSION(1),
-        HEROBATTLE(2),
-        JUKEBOX(3),
-        QUAKE(4),
-        UHCRUN(5),
-        UPPERVOID(6);
-
-        private int value;
-        StatsNames(int value)
-        {
-            this.value = value;
-        }
-
-        int intValue()
-        {
-            return value;
-        }
-    }
-
-    public StatsManager(String game, ApiImplementation apiImplementation)
+    public StatsManager(ApiImplementation apiImplementation)
     {
-        this.game = game;
         this.api = apiImplementation;
         this.caches = new HashMap<>();
         this.statsToLoad = new boolean[StatsNames.values().length];
@@ -74,28 +53,28 @@ public class StatsManager implements IStatsManager
     {
         PlayerData playerData = (PlayerData) api.getPlayerManager().getPlayerData(player);
         PlayerStats playerStats = new PlayerStats(api, player);
-        boolean global = statsToLoad[GLOBAL.intValue()];
-        if(global || statsToLoad[DIMENSION.intValue()])
+        boolean global = statsToLoad[StatsNames.GLOBAL.intValue()];
+        if(global || statsToLoad[StatsNames.DIMENSION.intValue()])
         {
             playerStats.setDimensionStats(new DimensionStats(playerData, api.getGameServiceManager().getDimensionStatistics(playerData.getPlayerBean())));
         }
-        if(global || statsToLoad[HEROBATTLE.intValue()])
+        if(global || statsToLoad[StatsNames.HEROBATTLE.intValue()])
         {
             playerStats.setHeroBattleStats(new HeroBattleStats(playerData, api.getGameServiceManager().getHeroBattleStatistics(playerData.getPlayerBean())));
         }
-        if(global || statsToLoad[JUKEBOX.intValue()])
+        if(global || statsToLoad[StatsNames.JUKEBOX.intValue()])
         {
             playerStats.setJukeBoxStats(new JukeBoxStats(playerData, api.getGameServiceManager().getJukeBoxStatistics(playerData.getPlayerBean())));
         }
-        if(global || statsToLoad[QUAKE.intValue()])
+        if(global || statsToLoad[StatsNames.QUAKE.intValue()])
         {
             playerStats.setQuakeStats(new QuakeStats(playerData, api.getGameServiceManager().getQuakeStatistics(playerData.getPlayerBean())));
         }
-        if(global || statsToLoad[UHCRUN.intValue()])
+        if(global || statsToLoad[StatsNames.UHCRUN.intValue()])
         {
             playerStats.setUhcRunStats(new UHCRunStats(playerData, api.getGameServiceManager().getUHCRunStatistics(playerData.getPlayerBean())));
         }
-        if(global || statsToLoad[UPPERVOID.intValue()])
+        if(global || statsToLoad[StatsNames.UPPERVOID.intValue()])
         {
             playerStats.setUppervoidStats(new UppervoidStats(playerData, api.getGameServiceManager().getUpperVoidStatistics(playerData.getPlayerBean())));
         }
@@ -119,9 +98,47 @@ public class StatsManager implements IStatsManager
         caches.values().forEach(PlayerStats::updateStats);
     }
 
-    @Override
-    public Leaderboard getLeaderboard(String stat)
+    public void setStatsToLoad(StatsNames game, boolean value)
     {
+        statsToLoad[game.intValue()] = value;
+    }
+
+    public boolean isStatsLoading(StatsNames game)
+    {
+        return statsToLoad[game.intValue()];
+    }
+
+    public Leaderboard getLeaderboard(StatsNames game, String category)
+    {
+        GameServiceManager gameServiceManager = api.getGameServiceManager();
+        List<LeaderboardBean> list = new ArrayList<>();
+        //TODO add annotation in api for simplify method
+        switch (game)
+        {
+            case DIMENSION:
+                list = gameServiceManager.getDimmensionLeaderBoard(category);
+            case HEROBATTLE:
+                list = gameServiceManager.getHeroBattleLeaderBoard(category);
+                break;
+            case JUKEBOX:
+                list = gameServiceManager.getJukeBoxLeaderBoard(category);
+                break;
+            case QUAKE:
+                list = gameServiceManager.getQuakeLeaderBoard(category);
+                break;
+            case UHCRUN:
+                list = gameServiceManager.getUhcLeaderBoard(category);
+                break;
+            case UPPERVOID:
+                list = gameServiceManager.getUpperVoidLeaderBoard(category);
+                break;
+            default:
+                list = new ArrayList<>();
+                break;
+        }
+
+        //TODO fill leaderboard
+
         Object response = RestAPI.getInstance().sendRequest("statistics/leaderboard", new Request().addProperty("category", game).addProperty("key", stat), new TypeToken<List<LeaderboradElement>>() {}.getType(), "POST");
 
         if (response instanceof List && ((List) response).size() == 3)

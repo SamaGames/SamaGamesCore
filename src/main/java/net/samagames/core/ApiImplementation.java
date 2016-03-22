@@ -12,11 +12,8 @@ import net.samagames.api.network.IJoinManager;
 import net.samagames.api.network.IProxyDataManager;
 import net.samagames.api.options.IServerOptions;
 import net.samagames.api.parties.IPartiesManager;
-import net.samagames.api.permissions.IPermissionsManager;
-import net.samagames.api.player.IPlayerDataManager;
 import net.samagames.api.pubsub.IPubSubAPI;
 import net.samagames.api.resourcepacks.IResourcePacksManager;
-import net.samagames.api.settings.ISettingsManager;
 import net.samagames.api.shops.AbstractShopsManager;
 import net.samagames.api.stats.IStatsManager;
 import net.samagames.core.api.friends.FriendsManagement;
@@ -32,9 +29,7 @@ import net.samagames.core.api.resourcepacks.ResourcePacksManagerImpl;
 import net.samagames.core.api.settings.SettingsManager;
 import net.samagames.core.api.shops.ShopsManager;
 import net.samagames.core.api.stats.StatsManager;
-import net.samagames.core.listeners.GlobalChannelHandler;
-import net.samagames.core.rest.AchievementManagerRest;
-import net.samagames.persistanceapi.datamanager.PermissionsManager;
+import net.samagames.core.listeners.pubsub.GlobalChannelHandler;
 import net.samagames.tools.BarAPI.BarAPI;
 import net.samagames.tools.SkyFactory;
 import net.samagames.tools.npc.NPCManager;
@@ -52,18 +47,17 @@ import java.util.HashMap;
 public class ApiImplementation extends SamaGamesAPI
 {
     private final APIPlugin plugin;
-    private final IGuiManager guiManager;
-    private final ISettingsManager settingsManager;
+    private final GuiManager guiManager;
+    private final SettingsManager settingsManager;
     private final PlayerDataManager playerDataManager;
-    private final IAchievementManager achievementManager;
     private final PubSubAPI pubSub;
-    private final IUUIDTranslator uuidTranslator;
-    private final IJoinManager joinManager;
+    private final UUIDTranslator uuidTranslator;
+    private final JoinManagerImplement joinManager;
     private final IProxyDataManager proxyDataManager;
-    private final IPartiesManager partiesManager;
-    private final IResourcePacksManager resourcePacksManager;
+    private final PartiesManager partiesManager;
+    private final ResourcePacksManagerImpl resourcePacksManager;
     private final PermissionManager permissionsManager;
-    private final IFriendsManager friendsManager;
+    private final FriendsManagement friendsManager;
     private final BarAPI barAPI;
     private final SkyFactory skyFactory;
     private final HashMap<String, StatsManager> statsManagerCache;
@@ -93,7 +87,6 @@ public class ApiImplementation extends SamaGamesAPI
         resourcePacksManager = new ResourcePacksManagerImpl(this);
         settingsManager = new SettingsManager(this);
         playerDataManager = new PlayerDataManager(this);
-        achievementManager = new AchievementManagerRest(this);
 
         pubSub = new PubSubAPI();
         pubSub.init(this);
@@ -125,7 +118,7 @@ public class ApiImplementation extends SamaGamesAPI
     }
 
     @Override
-    public IPermissionsManager getPermissionsManager()
+    public PermissionManager getPermissionsManager()
     {
         return permissionsManager;
     }
@@ -136,18 +129,18 @@ public class ApiImplementation extends SamaGamesAPI
     }
 
     @Override
-    public IServerOptions getServerOptions() {
+    public ServerOptions getServerOptions() {
         return serverOptions;
     }
 
     @Override
-    public IResourcePacksManager getResourcePacksManager()
+    public ResourcePacksManagerImpl getResourcePacksManager()
     {
         return resourcePacksManager;
     }
 
     @Override
-    public IFriendsManager getFriendsManager()
+    public FriendsManagement getFriendsManager()
     {
         return friendsManager;
     }
@@ -168,7 +161,7 @@ public class ApiImplementation extends SamaGamesAPI
     }
 
     @Override
-    public IPartiesManager getPartiesManager()
+    public PartiesManager getPartiesManager()
     {
         return partiesManager;
     }
@@ -214,13 +207,13 @@ public class ApiImplementation extends SamaGamesAPI
     }
 
     @Override
-    public ISettingsManager getSettingsManager()
+    public SettingsManager getSettingsManager()
     {
         return settingsManager;
     }
 
     @Override
-    public IPlayerDataManager getPlayerManager()
+    public PlayerDataManager getPlayerManager()
     {
         return playerDataManager;
     }
@@ -228,7 +221,7 @@ public class ApiImplementation extends SamaGamesAPI
     @Override
     public IAchievementManager getAchievementManager()
     {
-        return achievementManager;
+        throw new RuntimeException("Not implemented yet");
     }
 
     public IPubSubAPI getPubSub()

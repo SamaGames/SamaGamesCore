@@ -3,7 +3,6 @@ package net.samagames.core.api.player;
 import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.api.player.IPlayerDataManager;
 import net.samagames.core.ApiImplementation;
-import net.samagames.core.rest.RestPlayerData;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.UUID;
@@ -20,7 +19,7 @@ public class PlayerDataManager implements IPlayerDataManager
 {
 
     private final ApiImplementation api;
-    private final ConcurrentHashMap<UUID, PlayerData> cachedData = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, PlayerData> cache = new ConcurrentHashMap<>();
     private final EconomyManager economyManager;
     private final BukkitTask discountTask;
 
@@ -38,25 +37,25 @@ public class PlayerDataManager implements IPlayerDataManager
     }
 
     @Override
-    public AbstractPlayerData getPlayerData(UUID player)
+    public PlayerData getPlayerData(UUID player)
     {
         return getPlayerData(player, false);
     }
 
     @Override
-    public AbstractPlayerData getPlayerData(UUID player, boolean forceRefresh)
+    public PlayerData getPlayerData(UUID player, boolean forceRefresh)
     {
         if (player == null)
             return null;
 
-        PlayerData data = cachedData.get(player);
+        PlayerData data = cache.get(player);
 
         if (data == null)
-            return new PlayerData(player, api, (PlayerDataManager) api.getPlayerManager());
+            throw new RuntimeException("Player with uuid: " + player + " not loaded at join !");
 
         if (forceRefresh)
         {
-            data.updateData();
+            data.refreshData();
             return data;
         }
 
@@ -64,20 +63,20 @@ public class PlayerDataManager implements IPlayerDataManager
         return data;
     }
 
-    public void load(UUID player, PlayerData data, boolean forceLoad)
+    public void loadPlayer(UUID player)
     {
-        if (!cachedData.containsKey(player) || forceLoad)
-        {
-            cachedData.put(player, data);
-        }
+
+        PlayerData playerData = new PlayerData(player, api, this);
+        cache.put(player, playerData);
     }
 
-    @Override
-    public void unload(UUID player)
+    public void unloadPlayer(UUID player)
     {
-        if(cachedData.contains(player))
-            cachedData.get(player).updateData();
-        cachedData.remove(player);
+        //Update data before delete
+        if(cache.contains(player))
+            cache.get(player).updateData();
+
+        cache.remove(player);
     }
 
 

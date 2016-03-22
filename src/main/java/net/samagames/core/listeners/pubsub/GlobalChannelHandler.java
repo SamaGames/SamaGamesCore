@@ -1,4 +1,4 @@
-package net.samagames.core.listeners;
+package net.samagames.core.listeners.pubsub;
 
 import net.samagames.api.pubsub.IPacketsReceiver;
 import net.samagames.core.APIPlugin;

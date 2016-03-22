@@ -2,6 +2,7 @@ package net.samagames.core.listeners;
 
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.APIPlugin;
+import net.samagames.core.ApiImplementation;
 import org.bukkit.event.Listener;
 
 /**
@@ -13,7 +14,7 @@ import org.bukkit.event.Listener;
 abstract class APIListener implements Listener
 {
     final APIPlugin plugin;
-    final SamaGamesAPI api;
+    final ApiImplementation api;
 
     APIListener(APIPlugin plugin)
     {

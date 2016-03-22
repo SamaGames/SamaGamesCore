@@ -37,8 +37,7 @@ public class PermissionManager implements IPermissionsManager
 
     public void loadPlayer(UUID player)
     {
-        PlayerData playerData = (PlayerData) plugin.getAPI().getPlayerManager().getPlayerData(player);
-        PermissionEntity permissionEntity = new PermissionEntity(player, playerData, plugin);
+        PermissionEntity permissionEntity = new PermissionEntity(player, plugin);
         permissionEntity.refresh();
         cache.put(player, permissionEntity);
     }

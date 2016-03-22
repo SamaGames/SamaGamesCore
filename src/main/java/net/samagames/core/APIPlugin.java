@@ -8,7 +8,6 @@ import net.samagames.core.database.DatabaseConnector;
 import net.samagames.core.database.RedisServer;
 import net.samagames.core.hook.RestCacheLoader;
 import net.samagames.core.listeners.*;
-import net.samagames.core.rest.RestListener;
 import net.samagames.tools.Reflection;
 import net.samagames.tools.npc.NPCManager;
 import org.apache.commons.lang.StringUtils;

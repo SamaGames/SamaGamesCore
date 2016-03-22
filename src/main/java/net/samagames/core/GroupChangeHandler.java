@@ -6,6 +6,7 @@ import com.google.gson.JsonSyntaxException;
 import net.samagames.api.permissions.permissions.PermissionGroup;
 import net.samagames.api.permissions.permissions.PermissionUser;
 import net.samagames.api.pubsub.IPacketsReceiver;
+import net.samagames.core.api.permissions.PermissionEntity;
 import net.samagames.core.api.permissions.PermissionManager;
 
 import java.util.UUID;
@@ -40,21 +41,8 @@ public class GroupChangeHandler implements IPacketsReceiver
         }
         if (packetObj == null || packetObj.target == null || packetObj.type == null || packetObj.playerUUID == null )
             return;
-        PermissionGroup group = permissionsManager.getApi().getGroup(packetObj.target);
-        PermissionUser user = permissionsManager.getApi().getUser(packetObj.playerUUID);
-        if (group == null || user == null)
-            return;
-        switch (packetObj.type)
-        {
-            default:
-                break;
-            case "ADD":
-                user.addParent(group);
-                break;
-            case "REMOVE":
-                user.removeParent(group);
-                break;
-        }
+        PermissionEntity user = permissionsManager.getPlayer(packetObj.playerUUID);
+        user.refresh();
     }
 
     private class GroupChangePacket

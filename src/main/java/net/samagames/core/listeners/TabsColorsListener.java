@@ -22,8 +22,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
  */
 public class TabsColorsListener extends APIListener
 {
-
+    //TODO move to api
     private final TeamManager manager;
+
+    //TODO one team per player for futur guild and avoid group login
 
     public TabsColorsListener(APIPlugin plugin)
     {
@@ -63,14 +65,11 @@ public class TabsColorsListener extends APIListener
             final String displayn = replaceColors(display + "" + prefix) + p.getName();
             p.setDisplayName(displayn);
         });
-
-        event.setJoinMessage("");
     }
 
     @EventHandler
     public void playerQuit(final PlayerQuitEvent event)
     {
-        event.setQuitMessage("");
         manager.playerLeave(event.getPlayer());
         event.getPlayer().setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
     }
@@ -78,8 +77,6 @@ public class TabsColorsListener extends APIListener
     @EventHandler
     public void playerKick(final PlayerKickEvent event)
     {
-        event.setLeaveMessage("");
         manager.playerLeave(event.getPlayer());
-        event.getPlayer().setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
     }
 }

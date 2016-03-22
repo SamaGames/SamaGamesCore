@@ -6,8 +6,7 @@ import org.bukkit.Bukkit;
 /**
  * This file is a part of the SamaGames project
  * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
+ * (C) Copyright Elydra Network 2016 & 2017
  * All rights reserved.
  */
 class RemoteCommandsHandler implements IPacketsReceiver

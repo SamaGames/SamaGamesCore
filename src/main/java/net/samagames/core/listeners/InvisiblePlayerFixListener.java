@@ -23,7 +23,7 @@ public class InvisiblePlayerFixListener implements Listener
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerLoginEvent event)
+    public void onPlayerLogin(PlayerLoginEvent event)
     {
         //Don't force if player is hided moderator
         Bukkit.getScheduler().runTaskLater(pluginAPI, () -> {

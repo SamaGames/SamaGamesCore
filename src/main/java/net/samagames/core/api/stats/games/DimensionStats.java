@@ -44,8 +44,7 @@ public class DimensionStats extends DimensionStatisticsBean implements IDimensio
 
         if(playerData != null)
         {
-            DimensionStatisticsBean dimensionStatistics = api.getGameServiceManager().getDimensionStatistics(playerData.getPlayerBean());
-            ReflectionUtils.copySameFields(dimensionStatistics, this);
+            ReflectionUtils.copySameFields(api.getGameServiceManager().getDimensionStatistics(playerData.getPlayerBean()), this);
         }
     }
 }

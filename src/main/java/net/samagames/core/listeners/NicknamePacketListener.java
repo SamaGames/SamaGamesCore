@@ -69,8 +69,6 @@ public class NicknamePacketListener extends TinyProtocol
 
                 packet = p;
 
-                //Todo: check si joueur caché
-
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {

@@ -7,7 +7,6 @@ import net.samagames.api.network.IProxiedPlayer;
 import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.api.player.PlayerDataManager;
-import net.samagames.core.rest.RestPlayerData;
 
 import java.util.UUID;
 

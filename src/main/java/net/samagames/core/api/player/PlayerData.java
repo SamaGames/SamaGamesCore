@@ -1,12 +1,18 @@
 package net.samagames.core.api.player;
 
+import net.samagames.core.utils.ReflectionUtils;
+import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.persistanceapi.beans.PlayerBean;
 import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.api.player.IFinancialCallback;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
+import net.samagames.persistanceapi.beans.SanctionBean;
 import org.bukkit.Bukkit;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Pipeline;
 
+import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Map;
@@ -33,45 +39,80 @@ public class PlayerData extends AbstractPlayerData
     private long lastRefresh;
     private UUID playerUUID;
 
-    private final PlayerBean defaut;
+    private final GameServiceManager gameServiceManager;
+
+    private final static String key = "playerdata:";
+
+    private SanctionBean muteSanction = null;
 
     protected PlayerData(UUID playerID, ApiImplementation api, PlayerDataManager manager)
     {
         this.playerUUID = playerID;
         this.api = api;
         this.manager = manager;
+        this.gameServiceManager = api.getGameServiceManager();
 
         logger = api.getPlugin().getLogger();
-
-        Timestamp now = new Timestamp(System.currentTimeMillis());
-
-        //Should never be used since the player connect to bungee first
-        defaut = new PlayerBean(playerID,
-                api.getUUIDTranslator().getName(playerID),
-                500,
-                0,
-                now,
-                now,
-                Bukkit.getPlayer(playerID).spigot().getRawAddress().getAddress().toString(),
-                "",
-                0);
 
         refreshData();
     }
 
-    public void refreshData()
+    public boolean refreshData()
     {
         lastRefresh = System.currentTimeMillis();
+        //Load from redis
 
-        this.playerBean = api.getGameServiceManager().getPlayer(playerUUID, defaut);
+        Jedis jedis = api.getBungeeResource();
+        try{
+            if (jedis.exists(key + playerUUID))
+            {
+                ReflectionUtils.deserialiseFromRedis(jedis, key + playerUUID, playerBean);
+                if (jedis.exists("mute:" + playerUUID))
+                {
+                    muteSanction = new SanctionBean(playerUUID,
+                            SanctionBean.MUTE,
+                            jedis.hget("mute:" + playerUUID, "reason"),
+                            UUID.fromString(jedis.hget("mute:" + playerUUID, "by")),
+                            new Timestamp(Long.valueOf(jedis.hget("mute:" + playerUUID, "expireAt"))),
+                            false, null, null);
+                }
+                return true;
+            }
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }finally {
+            jedis.close();
+        }
+        return false;
     }
 
     public void updateData()
     {
         if(playerBean != null)
         {
-            api.getGameServiceManager().updatePlayer(playerBean);
+            //Save in redis
+            Jedis jedis = api.getBungeeResource();
+            Pipeline pipeline = jedis.pipelined();
+            Field[] declaredFields = PlayerBean.class.getDeclaredFields();
+            for (Field field : declaredFields)
+            {
+                field.setAccessible(true);
+                try {
+                    pipeline.hset(key + playerUUID, field.getName(), field.get(playerBean).toString());
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+            pipeline.exec();
+            pipeline.discard();
+            jedis.close();
         }
+    }
+
+    public SanctionBean getMuteSanction()
+    {
+        return muteSanction;
     }
 
     @Override
@@ -80,53 +121,6 @@ public class PlayerData extends AbstractPlayerData
         refreshIfNeeded();
         return playerBean.getCoins();
     }
-
-    /*@Override
-    public String get(String key)
-    {
-        if ("stars".equalsIgnoreCase(key) && !playerData.containsKey(key))
-            return Integer.toString(playerBean.getStars());
-        else if ("coins".equalsIgnoreCase(key) && !playerData.containsKey(key))
-            return Integer.toString(playerBean.getCoins());
-        else if (key.startsWith("settings.") && !playerData.containsKey(key))
-            return getSetting(key.substring(key.indexOf(".") + 1));
-        else if (key.startsWith("redis."))
-            return getFromRedis(key.substring(key.indexOf(".") + 1));
-        else if (!playerData.containsKey(key))
-            logger.warning("Can't manage get " + key);
-
-        return super.get(key);
-    }*/
-
-    /*@Override
-    public void set(String key, String value)
-    {
-        if (key.equalsIgnoreCase("coins"))
-        {
-            String oldValue = playerData.get("coins");
-            int toRemove = 0;
-            if (oldValue != null)
-                toRemove = Integer.parseInt(oldValue);
-            increaseCoins((-toRemove) + Integer.parseInt(value));
-        } else if (key.equalsIgnoreCase("stars"))
-        {
-            String oldValue = playerData.get("stars");
-            int toRemove = 0;
-            if (oldValue != null)
-                toRemove = Integer.parseInt(oldValue);
-            increaseStars((-toRemove) + Integer.parseInt(value));
-        } else if (key.startsWith("settings."))
-            setSetting(key.substring(key.indexOf(".") + 1), value);
-        else if (key.startsWith("redis."))
-            setFromRedis(key.substring(key.indexOf(".") + 1), value);
-        else
-            logger.warning("Can't manage set " + key + " for value: " + value);
-
-        playerData.put(key, value);
-
-        // Waiting for Raesta to implement it
-        logger.info("Set (" + key + ": " + value + ")");
-    }*/
 
     @Override
     public void creditStars(long famount, String reason, boolean applyMultiplier, IFinancialCallback financialCallback)
@@ -140,7 +134,7 @@ public class PlayerData extends AbstractPlayerData
                 if (applyMultiplier)
                 {
                     String name = ApiImplementation.get().getGameManager().getGame().getGameCodeName();
-                    //Todo handle game name to number
+                    //Todo handle game name to number need the satch enum
                     Multiplier multiplier = manager.getEconomyManager().getCurrentMultiplier(getPlayerID(), 2, 0);
                     amount *= multiplier.getGlobalAmount();
 
@@ -277,11 +271,13 @@ public class PlayerData extends AbstractPlayerData
         return increaseCoins(-decrBy);
     }
 
+    /**
+     *  Need to be call before edit data
+     */
     public void refreshIfNeeded()
     {
         if (lastRefresh + 1000 * 60 < System.currentTimeMillis())
         {
-            updateData();
             refreshData();
         }
     }
