@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -70,8 +71,8 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
         Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
             forceUrl = url;
             //Set the server resource pack (faster than sending manually)
-            /*CraftServer server = (CraftServer) Bukkit.getServer();
-            server.getServer().setResourcePack(url, "");*/
+            CraftServer server = (CraftServer) Bukkit.getServer();
+            server.getServer().setResourcePack(url, "null");
 
             APIPlugin.getInstance().getLogger().info("Defined automatic resource pack : " + url);
         });
@@ -81,7 +82,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
 
     private void sendPack(Player player, String url)
     {
-        player.setResourcePack(url);
+        /*player.setResourcePack(url);*/
         APIPlugin.getInstance().getLogger().info("Sending pack to " + player.getName() + " : " + url);
     }
 
