@@ -81,7 +81,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
 
     private void sendPack(Player player, String url)
     {
-        //player.setResourcePack(url);
+        player.setResourcePack(url);
         APIPlugin.getInstance().getLogger().info("Sending pack to " + player.getName() + " : " + url);
     }
 
