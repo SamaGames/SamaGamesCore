@@ -68,31 +68,32 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
     public void forceUrlPack(String url, IResourceCallback callback)
     {
         Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
-            //forceUrl = url;
+            forceUrl = url;
             //Set the server resource pack (faster than sending manually)
-            CraftServer server = (CraftServer) Bukkit.getServer();
-            server.getServer().setResourcePack(url, "");
+            /*CraftServer server = (CraftServer) Bukkit.getServer();
+            server.getServer().setResourcePack(url, "");*/
+
             APIPlugin.getInstance().getLogger().info("Defined automatic resource pack : " + url);
         });
 
         this.callback = callback;
     }
 
-    /*private void sendPack(Player player, String url)
+    private void sendPack(Player player, String url)
     {
         //player.setResourcePack(url);
         APIPlugin.getInstance().getLogger().info("Sending pack to " + player.getName() + " : " + url);
-    }*/
+    }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onJoin(PlayerJoinEvent event)
+    public void onJoin(PlayerLoginEvent event)
     {
         final Player player = event.getPlayer();
 
         if (forceUrl != null)
         {
             currentlyDownloading.add(player.getUniqueId());
-            //sendPack(player, forceUrl);
+            sendPack(player, forceUrl);
 
             //Kick if still downloading after 5 minutes
             Bukkit.getScheduler().runTaskLater(SamaGamesAPI.get().getPlugin(),
@@ -106,19 +107,19 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
                             currentlyDownloading.remove(player.getUniqueId());
                             APIPlugin.getInstance().getLogger().info("Player " + player.getName() + " timed out resource pack");
                         }
-                    }, 2400L);
+                    }, 200L);
         } else
         {
-                Jedis jedis = api.getBungeeResource();
-                Long l = jedis.srem("playersWithPack", player.getUniqueId().toString());
-                jedis.close();
+            Jedis jedis = api.getBungeeResource();
+            Long l = jedis.srem("playersWithPack", player.getUniqueId().toString());
+            jedis.close();
 
-                if (l > 0)
-                {
-                    //Better to check than force resourcepack
-                    player.setResourcePack(resetUrl);
-                    APIPlugin.getInstance().getLogger().info("Sending pack to " + player.getName() + " : " + resetUrl);
-                }
+            if (l > 0)
+            {
+                //Better to check than force resourcepack
+                player.setResourcePack(resetUrl);
+                APIPlugin.getInstance().getLogger().info("Sending pack to " + player.getName() + " : " + resetUrl);
+            }
         }
     }
 
