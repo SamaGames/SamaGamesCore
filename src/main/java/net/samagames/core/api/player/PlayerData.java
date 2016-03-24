@@ -1,5 +1,8 @@
 package net.samagames.core.api.player;
 
+import com.google.gson.Gson;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.utils.ReflectionUtils;
 import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.persistanceapi.beans.PlayerBean;
@@ -285,6 +288,24 @@ public class PlayerData extends AbstractPlayerData
     public PlayerBean getPlayerBean()
     {
         return playerBean;
+    }
+
+    @Override
+    public void kickFromNetwork(TextComponent reason)
+    {
+        SamaGamesAPI.get().getPubSub().send("apiexec.kick", playerUUID + " " + new Gson().toJson(reason));
+    }
+
+    @Override
+    public void connectToServer(String server)
+    {
+        SamaGamesAPI.get().getPubSub().send("apiexec.connect", playerUUID + " " + server);
+    }
+
+    @Override
+    public void sendMessage(TextComponent component)
+    {
+        SamaGamesAPI.get().getPubSub().send("apiexec.message", playerUUID + " " + new Gson().toJson(component));
     }
 
 }

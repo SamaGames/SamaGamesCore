@@ -4,20 +4,14 @@ import net.samagames.core.api.options.ServerOptions;
 import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.achievements.IAchievementManager;
-import net.samagames.api.friends.IFriendsManager;
-import net.samagames.api.games.IGameManager;
 import net.samagames.api.gui.IGuiManager;
 import net.samagames.api.names.IUUIDTranslator;
 import net.samagames.api.network.IJoinManager;
-import net.samagames.api.network.IProxyDataManager;
-import net.samagames.api.options.IServerOptions;
-import net.samagames.api.parties.IPartiesManager;
 import net.samagames.api.pubsub.IPubSubAPI;
-import net.samagames.api.resourcepacks.IResourcePacksManager;
 import net.samagames.api.shops.AbstractShopsManager;
 import net.samagames.api.stats.IStatsManager;
-import net.samagames.core.api.friends.FriendsManagement;
-import net.samagames.core.api.games.GameManagerImpl;
+import net.samagames.core.api.friends.FriendsManager;
+import net.samagames.core.api.games.GameManager;
 import net.samagames.core.api.gui.GuiManager;
 import net.samagames.core.api.names.UUIDTranslator;
 import net.samagames.core.api.network.*;
@@ -53,15 +47,14 @@ public class ApiImplementation extends SamaGamesAPI
     private final PubSubAPI pubSub;
     private final UUIDTranslator uuidTranslator;
     private final JoinManagerImplement joinManager;
-    private final IProxyDataManager proxyDataManager;
     private final PartiesManager partiesManager;
     private final ResourcePacksManagerImpl resourcePacksManager;
     private final PermissionManager permissionsManager;
-    private final FriendsManagement friendsManager;
+    private final FriendsManager friendsManager;
     private final BarAPI barAPI;
     private final SkyFactory skyFactory;
     private final HashMap<String, StatsManager> statsManagerCache;
-    private IGameManager gameApi;
+    private GameManager gameManager;
 
     private final ServerOptions serverOptions;
 
@@ -103,10 +96,10 @@ public class ApiImplementation extends SamaGamesAPI
         pubSub.subscribe("join." + getServerName(), new RegularJoinHandler(implement));
 
         uuidTranslator = new UUIDTranslator(plugin, this);
-        proxyDataManager = new ProxyDataManagerImpl(this);
         partiesManager = new PartiesManager(this);
         permissionsManager = new PermissionManager(plugin);
-        friendsManager = new FriendsManagement(this);
+        friendsManager = new FriendsManager(this);
+
 
         // Init Group change listener
         pubSub.subscribe("groupchange", new GroupChangeHandler(permissionsManager));
@@ -140,7 +133,7 @@ public class ApiImplementation extends SamaGamesAPI
     }
 
     @Override
-    public FriendsManagement getFriendsManager()
+    public FriendsManager getFriendsManager()
     {
         return friendsManager;
     }
@@ -150,14 +143,9 @@ public class ApiImplementation extends SamaGamesAPI
         return plugin;
     }
 
-    public IProxyDataManager getProxyDataManager()
+    public GameManager getGameManager()
     {
-        return proxyDataManager;
-    }
-
-    public IGameManager getGameManager()
-    {
-        return (gameApi == null) ? (this.gameApi = new GameManagerImpl(this)) : this.gameApi;
+        return (gameManager == null) ? (this.gameManager = new GameManager(this)) : this.gameManager;
     }
 
     @Override
@@ -189,7 +177,7 @@ public class ApiImplementation extends SamaGamesAPI
         if (this.statsManagerCache.containsKey(game))
             return statsManagerCache.get(game);
 
-        StatsManager statsManager = new StatsManager(game, this);
+        StatsManager statsManager = new StatsManager(this);
         statsManagerCache.put(game, statsManager);
         return statsManager;
     }

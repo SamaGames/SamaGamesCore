@@ -5,6 +5,7 @@ import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.player.PlayerData;
 import net.samagames.persistanceapi.beans.FriendshipBean;
+import redis.clients.jedis.Jedis;
 
 import java.util.*;
 
@@ -15,25 +16,38 @@ import java.util.*;
  * Created by Silvanosky
  * All rights reserved.
  */
-public class FriendsManagement implements IFriendsManager
+public class FriendsManager implements IFriendsManager
 {
 
     private final ApiImplementation api;
 
     private HashMap<UUID, FriendPlayer> cache;
 
-    public FriendsManagement(ApiImplementation api)
+    private static final String key = "friends:";
+
+    public FriendsManager(ApiImplementation api)
     {
         this.api = api;
         this.cache = new HashMap<>();
     }
 
-    public void loadFriends(UUID player)
+    public void loadPlayer(UUID player)
     {
-        PlayerData playerData = (PlayerData) api.getPlayerManager().getPlayerData(player);
-        ArrayList<FriendshipBean> friendshipList = api.getGameServiceManager().getFriendshipList(playerData.getPlayerBean());
-        //FriendPlayer friendPlayer = new FriendPlayer(player)
-        //TODO do with satch because brain fuck
+        FriendPlayer friendPlayer = new FriendPlayer(player);
+        Jedis jedis = api.getBungeeResource();
+        Set<String> smembers = jedis.smembers(key + player);
+        jedis.close();
+        for (String friend : smembers)
+        {
+            friendPlayer.addFriend(UUID.fromString(friend));
+        }
+
+    }
+
+    public void unloadPlayer(UUID player)
+    {
+        //We don't edit data here so remove cache
+        cache.remove(player);
     }
 
     @Override
@@ -41,11 +55,9 @@ public class FriendsManagement implements IFriendsManager
     {
         if (cache.containsKey(from))
         {
-            FriendPlayer friendPlayer = cache.get(from);
-            return friendPlayer.areFriend(isFriend);
+            return cache.get(from).areFriend(isFriend);
         }else
         {
-
             return false;
         }
     }

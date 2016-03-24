@@ -19,7 +19,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-public class GameManagerImpl implements IGameManager
+public class GameManager implements IGameManager
 {
     private final ApiImplementation api;
 
@@ -30,7 +30,7 @@ public class GameManagerImpl implements IGameManager
     private Game game;
     private int maxReconnectTime;
 
-    public GameManagerImpl(ApiImplementation api)
+    public GameManager(ApiImplementation api)
     {
         this.api = api;
         this.game = null;
@@ -118,18 +118,18 @@ public class GameManagerImpl implements IGameManager
             {
                 if (!this.bool)
                 {
-                    if (GameManagerImpl.this.playerDisconnectTime.containsKey(uuid))
-                        this.time = GameManagerImpl.this.playerDisconnectTime.get(uuid);
+                    if (GameManager.this.playerDisconnectTime.containsKey(uuid))
+                        this.time = GameManager.this.playerDisconnectTime.get(uuid);
 
                     this.bool = true;
                 }
 
-                if (this.time >= GameManagerImpl.this.maxReconnectTime * 60)
+                if (this.time >= GameManager.this.maxReconnectTime * 60)
                 {
                     Player playerReconnected = Bukkit.getPlayer(uuid);
 
                     if (playerReconnected == null || !playerReconnected.isOnline())
-                        GameManagerImpl.this.onPlayerReconnectTimeOut(Bukkit.getOfflinePlayer(uuid), false);
+                        GameManager.this.onPlayerReconnectTimeOut(Bukkit.getOfflinePlayer(uuid), false);
 
                     playerReconnectedTimers.remove(uuid);
 
@@ -138,7 +138,7 @@ public class GameManagerImpl implements IGameManager
 
                 this.time++;
 
-                GameManagerImpl.this.playerDisconnectTime.put(uuid, this.time);
+                GameManager.this.playerDisconnectTime.put(uuid, this.time);
             }
         }.runTaskTimer(APIPlugin.getInstance(), 20, 20);
 

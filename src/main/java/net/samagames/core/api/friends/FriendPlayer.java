@@ -37,6 +37,16 @@ public class FriendPlayer {
         friends.addAll(players);
     }
 
+    public void addFriend(UUID uuid)
+    {
+        friends.add(uuid);
+    }
+
+    public void removeFriend(UUID uuid)
+    {
+        friends.remove(uuid);
+    }
+
     public boolean areFriend(UUID uuid)
     {
         return friends.contains(uuid);
