@@ -6,6 +6,8 @@ import net.samagames.api.resourcepacks.IResourcePacksManager;
 import net.samagames.core.APIPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Server;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -66,18 +68,21 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
     public void forceUrlPack(String url, IResourceCallback callback)
     {
         Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
-            forceUrl = url;
-            APIPlugin.getInstance().getLogger().info("Defined automatic resource pack : " + forceUrl);
+            //forceUrl = url;
+            //Set the server resource pack (faster than sending manually)
+            CraftServer server = (CraftServer) Bukkit.getServer();
+            server.getServer().setResourcePack(url, "");
+            APIPlugin.getInstance().getLogger().info("Defined automatic resource pack : " + url);
         });
 
         this.callback = callback;
     }
 
-    private void sendPack(Player player, String url)
+    /*private void sendPack(Player player, String url)
     {
-        player.setResourcePack(url);
+        //player.setResourcePack(url);
         APIPlugin.getInstance().getLogger().info("Sending pack to " + player.getName() + " : " + url);
-    }
+    }*/
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent event)
@@ -87,7 +92,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
         if (forceUrl != null)
         {
             currentlyDownloading.add(player.getUniqueId());
-            sendPack(player, forceUrl);
+            //sendPack(player, forceUrl);
 
             //Kick if still downloading after 5 minutes
             Bukkit.getScheduler().runTaskLater(SamaGamesAPI.get().getPlugin(),
@@ -110,6 +115,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
 
                 if (l > 0)
                 {
+                    //Better to check than force resourcepack
                     player.setResourcePack(resetUrl);
                     APIPlugin.getInstance().getLogger().info("Sending pack to " + player.getName() + " : " + resetUrl);
                 }
