@@ -87,7 +87,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onJoin(PlayerLoginEvent event)
+    public void onJoin(PlayerJoinEvent event)
     {
         final Player player = event.getPlayer();
 
