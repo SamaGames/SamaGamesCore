@@ -108,7 +108,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
                             currentlyDownloading.remove(player.getUniqueId());
                             APIPlugin.getInstance().getLogger().info("Player " + player.getName() + " timed out resource pack");
                         }
-                    }, 200L);
+                    }, 400L);
         } else
         {
             Jedis jedis = api.getBungeeResource();
