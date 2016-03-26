@@ -66,8 +66,8 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
                     Player player = sender;
                     if (forceUrl == null)
                     {
-                        if (p.b.toString().equals(PlayerResourcePackStatusEvent.Status.DECLINED.toString())
-                                || p.b.toString().equals(PlayerResourcePackStatusEvent.Status.FAILED_DOWNLOAD.toString()))
+                        if (p.b.equals(PacketPlayInResourcePackStatus.EnumResourcePackStatus.DECLINED)
+                                || p.b.equals(PacketPlayInResourcePackStatus.EnumResourcePackStatus.FAILED_DOWNLOAD))
                         {
                             if (callback == null || callback.automaticKick(player))
                             {
@@ -76,7 +76,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
                             APIPlugin.getInstance().getLogger().info("Player " + player.getName() + " rejected resource pack");
                             currentlyDownloading.remove(player.getUniqueId());
 
-                        }else if(p.b.toString().equals(PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED.toString()))
+                        }else if(p.b.equals(PacketPlayInResourcePackStatus.EnumResourcePackStatus.SUCCESSFULLY_LOADED))
                         {
                             currentlyDownloading.remove(player.getUniqueId());
                             APIPlugin.getInstance().getLogger().info("Player " + player.getName() + " successfully downloaded resource pack");
@@ -90,9 +90,6 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
                                 callback.callback(player, PlayerResourcePackStatusEvent.Status.valueOf(p.b.toString()));
                         }
                     }
-
-
-
                 }
                 return super.onPacketInAsync(sender, channel, packet);
             }
