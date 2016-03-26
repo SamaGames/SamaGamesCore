@@ -42,7 +42,7 @@ public class MessageManagerImpl implements IMessageManager
     @Override
     public Message writeGameStartIn(int remainingTime)
     {
-        return new Message(ChatColor.YELLOW + "Début du jeu dans " + ChatColor.RED + remainingTime + " secondes" + ChatColor.YELLOW + ".", this.machine.getGameTag()).displayToAll();
+        return new Message(ChatColor.YELLOW + "Début du jeu dans " + ChatColor.RED + remainingTime + " seconde" + (remainingTime > 1 ? "s" : "") + ChatColor.YELLOW + ".", this.machine.getGameTag()).displayToAll();
     }
 
     @Override
@@ -93,16 +93,16 @@ public class MessageManagerImpl implements IMessageManager
 
         String ret = "";
         if (days > 0)
-            ret += days + " jours ";
+            ret += days + " jour" + (days > 1 ? "s" : "") + " ";
 
         if (hours > 0)
-            ret += hours + " heures ";
+            ret += hours + " heures" + (hours > 1 ? "s" : "") + " ";
 
         if (minutes > 0)
-            ret += minutes + " minutes ";
+            ret += minutes + " minutes" + (minutes > 1 ? "s" : "") + " ";
 
         if (seconds > 0)
-            ret += seconds + " secondes";
+            ret += seconds + " secondes" + (seconds > 1 ? "s" : "");
 
         if (ret.isEmpty() && minutes == 0)
             ret += "moins d'une minute";
