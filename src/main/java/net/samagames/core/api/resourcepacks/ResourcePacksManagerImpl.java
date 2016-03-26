@@ -131,18 +131,18 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
     public void forcePack(String name, IResourceCallback callback)
     {
         Jedis jedis = api.getBungeeResource();
-        forceUrlPack(jedis.hget("resourcepack:" + name, "url"), callback);
+        forceUrlPack(jedis.hget("resourcepack:" + name, "url"), jedis.hget("resourcepack:" + name, "hash"), callback);
         jedis.close();
     }
 
     @Override
-    public void forceUrlPack(String url, IResourceCallback callback)
+    public void forceUrlPack(String url, String hash, IResourceCallback callback)
     {
         Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
             forceUrl = url;
             //Set the server resource pack (faster than sending manually)
             CraftServer server = (CraftServer) Bukkit.getServer();
-            server.getServer().setResourcePack(url, DigestUtils.sha1Hex(url));
+            server.getServer().setResourcePack(url, hash);
 
             APIPlugin.getInstance().getLogger().info("Defined automatic resource pack : " + url);
         });
