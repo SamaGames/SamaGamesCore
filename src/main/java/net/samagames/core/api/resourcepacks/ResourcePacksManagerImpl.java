@@ -22,6 +22,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import redis.clients.jedis.Jedis;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -60,41 +61,65 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
         protocol = new TinyProtocol(api.getPlugin()) {
             @Override
             public Object onPacketInAsync(Player sender, Channel channel, Object packet) {
+                if (sender == null)
+                    return super.onPacketInAsync(null, channel, packet);
+
                 if (packet instanceof PacketPlayInResourcePackStatus)
                 {
-                    PacketPlayInResourcePackStatus p = (PacketPlayInResourcePackStatus) packet;
-                    Player player = sender;
-                    if (forceUrl == null)
+                    PacketPlayInResourcePackStatus status = (PacketPlayInResourcePackStatus) packet;
+                    try
                     {
-                        if (p.b.equals(PacketPlayInResourcePackStatus.EnumResourcePackStatus.DECLINED)
-                                || p.b.equals(PacketPlayInResourcePackStatus.EnumResourcePackStatus.FAILED_DOWNLOAD))
-                        {
-                            if (callback == null || callback.automaticKick(player))
-                            {
-                                Bukkit.getScheduler().runTask(SamaGamesAPI.get().getPlugin(), () -> player.kickPlayer(rejectMessage));
-                            }
-                            APIPlugin.getInstance().getLogger().info("Player " + player.getName() + " rejected resource pack");
-                            currentlyDownloading.remove(player.getUniqueId());
+                        Field hashField = status.getClass().getDeclaredField("a");
+                        hashField.setAccessible(true);
+                        Field stateField = status.getClass().getDeclaredField("b");
+                        stateField.setAccessible(true);
 
-                        }else if(p.b.equals(PacketPlayInResourcePackStatus.EnumResourcePackStatus.SUCCESSFULLY_LOADED))
-                        {
-                            currentlyDownloading.remove(player.getUniqueId());
-                            APIPlugin.getInstance().getLogger().info("Player " + player.getName() + " successfully downloaded resource pack");
-                            Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
-                                Jedis jedis = api.getBungeeResource();
-                                jedis.sadd("playersWithPack", player.getUniqueId().toString());
-                                jedis.close();
-                            });
-                            //Call when it's done
-                            if (callback != null)
-                                callback.callback(player, PlayerResourcePackStatusEvent.Status.valueOf(p.b.toString()));
-                        }
+                        String hash = (String) hashField.get(status);
+                        PacketPlayInResourcePackStatus.EnumResourcePackStatus state = (PacketPlayInResourcePackStatus.EnumResourcePackStatus) stateField.get(status);
+
+                        handle(sender, hash, state);
+                    } catch (Exception e)
+                    {
+                        e.printStackTrace();
                     }
                 }
+
                 return super.onPacketInAsync(sender, channel, packet);
             }
         };
     }
+
+    private void handle(Player sender, String hash, PacketPlayInResourcePackStatus.EnumResourcePackStatus state)
+    {
+        Player player = sender;
+        if (forceUrl == null)
+            return;
+
+        if (state.equals(PacketPlayInResourcePackStatus.EnumResourcePackStatus.DECLINED)
+                || state.equals(PacketPlayInResourcePackStatus.EnumResourcePackStatus.FAILED_DOWNLOAD))
+        {
+            if (callback == null || callback.automaticKick(player))
+            {
+                Bukkit.getScheduler().runTask(SamaGamesAPI.get().getPlugin(), () -> player.kickPlayer(rejectMessage));
+            }
+            APIPlugin.getInstance().getLogger().info("Player " + player.getName() + " rejected resource pack");
+            currentlyDownloading.remove(player.getUniqueId());
+
+        }else if(state.equals(PacketPlayInResourcePackStatus.EnumResourcePackStatus.SUCCESSFULLY_LOADED))
+        {
+            currentlyDownloading.remove(player.getUniqueId());
+            APIPlugin.getInstance().getLogger().info("Player " + player.getName() + " successfully downloaded resource pack");
+            Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
+                Jedis jedis = api.getBungeeResource();
+                jedis.sadd("playersWithPack", player.getUniqueId().toString());
+                jedis.close();
+            });
+            //Call when it's done
+            if (callback != null)
+                callback.callback(player, PlayerResourcePackStatusEvent.Status.valueOf(state.toString()));
+        }
+    }
+
 
     @Override
     public void forcePack(String name)
