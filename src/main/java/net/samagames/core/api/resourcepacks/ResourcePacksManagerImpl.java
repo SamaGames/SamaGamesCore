@@ -1,9 +1,13 @@
 package net.samagames.core.api.resourcepacks;
 
+import io.netty.channel.Channel;
+import net.minecraft.server.v1_8_R3.PacketPlayInResourcePackStatus;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.resourcepacks.IResourceCallback;
 import net.samagames.api.resourcepacks.IResourcePacksManager;
 import net.samagames.core.APIPlugin;
+import net.samagames.tools.TinyProtocol;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
@@ -18,7 +22,9 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import redis.clients.jedis.Jedis;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -31,13 +37,15 @@ import java.util.UUID;
 public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
 {
 
-    private final HashSet<UUID> currentlyDownloading = new HashSet<>();
+    private final List<UUID> currentlyDownloading = new ArrayList<>();
     private final SamaGamesAPI api;
     private final String resetUrl;
     private String forceUrl;
     private IResourceCallback callback;
 
     private final static String rejectMessage = ChatColor.RED + "Il est nécessaire d'accepter le ressource pack pour jouer.";
+
+    private TinyProtocol protocol;
 
     public ResourcePacksManagerImpl(SamaGamesAPI api)
     {
@@ -49,6 +57,46 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
         this.resetUrl = jedis.get("resourcepacks:reseturl");
         APIPlugin.getInstance().getLogger().info("Resource packs reset URL defined to " + resetUrl);
         jedis.close();
+        protocol = new TinyProtocol(api.getPlugin()) {
+            @Override
+            public Object onPacketInAsync(Player sender, Channel channel, Object packet) {
+                if (packet instanceof PacketPlayInResourcePackStatus)
+                {
+                    PacketPlayInResourcePackStatus p = (PacketPlayInResourcePackStatus) packet;
+                    Player player = sender;
+                    if (forceUrl == null)
+                    {
+                        if (p.b.toString().equals(PlayerResourcePackStatusEvent.Status.DECLINED.toString())
+                                || p.b.toString().equals(PlayerResourcePackStatusEvent.Status.FAILED_DOWNLOAD.toString()))
+                        {
+                            if (callback == null || callback.automaticKick(player))
+                            {
+                                Bukkit.getScheduler().runTask(SamaGamesAPI.get().getPlugin(), () -> player.kickPlayer(rejectMessage));
+                            }
+                            APIPlugin.getInstance().getLogger().info("Player " + player.getName() + " rejected resource pack");
+                            currentlyDownloading.remove(player.getUniqueId());
+
+                        }else if(p.b.toString().equals(PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED.toString()))
+                        {
+                            currentlyDownloading.remove(player.getUniqueId());
+                            APIPlugin.getInstance().getLogger().info("Player " + player.getName() + " successfully downloaded resource pack");
+                            Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
+                                Jedis jedis = api.getBungeeResource();
+                                jedis.sadd("playersWithPack", player.getUniqueId().toString());
+                                jedis.close();
+                            });
+                            //Call when it's done
+                            if (callback != null)
+                                callback.callback(player, PlayerResourcePackStatusEvent.Status.valueOf(p.b.toString()));
+                        }
+                    }
+
+
+
+                }
+                return super.onPacketInAsync(sender, channel, packet);
+            }
+        };
     }
 
     @Override
@@ -72,7 +120,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
             forceUrl = url;
             //Set the server resource pack (faster than sending manually)
             CraftServer server = (CraftServer) Bukkit.getServer();
-            server.getServer().setResourcePack(url, "null");
+            server.getServer().setResourcePack(url, DigestUtils.sha1Hex(url));
 
             APIPlugin.getInstance().getLogger().info("Defined automatic resource pack : " + url);
         });
@@ -96,10 +144,10 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
             currentlyDownloading.add(player.getUniqueId());
             sendPack(player, forceUrl);
 
-            //Kick if still downloading after 5 minutes
+            //Kick if still downloading after 1 minute
             Bukkit.getScheduler().runTaskLater(SamaGamesAPI.get().getPlugin(),
                     () -> {
-                        if(currentlyDownloading.contains(player.getUniqueId()))
+                        if(currentlyDownloading.contains(player.getUniqueId()) && player.isOnline())
                         {
                             if (callback == null || callback.automaticKick(player))
                             {
@@ -108,7 +156,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
                             currentlyDownloading.remove(player.getUniqueId());
                             APIPlugin.getInstance().getLogger().info("Player " + player.getName() + " timed out resource pack");
                         }
-                    }, 400L);
+                    }, 1200L);//20*60
         } else
         {
             Jedis jedis = api.getBungeeResource();
@@ -124,11 +172,10 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
         }
     }
 
-    @EventHandler
+    /*@EventHandler
     public void onResourcePack(PlayerResourcePackStatusEvent event)
     {
         Player player = event.getPlayer();
-
         if (forceUrl == null)
             return;
 
@@ -155,7 +202,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
             if (callback != null)
                 callback.callback(player, event.getStatus());
         }
-    }
+    }*/
 
 
     @Override
