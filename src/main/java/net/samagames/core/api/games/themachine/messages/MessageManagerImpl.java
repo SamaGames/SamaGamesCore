@@ -96,13 +96,13 @@ public class MessageManagerImpl implements IMessageManager
             ret += days + " jour" + (days > 1 ? "s" : "") + " ";
 
         if (hours > 0)
-            ret += hours + " heures" + (hours > 1 ? "s" : "") + " ";
+            ret += hours + " heure" + (hours > 1 ? "s" : "") + " ";
 
         if (minutes > 0)
-            ret += minutes + " minutes" + (minutes > 1 ? "s" : "") + " ";
+            ret += minutes + " minute" + (minutes > 1 ? "s" : "") + " ";
 
         if (seconds > 0)
-            ret += seconds + " secondes" + (seconds > 1 ? "s" : "");
+            ret += seconds + " seconde" + (seconds > 1 ? "s" : "");
 
         if (ret.isEmpty() && minutes == 0)
             ret += "moins d'une minute";
