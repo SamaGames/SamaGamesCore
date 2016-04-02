@@ -17,9 +17,9 @@ public class SettingsManager implements ISettingsManager
 
     public Map<String, String> getSettings(UUID player)
     {
-        /*PlayerData playerData = (PlayerData) api.getPlayerManager().getPlayerData(player);
-        playerData.getPlayerBean().*/
-       /* Map<String, String> data = SamaGamesAPI.get().getPlayerManager().getPlayerData(player).getValues();
+        // TODO: PlayerData playerData = (PlayerData) api.getPlayerManager().getPlayerData(player);
+        // TODO: playerData.getPlayerBean().
+        /*Map<String, String> data = SamaGamesAPI.get().getPlayerManager().getPlayerData(player).getValues();
         HashMap<String, String> settings = new HashMap<>();
         data.entrySet().stream().filter(line -> line.getKey().startsWith("settings.")).forEach(line -> {
             String setting = line.getKey().split(".")[0];

@@ -76,6 +76,13 @@ public class StatsManager implements IStatsManager
         //Add next stats there
     }
 
+
+    @Override
+    public void finish()
+    {
+        caches.values().forEach(net.samagames.core.api.stats.PlayerStat::send);
+    }
+
     //TODO unload at leave
     public void unloadPlayer(UUID player)
     {
