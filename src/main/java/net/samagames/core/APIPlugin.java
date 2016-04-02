@@ -2,12 +2,13 @@ package net.samagames.core;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import net.samagames.persistanceapi.GameServiceManager;
-import net.samagames.api.permissions.rawtypes.ICacheHandler;
 import net.samagames.core.database.DatabaseConnector;
 import net.samagames.core.database.RedisServer;
-import net.samagames.core.hook.RestCacheLoader;
-import net.samagames.core.listeners.*;
+import net.samagames.core.listeners.ChatHandleListener;
+import net.samagames.core.listeners.InvisiblePlayerFixListener;
+import net.samagames.core.listeners.NicknamePacketListener;
+import net.samagames.core.listeners.TabsColorsListener;
+import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.tools.Reflection;
 import net.samagames.tools.npc.NPCManager;
 import org.apache.commons.lang.StringUtils;
@@ -16,7 +17,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_9_R1.CraftServer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -25,7 +26,6 @@ import org.bukkit.scheduler.BukkitTask;
 import redis.clients.jedis.Jedis;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
@@ -57,7 +57,6 @@ public class APIPlugin extends JavaPlugin implements Listener
     private String joinPermission = null;
     private ScheduledExecutorService executor;
     private DebugListener debugListener;
-    private ICacheHandler cacheHandler;
 
     private NicknamePacketListener nicknamePacketListener;
     private NPCManager npcManager;
@@ -151,35 +150,6 @@ public class APIPlugin extends JavaPlugin implements Listener
             gameServiceManager = new GameServiceManager(sqlUrl, sqlUsername, sqlPassword, sqlMinPoolSize, sqlMaxPoolSize);
 
             databaseConnector = new DatabaseConnector(this, bungee);
-            this.cacheHandler = new ICacheHandler()
-            {
-                @Override
-                public void set(String key, String value) throws IOException
-                {
-                    Jedis jedis = databaseConnector.getBungeeResource();
-                    jedis.set(key, value);
-                    jedis.expire(key, 86400); // Expire every 24h
-                    jedis.close();
-                }
-
-                @Override
-                public String get(String key) throws IOException
-                {
-                    Jedis jedis = databaseConnector.getBungeeResource();
-                    String result = jedis.get(key);
-                    jedis.close();
-                    return result;
-                }
-
-                @Override
-                public boolean exist(String key) throws IOException
-                {
-                    Jedis jedis = databaseConnector.getBungeeResource();
-                    boolean result = jedis.exists(key);
-                    jedis.close();
-                    return result;
-                }
-            };
 
         }
 
@@ -209,8 +179,6 @@ public class APIPlugin extends JavaPlugin implements Listener
         nicknamePacketListener = new NicknamePacketListener(this);
         npcManager = new NPCManager(api);
 
-        Bukkit.getPluginManager().registerEvents(new PlayerDataListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new ChatFormatter(this), this);
         Bukkit.getPluginManager().registerEvents(chatHandleListener, this);
         Bukkit.getPluginManager().registerEvents(new TabsColorsListener(this), this);
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "WDL|CONTROL");
@@ -226,7 +194,6 @@ public class APIPlugin extends JavaPlugin implements Listener
             Bukkit.getLogger().info("Blocked WorldDownloader of " + player.getDisplayName());
             player.sendPluginMessage(this, "WDL|CONTROL", out.toByteArray());
         });
-        RestCacheLoader.hook();
 
         /*
         Loading commands
@@ -402,11 +369,6 @@ public class APIPlugin extends JavaPlugin implements Listener
     public DatabaseConnector getDatabaseConnector()
     {
         return databaseConnector;
-    }
-
-    public ICacheHandler getCacheHandler()
-    {
-        return cacheHandler;
     }
 
     public NPCManager getNPCManager() {

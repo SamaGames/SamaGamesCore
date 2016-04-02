@@ -1,0 +1,55 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'sonar-runner'
+apply plugin: 'maven'
+
+group = 'net.samagames'
+version = '4.0.0'
+archivesBaseName = 'SamaGamesCore'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+compileJava.options.encoding = 'UTF-8'
+
+repositories {
+    mavenCentral()
+
+    maven { url "http://maven.samagames.net/public/" }
+
+    maven {
+        url "http://maven.samagames.net/developpers/"
+        credentials {
+            username sguser
+            password sgpass
+        }
+    }
+
+    maven {
+        url "http://maven.samagames.net/network/"
+        credentials {
+            username sguser
+            password sgpass
+        }
+    }
+
+    mavenLocal()
+}
+
+dependencies {
+    compile group: 'net.samagames', name: 'SamaGamesAPI', version: '4.0.0', changing: true
+    compile(group: 'org.spigotmc', name: 'spigot', version: '1.9-R0.1-SNAPSHOT', changing: true) {
+        transitive = false
+    }
+    compile group: 'net.samagames', name: 'PersistanceAPI', version: '1.0.0'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'PersistanceGeneratorCore/Generation'
+        }
+    }
+}
+
+compileJava.dependsOn(':PersistanceGeneratorCore:runSimple')

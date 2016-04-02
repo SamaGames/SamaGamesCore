@@ -11,15 +11,10 @@ import net.samagames.core.api.stats.games.*;
 import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.persistanceapi.beans.statistics.LeaderboardBean;
 import net.samagames.persistanceapi.beans.statistics.PlayerStatisticsBean;
-import net.samagames.restfull.RestAPI;
-import net.samagames.restfull.request.Request;
-import net.samagames.restfull.response.ErrorResponse;
-import net.samagames.restfull.response.elements.LeaderboradElement;
 
 import java.util.*;
 import java.util.logging.Logger;
 
-import static net.samagames.core.api.stats.StatsManager.StatsNames.*;
 
 /**
  * This file is a part of the SamaGames project
@@ -56,7 +51,7 @@ public class StatsManager implements IStatsManager
         boolean global = statsToLoad[StatsNames.GLOBAL.intValue()];
         if(global || statsToLoad[StatsNames.DIMENSION.intValue()])
         {
-            playerStats.setDimensionStats(new DimensionStats(playerData, api.getGameServiceManager().getDimensionStatistics(playerData.getPlayerBean())));
+            playerStats.setDimensionStatistics(new DimensionStatistics(playerData, api.getGameServiceManager().getDimensionStatistics(playerData.getPlayerBean())));
         }
         if(global || statsToLoad[StatsNames.HEROBATTLE.intValue()])
         {

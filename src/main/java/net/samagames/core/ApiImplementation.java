@@ -1,6 +1,7 @@
 package net.samagames.core;
 
 import net.samagames.core.api.options.ServerOptions;
+import net.samagames.core.api.permissions.GroupChangeHandler;
 import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.achievements.IAchievementManager;
@@ -170,6 +171,11 @@ public class ApiImplementation extends SamaGamesAPI
     public IJoinManager getJoinManager()
     {
         return joinManager;
+    }
+
+    @Override
+    public ProxyDataManager getProxyDataManager() {
+        return null;
     }
 
     public IStatsManager getStatsManager(String game)

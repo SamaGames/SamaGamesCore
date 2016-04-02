@@ -1,17 +1,12 @@
 package net.samagames.core.tabcolors;
 
-import net.minecraft.server.v1_8_R3.ScoreboardTeamBase;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.permissions.IPermissionsManager;
-import net.samagames.api.permissions.permissions.PermissionGroup;
-import net.samagames.api.permissions.permissions.PermissionUser;
-import net.samagames.api.permissions.restfull.RestfullManager;
 import net.samagames.core.APIPlugin;
 import net.samagames.tools.scoreboards.TeamHandler;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;

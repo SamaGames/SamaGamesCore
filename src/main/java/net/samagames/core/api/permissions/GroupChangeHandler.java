@@ -1,20 +1,15 @@
-package net.samagames.core;
+package net.samagames.core.api.permissions;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import net.samagames.api.permissions.permissions.PermissionGroup;
-import net.samagames.api.permissions.permissions.PermissionUser;
 import net.samagames.api.pubsub.IPacketsReceiver;
-import net.samagames.core.api.permissions.PermissionEntity;
-import net.samagames.core.api.permissions.PermissionManager;
 
 import java.util.UUID;
 
 /**
  * This file is a part of the SamaGames Project CodeBase
  * This code is absolutely confidential.
- * Created by Thog
  * (C) Copyright Elydra Network 2014 & 2015
  * All rights reserved.
  */

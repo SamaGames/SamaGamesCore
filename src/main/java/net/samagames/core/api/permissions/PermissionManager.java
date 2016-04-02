@@ -4,8 +4,6 @@ import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.permissions.IPermissionsEntity;
 import net.samagames.api.permissions.IPermissionsManager;
 import net.samagames.core.APIPlugin;
-import net.samagames.core.api.player.PlayerData;
-import net.samagames.persistanceapi.beans.PlayerBean;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -31,8 +29,6 @@ public class PermissionManager implements IPermissionsManager
         this.plugin = plugin;
         this.isLobby = SamaGamesAPI.get().getServerName().startsWith("Hub");
         Bukkit.getLogger().info("Lobby mode was set to : " + isLobby);
-
-        plugin.getServer().getPluginManager().registerEvents(new PermissionListeners(plugin, this), plugin);
     }
 
     public void loadPlayer(UUID player)
