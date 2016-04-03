@@ -44,7 +44,7 @@ class ProtocolHandler extends TinyProtocol
             {
                 Field hashField = status.getClass().getDeclaredField("a");
                 hashField.setAccessible(true);
-                Field stateField = status.getClass().getDeclaredField("b");
+                Field stateField = status.getClass().getDeclaredField("status");
                 stateField.setAccessible(true);
 
                 String hash = (String) hashField.get(status);
