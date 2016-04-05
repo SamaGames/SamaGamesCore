@@ -3,7 +3,7 @@ package net.samagames.core.api.player;
 import com.google.gson.Gson;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.samagames.api.SamaGamesAPI;
-import net.samagames.core.utils.ReflectionUtils;
+import net.samagames.core.utils.CacheLoader;
 import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.persistanceapi.beans.PlayerBean;
 import net.samagames.api.player.AbstractPlayerData;
@@ -13,13 +13,9 @@ import net.samagames.core.ApiImplementation;
 import net.samagames.persistanceapi.beans.SanctionBean;
 import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Pipeline;
 
-import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -69,7 +65,7 @@ public class PlayerData extends AbstractPlayerData
         try{
             if (jedis.exists(key + playerUUID))
             {
-                ReflectionUtils.deserialiseFromRedis(jedis, key + playerUUID, playerBean);
+                CacheLoader.load(jedis, key + playerUUID, playerBean);
                 if (jedis.exists("mute:" + playerUUID))
                 {
                     muteSanction = new SanctionBean(playerUUID,
@@ -96,19 +92,8 @@ public class PlayerData extends AbstractPlayerData
         {
             //Save in redis
             Jedis jedis = api.getBungeeResource();
-            Pipeline pipeline = jedis.pipelined();
-            Field[] declaredFields = PlayerBean.class.getDeclaredFields();
-            for (Field field : declaredFields)
-            {
-                field.setAccessible(true);
-                try {
-                    pipeline.hset(key + playerUUID, field.getName(), field.get(playerBean).toString());
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-            pipeline.exec();
-            pipeline.discard();
+            //Generated class so FUCK IT i made it static
+            CacheLoader.send(jedis, key + playerUUID, playerBean);
             jedis.close();
         }
     }

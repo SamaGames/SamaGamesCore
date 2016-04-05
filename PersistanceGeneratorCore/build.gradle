@@ -36,7 +36,7 @@ repositories {
     }
 }
 
-jar {
+/*jar {
     manifest {
         attributes 'Main-Class': 'net.samagames.generator.Generator'
     }
@@ -44,7 +44,7 @@ jar {
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
-}
+}*/
 
 dependencies {
     compile group: 'net.samagames', name: 'PersistanceAPI', version: '1.0.0', changing: true

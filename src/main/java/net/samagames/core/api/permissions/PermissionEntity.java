@@ -2,8 +2,7 @@ package net.samagames.core.api.permissions;
 
 import net.samagames.api.permissions.IPermissionsEntity;
 import net.samagames.core.APIPlugin;
-import net.samagames.core.api.player.PlayerData;
-import net.samagames.core.utils.ReflectionUtils;
+import net.samagames.core.utils.CacheLoader;
 import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.persistanceapi.beans.GroupsBean;
 import org.bukkit.Bukkit;
@@ -58,8 +57,8 @@ public class PermissionEntity implements IPermissionsEntity {
                 // Reset variable
                 groupsBean = new GroupsBean();
 
-                //Get group
-                ReflectionUtils.deserialiseFromRedis(jedis, key + uuid, groupsBean);
+                //Get group (static because easier for generation FUCK YOU if you comment this)
+                CacheLoader.load(jedis, key + uuid, groupsBean);
 
                 //Get perm list
                 Map<String, String> datas = jedis.hgetAll(key + uuid + subkeyPerms);

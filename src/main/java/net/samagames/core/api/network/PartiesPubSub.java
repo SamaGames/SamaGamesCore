@@ -39,8 +39,8 @@ public class PartiesPubSub implements IPacketsReceiver
         {
             TextComponent component = new TextComponent("Impossible de vous connecter : " + response.getReason());
             component.setColor(net.md_5.bungee.api.ChatColor.RED);
-            SamaGamesAPI.get().getProxyDataManager()
-                    .getProxiedPlayer(SamaGamesAPI.get().getPartiesManager().getLeader(partyID))
+            SamaGamesAPI.get().getPlayerManager()
+                    .getPlayerData(SamaGamesAPI.get().getPartiesManager().getLeader(partyID))
                     .sendMessage(component);
         }
     }

@@ -2,16 +2,16 @@ package net.samagames.generator;
 
 import com.squareup.javapoet.*;
 import net.samagames.api.stats.IPlayerStats;
+import net.samagames.api.stats.IStatsManager;
+import net.samagames.persistanceapi.beans.GroupsBean;
+import net.samagames.persistanceapi.beans.PlayerBean;
 import net.samagames.persistanceapi.beans.statistics.PlayerStatisticsBean;
 
 import javax.lang.model.element.Modifier;
 import java.beans.ConstructorProperties;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -27,6 +27,8 @@ public class Generator {
     {
         createPlayerStat();
 
+        createCacheLoader();
+
         build();
     }
 
@@ -40,20 +42,41 @@ public class Generator {
 
         playerStatsBuilder.addField(UUID.class, "playerUUID", Modifier.PRIVATE);
         playerStatsBuilder.addField(apimpl, "api", Modifier.PRIVATE);
+        playerStatsBuilder.addField(boolean[].class, "statsToLoad", Modifier.PRIVATE);
 
         for (JavaFile javaFile : typeStats)
         {
-            playerStatsBuilder.addField(ClassName.get(javaFile.packageName, javaFile.typeSpec.name), javaFile.typeSpec.name.toLowerCase(), Modifier.PRIVATE);
+            playerStatsBuilder.addField(ClassName.get(javaFile.packageName, javaFile.typeSpec.name),
+                    javaFile.typeSpec.name.toLowerCase(), Modifier.PRIVATE);
         }
-
-        MethodSpec constructor = MethodSpec.constructorBuilder()
+        ClassName playerData = ClassName.get("net.samagames.core.api.player", "PlayerData");
+        ClassName statsNamesCLass = ClassName.get("net.samagames.api.stats.IStatsManager", "StatsNames");
+        MethodSpec.Builder constructor = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(apimpl, "api")
-                .addParameter(UUID.class, "player")
+                .addParameter(playerData, "player")
+                .addParameter(boolean[].class, "statsToLoad")
                 .addStatement("this.$N = $N", "api", "api")
-                .addStatement("this.$N = $N", "playerUUID", "player")
-                .build();
-        playerStatsBuilder.addMethod(constructor);
+                .addStatement("this.$N = $N.getPlayerID()", "playerUUID", "player")
+                .addStatement("this.$N = $N", "statsToLoad", "statsToLoad");
+        constructor.addStatement("boolean global = statsToLoad[" + IStatsManager.StatsNames.GLOBAL.intValue() + "]");
+        for (JavaFile javaFile : typeStats)
+        {
+            double value = 0;
+            IStatsManager.StatsNames stat = null;
+            for (IStatsManager.StatsNames statsNames : IStatsManager.StatsNames.values())
+            {
+                double sim = similarity(statsNames.name().toLowerCase(), javaFile.typeSpec.name.toLowerCase());
+                if ( sim > value )
+                {
+                    value = sim;
+                    stat = statsNames;
+                }
+            }
+            constructor.addStatement("if (global || statsToLoad[" + stat.intValue() + "]) \n"
+                                + "this." + javaFile.typeSpec.name.toLowerCase() + " = new " + javaFile.typeSpec.name + "(player)");
+        }
+        playerStatsBuilder.addMethod(constructor.build());
 
         MethodSpec getapi = MethodSpec.methodBuilder("getApi")
                 .addModifiers(Modifier.PUBLIC)
@@ -127,6 +150,7 @@ public class Generator {
 
     public static List<JavaFile> loadGameStats()
     {
+        ClassName apimpl = ClassName.get("net.samagames.core", "ApiImplementation");
         List<JavaFile> stats = new ArrayList<>();
         Field[] playerStatisticFields = PlayerStatisticsBean.class.getDeclaredFields();
         for (Field field : playerStatisticFields)
@@ -182,11 +206,52 @@ public class Generator {
             sup += ")";
 
             constructor.addStatement(sup);
-            ClassName apimpl = ClassName.get("net.samagames.core", "ApiImplementation");
             constructor.addStatement("this.api = ($T) $T.get()", apimpl, apimpl);
             constructor.addStatement("this.$N = $N", "playerData", "playerData");
 
             object.addMethod(constructor.build());
+
+
+            MethodSpec.Builder constructor2 = MethodSpec.constructorBuilder()
+                    .addModifiers(Modifier.PUBLIC)
+                    .addParameter(pdata, "playerData");
+
+            String instruction = "super(playerData.getPlayerID()\n";
+
+            boolean lol = true;
+            for (Parameter parameter : field.getType().getConstructors()[0].getParameters())
+            {
+                if (lol)
+                {
+                    lol = false;
+                    continue;
+                }
+
+                if (parameter.getType().equals(int.class))
+                {
+                    instruction += ",0\n";
+                }else if (parameter.getType().equals(long.class))
+                {
+                    instruction += ",0\n";
+                }else if (parameter.getType().equals(double.class))
+                {
+                    instruction += ",0.0\n";
+                }else if (parameter.getType().equals(boolean.class))
+                {
+                    instruction += ",false\n";
+                }else
+                {
+                    instruction += ", null\n";
+                }
+            }
+            instruction += ")";
+
+            constructor2.addStatement(instruction);
+            constructor2.addStatement("this.api = ($T) $T.get()", apimpl, apimpl);
+            constructor2.addStatement("this.$N = $N", "playerData", "playerData");
+
+            object.addMethod(constructor2.build());
+
 
             object.addField(pdata, "playerData", Modifier.PRIVATE);
             object.addField(apimpl, "api", Modifier.PRIVATE);
@@ -205,7 +270,9 @@ public class Generator {
             {
                 if (getters.getName().startsWith("get"))
                 {
-                    update.addStatement("jedis.hset(\"statistic:\" + playerData.getPlayerID() + \":" + workingField.getSimpleName() +"\", \"" + getters.getName().substring(3) + "\", \"\" + " + getters.getName() + "())");
+                    update.addStatement("jedis.hset(\"statistic:\" + playerData.getPlayerID() + \":"
+                            + workingField.getSimpleName() +"\", \"" + getters.getName().substring(3) + "\", \"\" + "
+                            + getters.getName() + "())");
                 }
             }
 
@@ -223,7 +290,9 @@ public class Generator {
             {
                 if (getters.getName().startsWith("set"))
                 {
-                    refresh.addStatement(getters.getName() + "($T.convert(" + getters.getParameters()[0].getType().getName() + ".class, jedis.hget(\"statistic:\" + playerData.getPlayerID() + \":" + workingField.getSimpleName() +"\", \"" + getters.getName().substring(3) + "\")))", converter);
+                    refresh.addStatement(getters.getName() + "($T.convert(" + getters.getParameters()[0].getType().getName()
+                            + ".class, jedis.hget(\"statistic:\" + playerData.getPlayerID() + \":"
+                            + workingField.getSimpleName() +"\", \"" + getters.getName().substring(3) + "\")))", converter);
                 }
             }
 
@@ -236,6 +305,67 @@ public class Generator {
             toBuild.add(file);
         }
         return stats;
+    }
+
+    public static void createCacheLoader()
+    {
+        //Imports
+        ClassName jedis = ClassName.get("redis.clients.jedis", "Jedis");
+        ClassName converter = ClassName.get("net.samagames.tools", "TypeConverter");
+
+        //Generation
+        TypeSpec.Builder object = TypeSpec.classBuilder("CacheLoader")
+                .addModifiers(Modifier.PUBLIC);
+
+        List<Class> toCreate = new ArrayList<>();
+        toCreate.add(GroupsBean.class);
+        toCreate.add(PlayerBean.class);
+
+        //Loaders
+        for (Class classe : toCreate)
+        {
+            MethodSpec.Builder getter = MethodSpec.methodBuilder("load")
+                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                    .addParameter(jedis, "jedis")
+                    .addParameter(String.class, "key")
+                    .addParameter(classe, "objet")
+                    .returns(void.class);
+
+            for (Method method : classe.getDeclaredMethods())
+            {
+                if (method.getName().startsWith("set"))
+                {
+                    getter.addStatement("objet." + method.getName() + "($T.convert("
+                            + method.getParameters()[0].getType().getName() + ".class, jedis.hget(key, \""
+                            + method.getName().substring(3) + "\")))", converter);
+                }
+            }
+            object.addMethod(getter.build());
+        }
+
+        //Setters
+        for (Class classe : toCreate)
+        {
+            MethodSpec.Builder setter = MethodSpec.methodBuilder("send")
+                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                    .addParameter(jedis, "jedis")
+                    .addParameter(String.class, "key")
+                    .addParameter(classe, "objet")
+                    .returns(void.class);
+
+            for (Method method : classe.getDeclaredMethods())
+            {
+                if (method.getName().startsWith("get"))
+                {
+                    setter.addStatement("jedis.hset(key, \"" + method.getName().substring(3) + "\","
+                            + " \"\" + objet." + method.getName() + "())");
+                }
+            }
+            object.addMethod(setter.build());
+        }
+
+        JavaFile file = JavaFile.builder("net.samagames.core.utils", object.build()).build();
+        toBuild.add(file);
     }
 
     public static void build()

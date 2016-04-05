@@ -139,11 +139,13 @@ public class ApiImplementation extends SamaGamesAPI
         return friendsManager;
     }
 
+    @Override
     public APIPlugin getPlugin()
     {
         return plugin;
     }
 
+    @Override
     public GameManager getGameManager()
     {
         return (gameManager == null) ? (this.gameManager = new GameManager(this)) : this.gameManager;
@@ -171,11 +173,6 @@ public class ApiImplementation extends SamaGamesAPI
     public IJoinManager getJoinManager()
     {
         return joinManager;
-    }
-
-    @Override
-    public ProxyDataManager getProxyDataManager() {
-        return null;
     }
 
     public IStatsManager getStatsManager(String game)

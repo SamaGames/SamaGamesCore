@@ -2,8 +2,6 @@ package net.samagames.core.api.shops;
 
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.shops.AbstractShopsManager;
-import net.samagames.restfull.response.ValueResponse;
-import net.samagames.restfull.response.elements.ShopElement;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,11 +9,11 @@ import java.util.UUID;
 /**
  * This file is a part of the SamaGames Project CodeBase
  * This code is absolutely confidential.
- * Created by Thog
+ * Created by Silvanoksy
  * (C) Copyright Elydra Network 2014 & 2015
  * All rights reserved.
  */
-
+//TODO shop when in persistance api
 public class ShopsManager extends AbstractShopsManager
 {
     public ShopsManager(String gameType, SamaGamesAPI api)
@@ -26,36 +24,32 @@ public class ShopsManager extends AbstractShopsManager
     @Override
     public String getItemLevelForPlayer(UUID player, String itemCategory)
     {
-        ValueResponse value = ((RestPlayerData)SamaGamesAPI.get().getPlayerManager().getPlayerData(player)).getEquipped(gameType, itemCategory);
-        if (value.getValue() == null || value.getValue().equals("false"))
-            return null;
-        return value.getValue();
+        // FIXME
+        return null;
     }
 
     @Override
     public List<String> getOwnedLevels(UUID player, String itemCategory)
     {
-        ShopElement value = ((RestPlayerData)SamaGamesAPI.get().getPlayerManager().getPlayerData(player)).getShopData(gameType, itemCategory);
-        if (value == null)
-            return null;
-        return value.getValue();
+        //FixMe
+        return null;
     }
 
     @Override
     public void addOwnedLevel(UUID player, String itemCategory, String itemName)
     {
-        ((RestPlayerData)SamaGamesAPI.get().getPlayerManager().getPlayerData(player)).setShopData(gameType, itemCategory, itemName);
+        //FIXME
     }
 
     @Override
     public void setCurrentLevel(UUID player, String itemCategory, String itemName)
     {
-        ((RestPlayerData)SamaGamesAPI.get().getPlayerManager().getPlayerData(player)).setEquipped(gameType, itemCategory, itemName);
+        //FixMe
     }
 
     @Override
     public void resetLevel(UUID player, String itemCategory)
     {
-        ((RestPlayerData)SamaGamesAPI.get().getPlayerManager().getPlayerData(player)).resetEquipped(gameType, itemCategory);
+        //FixME
     }
 }

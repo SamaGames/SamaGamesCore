@@ -34,7 +34,7 @@ public class EconomyManager
     {
         long currentTime = System.currentTimeMillis();
 
-        PlayerData user = (PlayerData) api.getPlayerManager().getPlayerData(player);
+        PlayerData user = api.getPlayerManager().getPlayerData(player);
         int groupMultiplier = api.getGameServiceManager().getGroupPlayer(user.getPlayerBean()).getMultiplier();
         Multiplier result = new Multiplier(groupMultiplier, 0);
         for (PromotionsBean promotion : promotions)

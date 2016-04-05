@@ -1,10 +1,7 @@
 package net.samagames.core.api.friends;
 
 import net.samagames.api.friends.IFriendsManager;
-import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.core.ApiImplementation;
-import net.samagames.core.api.player.PlayerData;
-import net.samagames.persistanceapi.beans.FriendshipBean;
 import redis.clients.jedis.Jedis;
 
 import java.util.*;
@@ -41,7 +38,6 @@ public class FriendsManager implements IFriendsManager
         {
             friendPlayer.addFriend(UUID.fromString(friend));
         }
-
     }
 
     public void unloadPlayer(UUID player)

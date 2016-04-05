@@ -1,16 +1,11 @@
 package net.samagames.core.api.stats;
 
-import com.google.gson.reflect.TypeToken;
-import net.md_5.bungee.api.ChatColor;
-import net.samagames.api.stats.IPlayerStats;
 import net.samagames.api.stats.IStatsManager;
 import net.samagames.api.stats.Leaderboard;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.player.PlayerData;
-import net.samagames.core.api.stats.games.*;
 import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.persistanceapi.beans.statistics.LeaderboardBean;
-import net.samagames.persistanceapi.beans.statistics.PlayerStatisticsBean;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -46,41 +41,10 @@ public class StatsManager implements IStatsManager
     //TODO load at join
     public void loadPlayer(UUID player)
     {
-        PlayerData playerData = (PlayerData) api.getPlayerManager().getPlayerData(player);
-        PlayerStats playerStats = new PlayerStats(api, player);
-        boolean global = statsToLoad[StatsNames.GLOBAL.intValue()];
-        if(global || statsToLoad[StatsNames.DIMENSION.intValue()])
-        {
-            playerStats.setDimensionStatistics(new DimensionStatistics(playerData, api.getGameServiceManager().getDimensionStatistics(playerData.getPlayerBean())));
-        }
-        if(global || statsToLoad[StatsNames.HEROBATTLE.intValue()])
-        {
-            playerStats.setHeroBattleStats(new HeroBattleStats(playerData, api.getGameServiceManager().getHeroBattleStatistics(playerData.getPlayerBean())));
-        }
-        if(global || statsToLoad[StatsNames.JUKEBOX.intValue()])
-        {
-            playerStats.setJukeBoxStats(new JukeBoxStats(playerData, api.getGameServiceManager().getJukeBoxStatistics(playerData.getPlayerBean())));
-        }
-        if(global || statsToLoad[StatsNames.QUAKE.intValue()])
-        {
-            playerStats.setQuakeStats(new QuakeStats(playerData, api.getGameServiceManager().getQuakeStatistics(playerData.getPlayerBean())));
-        }
-        if(global || statsToLoad[StatsNames.UHCRUN.intValue()])
-        {
-            playerStats.setUhcRunStats(new UHCRunStats(playerData, api.getGameServiceManager().getUHCRunStatistics(playerData.getPlayerBean())));
-        }
-        if(global || statsToLoad[StatsNames.UPPERVOID.intValue()])
-        {
-            playerStats.setUppervoidStats(new UppervoidStats(playerData, api.getGameServiceManager().getUpperVoidStatistics(playerData.getPlayerBean())));
-        }
-        //Add next stats there
-    }
-
-
-    @Override
-    public void finish()
-    {
-        caches.values().forEach(net.samagames.core.api.stats.PlayerStat::send);
+        PlayerData playerData = api.getPlayerManager().getPlayerData(player);
+        PlayerStats playerStats = new PlayerStats(api, playerData, statsToLoad);
+        playerStats.refreshStats();
+        caches.put(player, playerStats);
     }
 
     //TODO unload at leave
@@ -141,7 +105,7 @@ public class StatsManager implements IStatsManager
 
         //TODO fill leaderboard
 
-        Object response = RestAPI.getInstance().sendRequest("statistics/leaderboard", new Request().addProperty("category", game).addProperty("key", stat), new TypeToken<List<LeaderboradElement>>() {}.getType(), "POST");
+        /*Object response = RestAPI.getInstance().sendRequest("statistics/leaderboard", new Request().addProperty("category", game).addProperty("key", stat), new TypeToken<List<LeaderboradElement>>() {}.getType(), "POST");
 
         if (response instanceof List && ((List) response).size() == 3)
         {
@@ -149,7 +113,7 @@ public class StatsManager implements IStatsManager
             return new Leaderboard(new PlayerStats(game, stat).readResponse(responseList.get(0)), new PlayerStats(game, stat).readResponse(responseList.get(1)), new PlayerStats(game, stat).readResponse(responseList.get(2)));
         }
         else if (response instanceof ErrorResponse)
-            logger.warning(String.format("Error during recuperation of leaderboard for category %s and key %s (response: %s)", game, stat, response.toString()));
+            logger.warning(String.format("Error during recuperation of leaderboard for category %s and key %s (response: %s)", game, stat, response.toString()));*/
         return null;
     }
 
@@ -160,7 +124,7 @@ public class StatsManager implements IStatsManager
     }
 
     @Override
-    public IPlayerStats getPlayerStats(UUID player) {
+    public PlayerStats getPlayerStats(UUID player) {
         return caches.get(player);
     }
 }
