@@ -2,9 +2,11 @@ package net.samagames.core.api.player;
 
 import net.md_5.bungee.api.ChatColor;
 import net.samagames.core.ApiImplementation;
-import net.samagames.persistanceapi.beans.PromotionsBean;
+import net.samagames.persistanceapi.beans.shop.PromotionsBean;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * This file is a part of the SamaGames Project CodeBase

@@ -1,6 +1,5 @@
 package net.samagames.core.api.player;
 
-import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.api.player.IPlayerDataManager;
 import net.samagames.core.ApiImplementation;
 import org.bukkit.scheduler.BukkitTask;
@@ -78,6 +77,8 @@ public class PlayerDataManager implements IPlayerDataManager
 
         cache.remove(player);
     }
+
+    //TODO nickname
 
 
     public void onShutdown()

@@ -1,8 +1,5 @@
 package net.samagames.core;
 
-import net.samagames.core.api.options.ServerOptions;
-import net.samagames.core.api.permissions.GroupChangeHandler;
-import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.achievements.IAchievementManager;
 import net.samagames.api.gui.IGuiManager;
@@ -15,8 +12,13 @@ import net.samagames.core.api.friends.FriendsManager;
 import net.samagames.core.api.games.GameManager;
 import net.samagames.core.api.gui.GuiManager;
 import net.samagames.core.api.names.UUIDTranslator;
-import net.samagames.core.api.network.*;
+import net.samagames.core.api.network.JoinManagerImplement;
+import net.samagames.core.api.network.ModerationJoinHandler;
+import net.samagames.core.api.network.PartiesPubSub;
+import net.samagames.core.api.network.RegularJoinHandler;
+import net.samagames.core.api.options.ServerOptions;
 import net.samagames.core.api.parties.PartiesManager;
+import net.samagames.core.api.permissions.GroupChangeHandler;
 import net.samagames.core.api.permissions.PermissionManager;
 import net.samagames.core.api.player.PlayerDataManager;
 import net.samagames.core.api.pubsub.PubSubAPI;
@@ -25,10 +27,10 @@ import net.samagames.core.api.settings.SettingsManager;
 import net.samagames.core.api.shops.ShopsManager;
 import net.samagames.core.api.stats.StatsManager;
 import net.samagames.core.listeners.pubsub.GlobalChannelHandler;
+import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.tools.BarAPI.BarAPI;
 import net.samagames.tools.SkyFactory;
 import net.samagames.tools.npc.NPCManager;
-import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
 
 import java.util.HashMap;
@@ -65,12 +67,18 @@ public class ApiImplementation extends SamaGamesAPI
 
         this.plugin = plugin;
 
-        serverOptions = new ServerOptions();
+        this.pubSub = new PubSubAPI();
+        this.pubSub.init(this);
+        this.pubSub.subscribe("global", new GlobalChannelHandler(plugin));
+        this.pubSub.subscribe(plugin.getServerName(), new GlobalChannelHandler(plugin));
+        this.pubSub.subscribe("commands.servers." + getServerName(), new RemoteCommandsHandler());
+        this.pubSub.subscribe("commands.servers.all", new RemoteCommandsHandler());
+
+        this.serverOptions = new ServerOptions();
 
         this.statsManagerCache = new HashMap<>();
 
-        JoinManagerImplement implement = new JoinManagerImplement();
-        Bukkit.getServer().getPluginManager().registerEvents(implement, plugin);
+        JoinManagerImplement implement = new JoinManagerImplement(this);
         this.joinManager = implement;
 
         barAPI = new BarAPI(plugin);
@@ -82,18 +90,11 @@ public class ApiImplementation extends SamaGamesAPI
         settingsManager = new SettingsManager(this);
         playerDataManager = new PlayerDataManager(this);
 
-        pubSub = new PubSubAPI();
-        pubSub.init(this);
-        pubSub.subscribe("global", new GlobalChannelHandler(plugin));
-        pubSub.subscribe(plugin.getServerName(), new GlobalChannelHandler(plugin));
-        pubSub.subscribe("commands.servers." + getServerName(), new RemoteCommandsHandler());
-        pubSub.subscribe("commands.servers.all", new RemoteCommandsHandler());
-
         ModerationJoinHandler moderationJoinHandler = new ModerationJoinHandler(this);
         implement.registerHandler(moderationJoinHandler, -1);
 
         pubSub.subscribe(plugin.getServerName(), moderationJoinHandler);
-        pubSub.subscribe("partyjoin." + getServerName(), new PartiesPubSub(implement));
+        pubSub.subscribe("partyjoin." + getServerName(), new PartiesPubSub(this, implement));
         pubSub.subscribe("join." + getServerName(), new RegularJoinHandler(implement));
 
         uuidTranslator = new UUIDTranslator(plugin, this);

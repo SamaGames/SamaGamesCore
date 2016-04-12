@@ -1,7 +1,18 @@
 package net.samagames.core.listeners;
 
+import com.mojang.authlib.GameProfile;
+import io.netty.channel.Channel;
+import net.minecraft.server.v1_9_R1.PacketPlayOutNamedEntitySpawn;
+import net.minecraft.server.v1_9_R1.PacketPlayOutPlayerInfo;
+import net.samagames.core.utils.SkinLoader;
+import net.samagames.tools.Reflection;
 import net.samagames.tools.TinyProtocol;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * This file is a part of the SamaGames Project CodeBase
@@ -26,7 +37,7 @@ public class NicknamePacketListener extends TinyProtocol
         super(plugin);
     }
 
-    /*@Override
+    @Override
     public Object onPacketOutAsync(Player reciever, Channel channel, Object packet) {
 
         if(packet instanceof PacketPlayOutPlayerInfo)
@@ -47,25 +58,21 @@ public class NicknamePacketListener extends TinyProtocol
                 Field b = p.getClass().getDeclaredField("b");
                 b.setAccessible(true);
 
-                List<PacketPlayOutPlayerInfo.PlayerInfoData> list = (List<PacketPlayOutPlayerInfo.PlayerInfoData>) b.get(p);
-                for(PacketPlayOutPlayerInfo.PlayerInfoData data : list)
+                List list = (List) b.get(p);
+                if(!reciever.getUniqueId().equals(UUID.fromString("ad345a5e-5ae3-45bf-aba4-94f4102f37c0")))
                 {
-                    if(reciever.getUniqueId().equals(UUID.fromString("ad345a5e-5ae3-45bf-aba4-94f4102f37c0")))
+                    for(Object data : list)
                     {
-                        continue;
-                    }
+                        PacketPlayOutPlayerInfo.PlayerInfoData data1 = (PacketPlayOutPlayerInfo.PlayerInfoData) data;
+                        GameProfile profile = data1.a();
+                        if(profile.getId().equals(UUID.fromString("ad345a5e-5ae3-45bf-aba4-94f4102f37c0")))
+                        {
+                            Field gameProfile = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredField("d");
 
-                    GameProfile profile = data.a();
-                    if(profile.getId().equals(UUID.fromString("ad345a5e-5ae3-45bf-aba4-94f4102f37c0")))
-                    {
-                        //list.remove(data);
-                        Field gameProfile = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredField("d");
-                        gameProfile.setAccessible(true);
-                        Reflection.setFinalStatic(gameProfile,data, new GameProfile(UUID.fromString("c59220b1-662f-4aa8-b9d9-72660eb97c10"), "Aure_wesh"));
-                        list.add(data);
+                            Reflection.setFinal(data, gameProfile, SkinLoader.getSkinProfile("Aurelien_Sama").getHandle());
+                        }
                     }
                 }
-                Reflection.setFinalStatic(b, p, list);
 
                 packet = p;
 
@@ -97,13 +104,14 @@ public class NicknamePacketListener extends TinyProtocol
 
                 uuid.setAccessible(false);
 
+               /* net.samagames.core.utils.reflection.minecraft.DataWatcher
                 Field dataWatcher = p.getClass().getDeclaredField("i");
                 dataWatcher.setAccessible(true);
                 DataWatcher dWtacher = (DataWatcher) dataWatcher.get(p);
 
-                dWtacher.a(4, "");
+                dWtacher.set(DataWatcher.a(), "");
                 dataWatcher.set(p, dWtacher);
-                dataWatcher.setAccessible(false);
+                dataWatcher.setAccessible(false);*/
 
 
             } catch (NoSuchFieldException e) {
@@ -116,7 +124,7 @@ public class NicknamePacketListener extends TinyProtocol
         }
 
         return super.onPacketOutAsync(reciever, channel, packet);
-    }*/
+    }
 
 
 }

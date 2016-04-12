@@ -5,12 +5,11 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.utils.CacheLoader;
 import net.samagames.persistanceapi.GameServiceManager;
-import net.samagames.persistanceapi.beans.PlayerBean;
+import net.samagames.persistanceapi.beans.players.*;
 import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.api.player.IFinancialCallback;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
-import net.samagames.persistanceapi.beans.SanctionBean;
 import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
 
@@ -148,8 +147,13 @@ public class PlayerData extends AbstractPlayerData
     }
 
     @Override
-    public String getCustomName() {
-        refreshIfNeeded();
+    public String getCustomName()
+    {
+        return playerBean.getNickName();
+    }
+
+    @Override
+    public String getEffectiveName() {
         return playerBean.getName();
     }
 

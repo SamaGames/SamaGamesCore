@@ -4,7 +4,7 @@ import net.samagames.api.permissions.IPermissionsEntity;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.utils.CacheLoader;
 import net.samagames.persistanceapi.GameServiceManager;
-import net.samagames.persistanceapi.beans.GroupsBean;
+import net.samagames.persistanceapi.beans.players.GroupsBean;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -32,6 +32,8 @@ public class PermissionEntity implements IPermissionsEntity {
     private static final String key = "permissions:";
     private static final String subkeyPerms = ":list";
 
+
+
     public PermissionEntity(UUID player, APIPlugin plugin)
     {
         this.uuid = player;
@@ -43,7 +45,8 @@ public class PermissionEntity implements IPermissionsEntity {
     }
 
     @Override
-    public UUID getUUID() {
+    public UUID getUUID()
+    {
         return uuid;
     }
 
@@ -133,11 +136,6 @@ public class PermissionEntity implements IPermissionsEntity {
     @Override
     public long getGroupId() {
         return this.groupsBean.getGroupId();
-    }
-
-    @Override
-    public String getPlayerName() {
-        return groupsBean.getPlayerName();
     }
 
     @Override

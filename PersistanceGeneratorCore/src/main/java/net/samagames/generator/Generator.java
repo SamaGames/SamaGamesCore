@@ -3,8 +3,8 @@ package net.samagames.generator;
 import com.squareup.javapoet.*;
 import net.samagames.api.stats.IPlayerStats;
 import net.samagames.api.stats.IStatsManager;
-import net.samagames.persistanceapi.beans.GroupsBean;
-import net.samagames.persistanceapi.beans.PlayerBean;
+import net.samagames.persistanceapi.beans.players.GroupsBean;
+import net.samagames.persistanceapi.beans.players.PlayerBean;
 import net.samagames.persistanceapi.beans.statistics.PlayerStatisticsBean;
 
 import javax.lang.model.element.Modifier;

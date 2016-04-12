@@ -8,7 +8,6 @@ import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.persistanceapi.beans.statistics.LeaderboardBean;
 
 import java.util.*;
-import java.util.logging.Logger;
 
 
 /**
@@ -19,7 +18,6 @@ import java.util.logging.Logger;
  */
 public class StatsManager implements IStatsManager
 {
-    private final Logger logger;
     private ApiImplementation api;
     private Map<UUID, PlayerStats> caches;
 
@@ -34,8 +32,6 @@ public class StatsManager implements IStatsManager
         {
             statsToLoad[i] = false;
         }
-
-        logger = api.getPlugin().getLogger();
     }
 
     //TODO load at join

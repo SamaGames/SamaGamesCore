@@ -2,23 +2,23 @@ package net.samagames.core.listeners;
 
 import io.netty.util.internal.ConcurrentSet;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.pubsub.IPacketsReceiver;
 import net.samagames.api.pubsub.PendingMessage;
 import net.samagames.core.APIPlugin;
+import net.samagames.core.api.parties.Party;
 import net.samagames.core.api.permissions.PermissionEntity;
 import net.samagames.core.api.player.PlayerData;
-import net.samagames.persistanceapi.beans.SanctionBean;
+import net.samagames.persistanceapi.beans.players.SanctionBean;
 import net.samagames.tools.Misc;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import redis.clients.jedis.Jedis;
 
 import java.util.*;
@@ -151,7 +151,7 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
 
         if (message.startsWith("*"))
         {
-            UUID party = api.getPartiesManager().getPlayerParty(player.getUniqueId());
+            Party party = api.getPartiesManager().getPartyForPlayer(player.getUniqueId());
             if (party != null)
             {
                 message = message.substring(1);

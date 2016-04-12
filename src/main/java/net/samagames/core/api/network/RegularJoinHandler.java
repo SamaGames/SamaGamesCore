@@ -29,7 +29,7 @@ public class RegularJoinHandler implements IPacketsReceiver
     public void receive(String channel, String packet)
     {
         UUID player = UUID.fromString(packet);
-        JoinResponse response = manager.requestJoin(player);
+        JoinResponse response = manager.requestJoin(player, false);
         if (!response.isAllowed())
         {
             TextComponent component = new TextComponent(response.getReason());

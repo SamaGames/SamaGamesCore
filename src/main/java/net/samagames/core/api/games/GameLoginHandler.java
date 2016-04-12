@@ -14,7 +14,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 class GameLoginHandler implements IJoinHandler
@@ -88,7 +88,7 @@ class GameLoginHandler implements IJoinHandler
         {
             Game game = api.getGame();
             //Hope for cache
-            Set<UUID> members = SamaGamesAPI.get().getPartiesManager().getPlayersInParty(party).keySet();
+            List<UUID> members = SamaGamesAPI.get().getPartiesManager().getParty(party).getPlayers();
             Pair<Boolean, String> gameResponse = game.canPartyJoinGame(members);
 
             if (gameResponse.getKey())
