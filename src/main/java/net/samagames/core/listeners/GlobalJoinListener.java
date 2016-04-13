@@ -5,6 +5,7 @@ import net.samagames.core.api.permissions.PermissionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 
@@ -12,7 +13,6 @@ import org.bukkit.event.player.*;
  * Created by Silvanosky on 22/03/2016.
  */
 public class GlobalJoinListener implements Listener {
-
 
     private ApiImplementation api;
 
@@ -23,7 +23,7 @@ public class GlobalJoinListener implements Listener {
         //TODO register the object in listeners
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPreJoin(AsyncPlayerPreLoginEvent event)
     {
 
@@ -33,12 +33,11 @@ public class GlobalJoinListener implements Listener {
         //Load permissions
         api.getPermissionsManager().loadPlayer(event.getUniqueId());
 
-
-
+        //TODO load all managers
 
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLogin(PlayerLoginEvent event)
     {
         //On join reload permissions to add in the bukkit system
@@ -50,14 +49,14 @@ public class GlobalJoinListener implements Listener {
                     () -> permissionManager.refreshPlayer(event.getPlayer()));
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event)
     {
         //Remove natural join message
         event.setJoinMessage("");
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLeave(PlayerQuitEvent event)
     {
         // Remove quit message

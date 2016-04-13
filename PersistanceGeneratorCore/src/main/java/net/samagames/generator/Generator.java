@@ -5,6 +5,7 @@ import net.samagames.api.stats.IPlayerStats;
 import net.samagames.api.stats.IStatsManager;
 import net.samagames.persistanceapi.beans.players.GroupsBean;
 import net.samagames.persistanceapi.beans.players.PlayerBean;
+import net.samagames.persistanceapi.beans.players.PlayerSettingsBean;
 import net.samagames.persistanceapi.beans.statistics.PlayerStatisticsBean;
 
 import javax.lang.model.element.Modifier;
@@ -23,6 +24,10 @@ public class Generator {
 
     private static List<JavaFile> toBuild = new ArrayList<>();
 
+    private static ClassName apimpl = ClassName.get("net.samagames.core", "ApiImplementation");
+    private static ClassName jedis = ClassName.get("redis.clients.jedis", "Jedis");
+    private static ClassName converter = ClassName.get("net.samagames.tools", "TypeConverter");
+
     public static void main(String[] args)
     {
         createPlayerStat();
@@ -35,7 +40,7 @@ public class Generator {
     public static void createPlayerStat()
     {
         List<JavaFile> typeStats = loadGameStats();
-        ClassName apimpl = ClassName.get("net.samagames.core", "ApiImplementation");
+
         TypeSpec.Builder playerStatsBuilder = TypeSpec.classBuilder("PlayerStats")
                 .addModifiers(Modifier.PUBLIC);
         playerStatsBuilder.addSuperinterface(IPlayerStats.class);
@@ -144,167 +149,183 @@ public class Generator {
             playerStatsBuilder.addMethod(setter.build());
 
         }
-
         toBuild.add(JavaFile.builder("net.samagames.core.api.stats", playerStatsBuilder.build()).build());
+
+        String settingPackage = "net.samagames.core.api.settings";
+        String settingPackageI = "net.samagames.api.settings";
+        TypeSpec implClass = createImplementationClass(settingPackageI, PlayerSettingsBean.class, "settings:");
+        toBuild.add(JavaFile.builder(settingPackage, implClass).build());
     }
 
     public static List<JavaFile> loadGameStats()
     {
-        ClassName apimpl = ClassName.get("net.samagames.core", "ApiImplementation");
         List<JavaFile> stats = new ArrayList<>();
+        String package_ = "net.samagames.core.api.stats.games";
+        String packageI_ = "net.samagames.api.stats.games";
         Field[] playerStatisticFields = PlayerStatisticsBean.class.getDeclaredFields();
         for (Field field : playerStatisticFields)
         {
             field.setAccessible(true);
-            Class workingField = field.getType();
-            String name = workingField.getSimpleName().replaceAll("Bean", "");
-
-            TypeSpec.Builder object = TypeSpec.classBuilder(name)
-                    .addModifiers(Modifier.PUBLIC)
-                    .addSuperinterface(ClassName.get("net.samagames.api.stats.games", "I"+name))
-                    .superclass(workingField);
-            ClassName pdata = ClassName.get("net.samagames.core.api.player","PlayerData");
-            MethodSpec.Builder constructor = MethodSpec.constructorBuilder()
-                    .addModifiers(Modifier.PUBLIC)
-                    .addParameter(pdata, "playerData")
-                    .addParameter(workingField, "bean");
-
-            String sup = "super(playerData.getPlayerID()\n";
-
-            Constructor constructor1 = field.getType().getConstructors()[0];
-            if (!constructor1.isAnnotationPresent(ConstructorProperties.class))
-                continue;
-            ConstructorProperties annotation = (ConstructorProperties) constructor1.getAnnotation(ConstructorProperties.class);
-
-            //Not efficiency but do the job and don't care for compilation
-            Method[] subDeclaredMethods = workingField.getDeclaredMethods();
-            int i = 0;
-            for (String parameterName : annotation.value())
-            {
-                //Don't do the first iteration
-                if (i == 0)
-                {
-                    i++;
-                    continue;
-                }
-                double similitudeMax = 0.0;
-                String methodName = "";
-                for (Method method : subDeclaredMethods)
-                {
-                    if (method.getName().startsWith("get"))
-                    {
-                        double similitude = similarity(parameterName.toLowerCase(), method.getName().toLowerCase());
-                        if (similitude > similitudeMax)
-                        {
-                            similitudeMax = similitude;
-                            methodName = method.getName();
-                        }
-                    }
-                }
-                sup += ",bean." + methodName + "()\n";
-            }
-            sup += ")";
-
-            constructor.addStatement(sup);
-            constructor.addStatement("this.api = ($T) $T.get()", apimpl, apimpl);
-            constructor.addStatement("this.$N = $N", "playerData", "playerData");
-
-            object.addMethod(constructor.build());
-
-
-            MethodSpec.Builder constructor2 = MethodSpec.constructorBuilder()
-                    .addModifiers(Modifier.PUBLIC)
-                    .addParameter(pdata, "playerData");
-
-            String instruction = "super(playerData.getPlayerID()\n";
-
-            boolean lol = true;
-            for (Parameter parameter : field.getType().getConstructors()[0].getParameters())
-            {
-                if (lol)
-                {
-                    lol = false;
-                    continue;
-                }
-
-                if (parameter.getType().equals(int.class))
-                {
-                    instruction += ",0\n";
-                }else if (parameter.getType().equals(long.class))
-                {
-                    instruction += ",0\n";
-                }else if (parameter.getType().equals(double.class))
-                {
-                    instruction += ",0.0\n";
-                }else if (parameter.getType().equals(boolean.class))
-                {
-                    instruction += ",false\n";
-                }else
-                {
-                    instruction += ", null\n";
-                }
-            }
-            instruction += ")";
-
-            constructor2.addStatement(instruction);
-            constructor2.addStatement("this.api = ($T) $T.get()", apimpl, apimpl);
-            constructor2.addStatement("this.$N = $N", "playerData", "playerData");
-
-            object.addMethod(constructor2.build());
-
-
-            object.addField(pdata, "playerData", Modifier.PRIVATE);
-            object.addField(apimpl, "api", Modifier.PRIVATE);
-
-            MethodSpec.Builder update = MethodSpec.methodBuilder("update")
-                    .addModifiers(Modifier.PUBLIC)
-                    .returns(void.class)
-                    .addAnnotation(Override.class);
-            ClassName jedis = ClassName.get("redis.clients.jedis", "Jedis");
-            ClassName converter = ClassName.get("net.samagames.tools", "TypeConverter");
-            update.addStatement("$T jedis = this.api.getBungeeResource()", jedis);
-
-            Method[] declaredMethods = workingField.getDeclaredMethods();
-
-            for (Method getters : declaredMethods)
-            {
-                if (getters.getName().startsWith("get"))
-                {
-                    update.addStatement("jedis.hset(\"statistic:\" + playerData.getPlayerID() + \":"
-                            + workingField.getSimpleName() +"\", \"" + getters.getName().substring(3) + "\", \"\" + "
-                            + getters.getName() + "())");
-                }
-            }
-
-            update.addStatement("jedis.close()");
-            object.addMethod(update.build());
-
-            MethodSpec.Builder refresh = MethodSpec.methodBuilder("refresh")
-                    .addModifiers(Modifier.PUBLIC)
-                    .returns(void.class)
-                    .addAnnotation(Override.class);
-
-            refresh.addStatement("$T jedis = this.api.getBungeeResource()", jedis);
-
-            for (Method getters : workingField.getDeclaredMethods())
-            {
-                if (getters.getName().startsWith("set"))
-                {
-                    refresh.addStatement(getters.getName() + "($T.convert(" + getters.getParameters()[0].getType().getName()
-                            + ".class, jedis.hget(\"statistic:\" + playerData.getPlayerID() + \":"
-                            + workingField.getSimpleName() +"\", \"" + getters.getName().substring(3) + "\")))", converter);
-                }
-            }
-
-            refresh.addStatement("jedis.close()");
-            object.addMethod(refresh.build());
-
-            TypeSpec build = object.build();
-            JavaFile file = JavaFile.builder("net.samagames.core.api.stats.games", build).build();
+            TypeSpec implClass = createImplementationClass(packageI_, field.getType(), "statistic:");
+            JavaFile file = JavaFile.builder(package_, implClass).build();
             stats.add(file);
             toBuild.add(file);
         }
         return stats;
+    }
+
+    public static TypeSpec createImplementationClass(String package_, Class type, String serializeKey)
+    {
+        String name = type.getSimpleName().replaceAll("Bean", "");
+
+        TypeSpec.Builder object = TypeSpec.classBuilder(name)
+                .addModifiers(Modifier.PUBLIC)
+                .addSuperinterface(ClassName.get(package_, "I"+name))
+                .superclass(type);
+        ClassName pdata = ClassName.get("net.samagames.core.api.player","PlayerData");
+        MethodSpec.Builder constructor = MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(pdata, "playerData")
+                .addParameter(type, "bean");
+
+        String sup = "super(playerData.getPlayerID()\n";
+
+        Constructor constructor1 = type.getConstructors()[0];
+        if (!constructor1.isAnnotationPresent(ConstructorProperties.class))
+            return null;
+        ConstructorProperties annotation = (ConstructorProperties) constructor1.getAnnotation(ConstructorProperties.class);
+
+        //Not efficiency but do the job and don't care for compilation
+        Method[] subDeclaredMethods = type.getDeclaredMethods();
+        int i = 0;
+        for (String parameterName : annotation.value())
+        {
+            //Don't do the first iteration
+            if (i == 0)
+            {
+                i++;
+                continue;
+            }
+            double similitudeMax = 0.0;
+            String methodName = "";
+            for (Method method : subDeclaredMethods)
+            {
+                if (method.getName().startsWith("get")
+                        || method.getName().startsWith("is"))
+                {
+                    double similitude = similarity(parameterName.toLowerCase(), method.getName().toLowerCase());
+                    if (similitude > similitudeMax)
+                    {
+                        similitudeMax = similitude;
+                        methodName = method.getName();
+                    }
+                }
+            }
+            sup += ",bean." + methodName + "()\n";
+        }
+        sup += ")";
+
+        constructor.addStatement(sup);
+        constructor.addStatement("this.api = ($T) $T.get()", apimpl, apimpl);
+        constructor.addStatement("this.$N = $N", "playerData", "playerData");
+
+        object.addMethod(constructor.build());
+
+
+        MethodSpec.Builder constructor2 = MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(pdata, "playerData");
+
+        String instruction = "super(playerData.getPlayerID()\n";
+
+        boolean lol = true;
+        for (Parameter parameter : type.getConstructors()[0].getParameters())
+        {
+            if (lol)
+            {
+                lol = false;
+                continue;
+            }
+
+            if (parameter.getType().equals(int.class))
+            {
+                instruction += ",0\n";
+            }else if (parameter.getType().equals(long.class))
+            {
+                instruction += ",0\n";
+            }else if (parameter.getType().equals(double.class))
+            {
+                instruction += ",0.0\n";
+            }else if (parameter.getType().equals(boolean.class))
+            {
+                instruction += ",false\n";
+            }else
+            {
+                instruction += ", null\n";
+            }
+        }
+        instruction += ")";
+
+        constructor2.addStatement(instruction);
+        constructor2.addStatement("this.api = ($T) $T.get()", apimpl, apimpl);
+        constructor2.addStatement("this.$N = $N", "playerData", "playerData");
+
+        object.addMethod(constructor2.build());
+
+
+        object.addField(pdata, "playerData", Modifier.PRIVATE);
+        object.addField(apimpl, "api", Modifier.PRIVATE);
+
+        MethodSpec.Builder update = MethodSpec.methodBuilder("update")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(void.class)
+                .addAnnotation(Override.class);
+
+        update.addStatement("$T jedis = this.api.getBungeeResource()", jedis);
+
+        Method[] declaredMethods = type.getDeclaredMethods();
+
+        for (Method getters : declaredMethods)
+        {
+            int test = 0;
+            if (getters.getName().startsWith("get"))
+            {
+                test = 3;
+            }else if (getters.getName().startsWith("is"))
+            {
+                test = 2;
+            }
+            if (test != 0)
+            {
+                update.addStatement("jedis.hset(\"" + serializeKey + "\" + playerData.getPlayerID() + \":"
+                        + type.getSimpleName() +"\", \"" + getters.getName().substring(test) + "\", \"\" + "
+                        + getters.getName() + "())");
+            }
+        }
+
+        update.addStatement("jedis.close()");
+        object.addMethod(update.build());
+
+        MethodSpec.Builder refresh = MethodSpec.methodBuilder("refresh")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(void.class)
+                .addAnnotation(Override.class);
+
+        refresh.addStatement("$T jedis = this.api.getBungeeResource()", jedis);
+
+        for (Method getters : type.getDeclaredMethods())
+        {
+            if (getters.getName().startsWith("set"))
+            {
+                refresh.addStatement(getters.getName() + "($T.convert(" + getters.getParameters()[0].getType().getName()
+                        + ".class, jedis.hget(\"" + serializeKey + "\" + playerData.getPlayerID() + \":"
+                        + type.getSimpleName() +"\", \"" + getters.getName().substring(3) + "\")))", converter);
+            }
+        }
+
+        refresh.addStatement("jedis.close()");
+        object.addMethod(refresh.build());
+        return object.build();
     }
 
     public static void createCacheLoader()
@@ -398,7 +419,7 @@ public class Generator {
     /**
      * Calculates the similarity (a number within 0 and 1) between two strings.
      */
-    public static double similarity(String s1, String s2) {
+    private static double similarity(String s1, String s2) {
         String longer = s1, shorter = s2;
         if (s1.length() < s2.length()) { // longer should always have greater length
             longer = s2; shorter = s1;
@@ -414,7 +435,7 @@ public class Generator {
 
     // Example implementation of the Levenshtein Edit Distance
     // See http://r...content-available-to-author-only...e.org/wiki/Levenshtein_distance#Java
-    public static int editDistance(String s1, String s2) {
+    private static int editDistance(String s1, String s2) {
         s1 = s1.toLowerCase();
         s2 = s2.toLowerCase();
 

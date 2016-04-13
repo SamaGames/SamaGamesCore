@@ -13,7 +13,7 @@ import java.util.UUID;
  * (C) Copyright Elydra Network 2014 & 2015
  * All rights reserved.
  */
-//TODO shop when in persistance api
+//TODO shop when ready in persistance api
 public class ShopsManager extends AbstractShopsManager
 {
     public ShopsManager(String gameType, SamaGamesAPI api)
