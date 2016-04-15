@@ -9,6 +9,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 
+import java.util.UUID;
+
 /**
  * Created by Silvanosky on 22/03/2016.
  */
@@ -26,7 +28,6 @@ public class GlobalJoinListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPreJoin(AsyncPlayerPreLoginEvent event)
     {
-
         //First load main data
         api.getPlayerManager().loadPlayer(event.getUniqueId());
 
@@ -35,18 +36,16 @@ public class GlobalJoinListener implements Listener {
 
         //TODO load all managers
 
+        //Load in game api
+        api.getJoinManager().onLogin(event);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLogin(PlayerLoginEvent event)
     {
-        //On join reload permissions to add in the bukkit system
+        //Permissions already loaded in async, just apply them
         PermissionManager permissionManager = api.getPermissionsManager();
-        if (!permissionManager.isLobby())
-            permissionManager.refreshPlayer(event.getPlayer());
-        else
-            Bukkit.getScheduler().runTaskAsynchronously(api.getPlugin(),
-                    () -> permissionManager.refreshPlayer(event.getPlayer()));
+        permissionManager.getPlayer(event.getPlayer().getUniqueId()).applyPermissions();
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -54,6 +53,7 @@ public class GlobalJoinListener implements Listener {
     {
         //Remove natural join message
         event.setJoinMessage("");
+        api.getJoinManager().onJoin(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -74,12 +74,37 @@ public class GlobalJoinListener implements Listener {
 
     private void onLeaveEvent(Player p)
     {
+        //first quit game
+        api.getJoinManager().onLogout(p);
+
+        //Unload friend from cache
+        api.getFriendsManager().unloadPlayer(p.getUniqueId());
+
+        //Unload all partis wihtout player
+        api.getPartiesManager().unloadParties();
+
+        //Unload settings from cache
+        api.getSettingsManager().unloadPlayer(p.getUniqueId());
+
+        //Unload stats from cache
+        api.getStatsManager().unloadPlayer(p.getUniqueId());
+
         //Unload permission player cache
         api.getPermissionsManager().unloadPlayer(p);
 
         // Last unload
         api.getPlayerManager().unloadPlayer(p.getUniqueId());
+
         //Reset player scoreboard on leave
         p.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+    }
+
+    public void onWillLeave(UUID player, String targetServer)
+    {
+        //TODO save all data in redis
+        api.getPlayerManager().getPlayerData(player).updateData();
+        api.getSettingsManager().getSettings(player).update();
+        api.getStatsManager().getPlayerStats(player).updateStats();
+
     }
 }

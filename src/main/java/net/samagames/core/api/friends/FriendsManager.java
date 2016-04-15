@@ -28,6 +28,7 @@ public class FriendsManager implements IFriendsManager
         this.cache = new HashMap<>();
     }
 
+    //TODO update at join
     public void loadPlayer(UUID player)
     {
         FriendPlayer friendPlayer = new FriendPlayer(player);
@@ -42,7 +43,7 @@ public class FriendsManager implements IFriendsManager
 
     public void unloadPlayer(UUID player)
     {
-        //We don't edit data here so remove cache
+        //We don't edit data here so remove cache (bungee side)
         cache.remove(player);
     }
 
@@ -123,20 +124,21 @@ public class FriendsManager implements IFriendsManager
     @Override
     public List<String> requests(UUID asking)
     {
+        //Bungee side
         return null;
     }
 
     @Override
     public List<String> sentRequests(UUID asking)
     {
-        //TODO get request from player
+        //Bungee side
         return null;
     }
 
     @Override
     public boolean removeFriend(UUID asking, UUID target)
     {
-        //TODO update player in db and cache
+        //Bungee side
         return false;
     }
 

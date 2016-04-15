@@ -42,9 +42,8 @@ public class PartiesManager implements IPartiesManager
                 jedis.close();
                 return;
             }
-
             UUID partieID = UUID.fromString(jedis.get("currentparty:" + player));
-
+            loadParty(partieID);
             jedis.close();
         }
     }

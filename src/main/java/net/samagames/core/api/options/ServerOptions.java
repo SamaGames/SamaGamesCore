@@ -14,7 +14,6 @@ public class ServerOptions implements IServerOptions {
     {
         displayRanks = true;
         activeNature = true;
-
     }
 
     @Override

@@ -4,10 +4,8 @@ import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.achievements.IAchievementManager;
 import net.samagames.api.gui.IGuiManager;
 import net.samagames.api.names.IUUIDTranslator;
-import net.samagames.api.network.IJoinManager;
 import net.samagames.api.pubsub.IPubSubAPI;
 import net.samagames.api.shops.AbstractShopsManager;
-import net.samagames.api.stats.IStatsManager;
 import net.samagames.core.api.friends.FriendsManager;
 import net.samagames.core.api.games.GameManager;
 import net.samagames.core.api.gui.GuiManager;
@@ -18,7 +16,6 @@ import net.samagames.core.api.network.PartiesPubSub;
 import net.samagames.core.api.network.RegularJoinHandler;
 import net.samagames.core.api.options.ServerOptions;
 import net.samagames.core.api.parties.PartiesManager;
-import net.samagames.core.api.permissions.GroupChangeHandler;
 import net.samagames.core.api.permissions.PermissionManager;
 import net.samagames.core.api.player.PlayerDataManager;
 import net.samagames.core.api.pubsub.PubSubAPI;
@@ -26,14 +23,12 @@ import net.samagames.core.api.resourcepacks.ResourcePacksManagerImpl;
 import net.samagames.core.api.settings.SettingsManager;
 import net.samagames.core.api.shops.ShopsManager;
 import net.samagames.core.api.stats.StatsManager;
-import net.samagames.core.listeners.pubsub.GlobalChannelHandler;
+import net.samagames.core.listeners.pubsub.GlobalUpdateListener;
 import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.tools.BarAPI.BarAPI;
 import net.samagames.tools.SkyFactory;
 import net.samagames.tools.npc.NPCManager;
 import redis.clients.jedis.Jedis;
-
-import java.util.HashMap;
 
 /**
  * This file is a part of the SamaGames project
@@ -56,7 +51,7 @@ public class ApiImplementation extends SamaGamesAPI
     private final FriendsManager friendsManager;
     private final BarAPI barAPI;
     private final SkyFactory skyFactory;
-    private final HashMap<String, StatsManager> statsManagerCache;
+    private final StatsManager statsManager;
     private GameManager gameManager;
 
     private final ServerOptions serverOptions;
@@ -69,14 +64,17 @@ public class ApiImplementation extends SamaGamesAPI
 
         this.pubSub = new PubSubAPI();
         this.pubSub.init(this);
-        this.pubSub.subscribe("global", new GlobalChannelHandler(plugin));
-        this.pubSub.subscribe(plugin.getServerName(), new GlobalChannelHandler(plugin));
+        //TODO redo
+        GlobalUpdateListener listener = new GlobalUpdateListener(plugin);
+        this.pubSub.subscribe("groupchange", listener);
+        this.pubSub.subscribe("global", listener);
+        this.pubSub.subscribe(plugin.getServerName(), listener);
         this.pubSub.subscribe("commands.servers." + getServerName(), new RemoteCommandsHandler());
         this.pubSub.subscribe("commands.servers.all", new RemoteCommandsHandler());
 
         this.serverOptions = new ServerOptions();
 
-        this.statsManagerCache = new HashMap<>();
+        this.statsManager = new StatsManager(this);
 
         JoinManagerImplement implement = new JoinManagerImplement(this);
         this.joinManager = implement;
@@ -101,10 +99,6 @@ public class ApiImplementation extends SamaGamesAPI
         partiesManager = new PartiesManager(this);
         permissionsManager = new PermissionManager(plugin);
         friendsManager = new FriendsManager(this);
-
-
-        // Init Group change listener
-        pubSub.subscribe("groupchange", new GroupChangeHandler(permissionsManager));
     }
 
     public void onShutdown()
@@ -171,18 +165,14 @@ public class ApiImplementation extends SamaGamesAPI
     }
 
     @Override
-    public IJoinManager getJoinManager()
+    public JoinManagerImplement getJoinManager()
     {
         return joinManager;
     }
 
-    public IStatsManager getStatsManager(String game)
+    @Override
+    public StatsManager getStatsManager()
     {
-        if (this.statsManagerCache.containsKey(game))
-            return statsManagerCache.get(game);
-
-        StatsManager statsManager = new StatsManager(this);
-        statsManagerCache.put(game, statsManager);
         return statsManager;
     }
 

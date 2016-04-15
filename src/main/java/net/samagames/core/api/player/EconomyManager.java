@@ -3,6 +3,7 @@ package net.samagames.core.api.player;
 import net.md_5.bungee.api.ChatColor;
 import net.samagames.core.ApiImplementation;
 import net.samagames.persistanceapi.beans.shop.PromotionsBean;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +21,15 @@ public class EconomyManager
     private final ApiImplementation api;
     private List<PromotionsBean> promotions;
 
+    private final BukkitTask discountTask;
+
     public EconomyManager(ApiImplementation api)
     {
         this.api = api;
         this.promotions = new ArrayList<>();
+
+        // Run task every 30 minutes
+        discountTask = api.getPlugin().getServer().getScheduler().runTaskTimerAsynchronously(this.api.getPlugin(), this::reload, 0L, 36000L);
     }
 
     public void reload()
@@ -36,6 +42,7 @@ public class EconomyManager
     {
         long currentTime = System.currentTimeMillis();
 
+        //TODO cache and get promotions
         PlayerData user = api.getPlayerManager().getPlayerData(player);
         int groupMultiplier = api.getGameServiceManager().getGroupPlayer(user.getPlayerBean()).getMultiplier();
         Multiplier result = new Multiplier(groupMultiplier, 0);
@@ -83,5 +90,10 @@ public class EconomyManager
         }
 
         return builder.toString();
+    }
+
+    public void onShutdown()
+    {
+        discountTask.cancel();
     }
 }

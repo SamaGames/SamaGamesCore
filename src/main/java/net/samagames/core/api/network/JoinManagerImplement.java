@@ -10,8 +10,6 @@ import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.parties.Party;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import redis.clients.jedis.Jedis;
@@ -156,9 +154,6 @@ public class JoinManagerImplement implements IJoinManager
         return requestSoloJoin(player);
     }
 
-
-    //TODO call it from general joiner
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onLogin(AsyncPlayerPreLoginEvent event)
     {
         UUID player = event.getUniqueId();
@@ -182,7 +177,6 @@ public class JoinManagerImplement implements IJoinManager
             handler.onLogin(player, event.getName());
     }
 
-    //TODO on player join
     public void onJoin(Player player)
     {
         if (moderatorsExpected.contains(player.getUniqueId()))

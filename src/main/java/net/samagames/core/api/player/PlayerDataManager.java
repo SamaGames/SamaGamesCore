@@ -2,7 +2,6 @@ package net.samagames.core.api.player;
 
 import net.samagames.api.player.IPlayerDataManager;
 import net.samagames.core.ApiImplementation;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,14 +19,12 @@ public class PlayerDataManager implements IPlayerDataManager
     private final ApiImplementation api;
     private final ConcurrentHashMap<UUID, PlayerData> cache = new ConcurrentHashMap<>();
     private final EconomyManager economyManager;
-    private final BukkitTask discountTask;
+
 
     public PlayerDataManager(ApiImplementation api)
     {
         this.api = api;
         economyManager = new EconomyManager(api);
-        // Run task every 30 minutes
-        discountTask = this.api.getPlugin().getServer().getScheduler().runTaskTimerAsynchronously(this.api.getPlugin(), economyManager::reload, 0L, 36000L);
     }
 
     public EconomyManager getEconomyManager()
@@ -83,6 +80,6 @@ public class PlayerDataManager implements IPlayerDataManager
 
     public void onShutdown()
     {
-        discountTask.cancel();
+        economyManager.onShutdown();
     }
 }

@@ -4,10 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import net.samagames.core.database.DatabaseConnector;
 import net.samagames.core.database.RedisServer;
-import net.samagames.core.listeners.ChatHandleListener;
-import net.samagames.core.listeners.InvisiblePlayerFixListener;
-import net.samagames.core.listeners.NicknamePacketListener;
-import net.samagames.core.listeners.TabsColorsListener;
+import net.samagames.core.listeners.*;
 import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.tools.Reflection;
 import net.samagames.tools.npc.NPCManager;
@@ -20,7 +17,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_9_R1.CraftServer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import redis.clients.jedis.Jedis;
@@ -64,6 +62,7 @@ public class APIPlugin extends JavaPlugin implements Listener
     private BukkitTask startTimer;
 
     private ChatHandleListener chatHandleListener;
+    private GlobalJoinListener globalJoinListener;
 
     private GameServiceManager gameServiceManager;
 
@@ -161,27 +160,27 @@ public class APIPlugin extends JavaPlugin implements Listener
 		 */
 
         chatHandleListener = new ChatHandleListener(this);
-
-        debugListener = new DebugListener();
-        api.getJoinManager().registerHandler(debugListener, 0);
-
-        // Web
-        //etServer().getPluginManager().registerEvents(new RestListener(this), this);
-
-        //Invisible fix
-        api.getPlugin().getServer().getPluginManager().registerEvents(new InvisiblePlayerFixListener(this), this);
-
-        api.getPubSub().subscribe("*", debugListener);
-        //Nickname
-
         //Mute
         api.getPubSub().subscribe("mute.add", chatHandleListener);
         api.getPubSub().subscribe("mute.remove", chatHandleListener);
 
-        nicknamePacketListener = new NicknamePacketListener(this);
-        npcManager = new NPCManager(api);
-
         Bukkit.getPluginManager().registerEvents(chatHandleListener, this);
+
+        globalJoinListener = new GlobalJoinListener(api);
+        Bukkit.getPluginManager().registerEvents(globalJoinListener, this);
+
+        debugListener = new DebugListener();
+        api.getJoinManager().registerHandler(debugListener, 0);
+
+        //Invisible fix
+        getServer().getPluginManager().registerEvents(new InvisiblePlayerFixListener(this), this);
+
+        api.getPubSub().subscribe("*", debugListener);
+        //Nickname
+        //TODO nickname
+        nicknamePacketListener = new NicknamePacketListener(this);
+
+        npcManager = new NPCManager(api);
         Bukkit.getPluginManager().registerEvents(new TabsColorsListener(this), this);
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "WDL|CONTROL");
         Bukkit.getMessenger().registerIncomingPluginChannel(this, "WDL|INIT", (s, player, bytes) -> {
@@ -344,28 +343,31 @@ public class APIPlugin extends JavaPlugin implements Listener
 	 */
 
     @EventHandler
-    public void onLogin(PlayerLoginEvent event)
+    public void onLogin(AsyncPlayerPreLoginEvent event)
     {
         if (!allowJoin)
         {
-            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ChatColor.RED + denyJoinReason);
-            event.setResult(PlayerLoginEvent.Result.KICK_WHITELIST);
+            event.disallow(Result.KICK_OTHER, ChatColor.RED + denyJoinReason);
             event.setKickMessage(ChatColor.RED + denyJoinReason);
 
             return;
         }
 
-        if (joinPermission != null && !api.getPermissionsManager().hasPermission(event.getPlayer(), joinPermission))
+        if (!ipWhiteList.contains(event.getAddress().getHostAddress()) && !disableWhitelist)
         {
-            event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, "Vous n'avez pas la permission de rejoindre ce serveur.");
+            event.setKickMessage(ChatColor.RED + "Vous n'avez pas la permission de rejoindre ce serveur.");
+            Bukkit.getLogger().log(Level.WARNING, "An user tried to connect from IP " + event.getAddress().getHostAddress());
         }
 
-        if (!ipWhiteList.contains(event.getRealAddress().getHostAddress()) && !disableWhitelist)
+        if (joinPermission != null && !api.getPermissionsManager().hasPermission(event.getUniqueId(), joinPermission))
         {
-            event.setResult(PlayerLoginEvent.Result.KICK_WHITELIST);
-            event.setKickMessage(ChatColor.RED + "Vous n'avez pas la permission de rejoindre ce serveur.");
-            Bukkit.getLogger().log(Level.WARNING, "An user tried to connect from IP " + event.getRealAddress().getHostAddress());
+            event.disallow(Result.KICK_WHITELIST, "Vous n'avez pas la permission de rejoindre ce serveur.");
         }
+    }
+
+    public GlobalJoinListener getGlobalJoinListener()
+    {
+        return globalJoinListener;
     }
 
     public DatabaseConnector getDatabaseConnector()
