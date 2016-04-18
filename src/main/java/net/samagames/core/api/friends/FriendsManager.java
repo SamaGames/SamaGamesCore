@@ -15,7 +15,6 @@ import java.util.*;
  */
 public class FriendsManager implements IFriendsManager
 {
-
     private final ApiImplementation api;
 
     private HashMap<UUID, FriendPlayer> cache;
@@ -28,7 +27,6 @@ public class FriendsManager implements IFriendsManager
         this.cache = new HashMap<>();
     }
 
-    //TODO update at join
     public void loadPlayer(UUID player)
     {
         FriendPlayer friendPlayer = new FriendPlayer(player);

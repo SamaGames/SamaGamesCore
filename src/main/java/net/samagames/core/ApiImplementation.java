@@ -21,7 +21,6 @@ import net.samagames.core.api.player.PlayerDataManager;
 import net.samagames.core.api.pubsub.PubSubAPI;
 import net.samagames.core.api.resourcepacks.ResourcePacksManagerImpl;
 import net.samagames.core.api.settings.SettingsManager;
-import net.samagames.core.api.shops.ShopsManager;
 import net.samagames.core.api.stats.StatsManager;
 import net.samagames.core.listeners.pubsub.GlobalUpdateListener;
 import net.samagames.persistanceapi.GameServiceManager;
@@ -29,6 +28,7 @@ import net.samagames.tools.BarAPI.BarAPI;
 import net.samagames.tools.SkyFactory;
 import net.samagames.tools.npc.NPCManager;
 import redis.clients.jedis.Jedis;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * This file is a part of the SamaGames project
@@ -177,9 +177,9 @@ public class ApiImplementation extends SamaGamesAPI
     }
 
     @Override
-    public AbstractShopsManager getShopsManager(String game)
+    public AbstractShopsManager getShopsManager()
     {
-        return new ShopsManager(game, this);
+        throw new NotImplementedException();
     }
 
     @Override
@@ -203,7 +203,7 @@ public class ApiImplementation extends SamaGamesAPI
     @Override
     public IAchievementManager getAchievementManager()
     {
-        throw new RuntimeException("Not implemented yet");
+        throw new NotImplementedException();
     }
 
     public IPubSubAPI getPubSub()

@@ -28,13 +28,22 @@ public class GlobalJoinListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPreJoin(AsyncPlayerPreLoginEvent event)
     {
+        UUID player = event.getUniqueId();
         //First load main data
         api.getPlayerManager().loadPlayer(event.getUniqueId());
 
         //Load permissions
         api.getPermissionsManager().loadPlayer(event.getUniqueId());
 
-        //TODO load all managers
+        api.getSettingsManager().loadPlayer(player);
+
+        api.getStatsManager().loadPlayer(player);
+
+        //TODO load shop
+
+        api.getPlayerManager().loadPlayer(player);
+
+        api.getFriendsManager().loadPlayer(player);
 
         //Load in game api
         api.getJoinManager().onLogin(event);

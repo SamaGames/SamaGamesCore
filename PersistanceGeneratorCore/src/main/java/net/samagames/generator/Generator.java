@@ -177,6 +177,7 @@ public class Generator {
     public static TypeSpec createImplementationClass(String package_, Class type, String serializeKey)
     {
         String name = type.getSimpleName().replaceAll("Bean", "");
+        Method[] subDeclaredMethods = type.getDeclaredMethods();
 
         TypeSpec.Builder object = TypeSpec.classBuilder(name)
                 .addModifiers(Modifier.PUBLIC)
@@ -190,13 +191,13 @@ public class Generator {
 
         String sup = "super(playerData.getPlayerID()\n";
 
+        //CONSTRUCTOR START
         Constructor constructor1 = type.getConstructors()[0];
         if (!constructor1.isAnnotationPresent(ConstructorProperties.class))
             return null;
         ConstructorProperties annotation = (ConstructorProperties) constructor1.getAnnotation(ConstructorProperties.class);
 
         //Not efficiency but do the job and don't care for compilation
-        Method[] subDeclaredMethods = type.getDeclaredMethods();
         int i = 0;
         for (String parameterName : annotation.value())
         {
@@ -230,8 +231,9 @@ public class Generator {
         constructor.addStatement("this.$N = $N", "playerData", "playerData");
 
         object.addMethod(constructor.build());
+        //CONSTRUCTOR END
 
-
+        //Constructor 2 START
         MethodSpec.Builder constructor2 = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(pdata, "playerData");
@@ -271,11 +273,52 @@ public class Generator {
         constructor2.addStatement("this.$N = $N", "playerData", "playerData");
 
         object.addMethod(constructor2.build());
-
+        //CONSTRUCTOR 2 END
 
         object.addField(pdata, "playerData", Modifier.PRIVATE);
         object.addField(apimpl, "api", Modifier.PRIVATE);
 
+        List<String> createdFields = new ArrayList<>();
+
+        for (Method method : subDeclaredMethods)
+        {
+            String methodName = method.getName();
+            if (method.getParameters().length > 0)
+            {
+                boolean isIncrementable = false;
+                Class<?> type1 = method.getParameters()[0].getType();
+                if (type1.equals(int.class)
+                        || type1.equals(long.class)
+                        || type1.equals(double.class)
+                        || type1.equals(float.class))
+                    isIncrementable = true;
+
+                if (methodName.startsWith("set") && isIncrementable)
+                {
+                    methodName = "incrBy" + methodName.substring(3);
+                    String fieldName = method.getName().substring(3) + "Vector";
+                    createdFields.add(fieldName);
+                    FieldSpec vector = FieldSpec.builder(type1, fieldName)
+                            .addModifiers(Modifier.PRIVATE).initializer("0").build();
+                    object.addField(vector);
+
+                    MethodSpec.Builder builder = MethodSpec.methodBuilder(methodName);
+                    if (method.getParameterCount() > 0)
+                    {
+                        for (Parameter parameter : method.getParameters())
+                        {
+                            builder.addParameter(parameter.getType(), parameter.getName());
+                        }
+                    }
+                    builder.addModifiers(Modifier.PUBLIC);
+                    builder.returns(method.getReturnType());
+                    builder.addStatement("$N += arg0", vector);
+                    object.addMethod(builder.build());
+                }
+            }
+        }
+
+        //UPDATE START
         MethodSpec.Builder update = MethodSpec.methodBuilder("update")
                 .addModifiers(Modifier.PUBLIC)
                 .returns(void.class)
@@ -284,7 +327,6 @@ public class Generator {
         update.addStatement("$T jedis = this.api.getBungeeResource()", jedis);
 
         Method[] declaredMethods = type.getDeclaredMethods();
-
         for (Method getters : declaredMethods)
         {
             int test = 0;
@@ -297,15 +339,28 @@ public class Generator {
             }
             if (test != 0)
             {
-                update.addStatement("jedis.hset(\"" + serializeKey + "\" + playerData.getPlayerID() + \":"
-                        + type.getSimpleName() +"\", \"" + getters.getName().substring(test) + "\", \"\" + "
-                        + getters.getName() + "())");
+                String command = "hset";
+                String dataName = "\"\" + " + getters.getName() + "()";
+                if (createdFields.contains(getters.getName().substring(3) + "Vector"))
+                {
+                    command = "hincrBy";
+                    if (getters.getReturnType().equals(float.class)
+                            || getters.getReturnType().equals(double.class))
+                        command = "hincrByFloat";
+                    dataName = getters.getName().substring(3) + "Vector";
+                }
+
+                update.addStatement("jedis." + command + "(\"" + serializeKey + "\" + playerData.getPlayerID() + \":"
+                        + type.getSimpleName() +"\", \"" + getters.getName().substring(test) + "\", "
+                        + dataName + ")");
             }
         }
 
         update.addStatement("jedis.close()");
         object.addMethod(update.build());
+        //UPDATE END
 
+        //REFRESH START
         MethodSpec.Builder refresh = MethodSpec.methodBuilder("refresh")
                 .addModifiers(Modifier.PUBLIC)
                 .returns(void.class)
@@ -325,11 +380,17 @@ public class Generator {
 
         refresh.addStatement("jedis.close()");
         object.addMethod(refresh.build());
+        //REFRESH END
+
         return object.build();
     }
 
     public static void createCacheLoader()
     {
+        List<Class> toCreate = new ArrayList<>();
+        toCreate.add(GroupsBean.class);
+        toCreate.add(PlayerBean.class);
+
         //Imports
         ClassName jedis = ClassName.get("redis.clients.jedis", "Jedis");
         ClassName converter = ClassName.get("net.samagames.tools", "TypeConverter");
@@ -337,10 +398,6 @@ public class Generator {
         //Generation
         TypeSpec.Builder object = TypeSpec.classBuilder("CacheLoader")
                 .addModifiers(Modifier.PUBLIC);
-
-        List<Class> toCreate = new ArrayList<>();
-        toCreate.add(GroupsBean.class);
-        toCreate.add(PlayerBean.class);
 
         //Loaders
         for (Class classe : toCreate)

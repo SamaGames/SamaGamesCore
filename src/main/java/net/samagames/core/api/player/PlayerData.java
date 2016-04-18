@@ -55,20 +55,17 @@ public class PlayerData extends AbstractPlayerData
 
         Jedis jedis = api.getBungeeResource();
         try{
-            if (jedis.exists(key + playerUUID))
+            CacheLoader.load(jedis, key + playerUUID, playerBean);
+            if (jedis.exists("mute:" + playerUUID))
             {
-                CacheLoader.load(jedis, key + playerUUID, playerBean);
-                if (jedis.exists("mute:" + playerUUID))
-                {
-                    muteSanction = new SanctionBean(playerUUID,
-                            SanctionBean.MUTE,
-                            jedis.hget("mute:" + playerUUID, "reason"),
-                            UUID.fromString(jedis.hget("mute:" + playerUUID, "by")),
-                            new Timestamp(Long.valueOf(jedis.hget("mute:" + playerUUID, "expireAt"))),
-                            false, null, null);
-                }
-                return true;
+                muteSanction = new SanctionBean(playerUUID,
+                        SanctionBean.MUTE,
+                        jedis.hget("mute:" + playerUUID, "reason"),
+                        UUID.fromString(jedis.hget("mute:" + playerUUID, "by")),
+                        new Timestamp(Long.valueOf(jedis.hget("mute:" + playerUUID, "expireAt"))),
+                        false, null, null);
             }
+            return true;
         }catch (Exception e)
         {
             e.printStackTrace();
