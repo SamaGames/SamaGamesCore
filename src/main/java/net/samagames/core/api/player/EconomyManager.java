@@ -35,7 +35,11 @@ public class EconomyManager
     public void reload()
     {
         promotions.clear();
-        promotions.addAll(api.getGameServiceManager().getAllActivePromotions());
+        try {
+            promotions.addAll(api.getGameServiceManager().getAllActivePromotions());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public Multiplier getCurrentMultiplier(UUID player, int type, int game)
@@ -44,7 +48,12 @@ public class EconomyManager
 
         //TODO cache and get promotions
         PlayerData user = api.getPlayerManager().getPlayerData(player);
-        int groupMultiplier = api.getGameServiceManager().getGroupPlayer(user.getPlayerBean()).getMultiplier();
+        int groupMultiplier = 0;
+        try {
+            groupMultiplier = api.getGameServiceManager().getGroupPlayer(user.getPlayerBean()).getMultiplier();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Multiplier result = new Multiplier(groupMultiplier, 0);
         for (PromotionsBean promotion : promotions)
         {
