@@ -46,6 +46,8 @@ repositories {
     }
 }*/
 
+project.tasks.remove(jar)
+
 dependencies {
     compile group: 'net.samagames', name: 'PersistanceAPI', version: '1.0.0', changing: true
     compile group: 'net.samagames', name: 'SamaGamesAPI', version: '4.0.0', changing: true
