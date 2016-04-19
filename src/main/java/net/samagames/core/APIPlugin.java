@@ -143,8 +143,8 @@ public class APIPlugin extends JavaPlugin implements Listener
             RedisServer bungee = new RedisServer(bungeeIp, bungeePort, bungeePassword);
 
             String sqlUrl = dataYML.getString("sql-url", "127.0.0.1");
-            String sqlUsername = dataYML.getString("sql-username", "root");
-            String sqlPassword = dataYML.getString("sql-password", "passw0rd");
+            String sqlUsername = dataYML.getString("sql-user", "root");
+            String sqlPassword = dataYML.getString("sql-pass", "passw0rd");
             int sqlMinPoolSize = dataYML.getInt("sql-minpoolsize", 1);
             int sqlMaxPoolSize = dataYML.getInt("sql-maxpoolsize", 10);
 
