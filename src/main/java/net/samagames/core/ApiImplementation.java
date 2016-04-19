@@ -27,7 +27,6 @@ import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.tools.SkyFactory;
 import net.samagames.tools.npc.NPCManager;
 import redis.clients.jedis.Jedis;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * This file is a part of the SamaGames project
@@ -171,7 +170,7 @@ public class ApiImplementation extends SamaGamesAPI
     @Override
     public AbstractShopsManager getShopsManager()
     {
-        throw new NotImplementedException();
+        return null;
     }
 
     @Override
@@ -195,7 +194,7 @@ public class ApiImplementation extends SamaGamesAPI
     @Override
     public IAchievementManager getAchievementManager()
     {
-        throw new NotImplementedException();
+        return null;
     }
 
     public IPubSubAPI getPubSub()

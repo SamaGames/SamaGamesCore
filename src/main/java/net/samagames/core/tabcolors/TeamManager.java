@@ -71,9 +71,8 @@ public class TeamManager
                 newTeam.setPrefix(user.getTag());
                 newTeam.setDisplayName(user.getTag());
                 newTeam.setSuffix(user.getSuffix());
-                teamHandler.addTeam(newTeam);
-
                 teamHandler.addPlayerToTeam(p, newTeam);
+                teamHandler.addTeam(newTeam);
             }
         });
     }
