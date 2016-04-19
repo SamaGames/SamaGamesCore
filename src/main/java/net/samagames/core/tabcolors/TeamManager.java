@@ -51,8 +51,7 @@ public class TeamManager
     public void playerLeave(final Player p)
     {
         executor.execute(() ->{
-            final PermissionEntity user = manager.getPlayer(p.getUniqueId());
-            teamHandler.removeTeam(getTeamName(p.getName(), user.getRank()));
+            teamHandler.removeTeam(teamHandler.getTeamByPlayer(p).getName());
             teamHandler.removeReceiver(p);
         });
     }
