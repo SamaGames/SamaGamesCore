@@ -21,9 +21,6 @@ commands:
    lag:
      description: Donne des informations sur le serveur actuel et sur les latences
      usage: /lag
-   playerdata:
-     description: Renvoie les playerdata d'un joueur
-     usage: /playerdata <pseudo>
    bukkitdebug:
      description: Renvoie les playerdata d'un joueur
      usage: /playerdata <pseudo>

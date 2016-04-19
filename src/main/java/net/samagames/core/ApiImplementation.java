@@ -110,7 +110,8 @@ public class ApiImplementation extends SamaGamesAPI
     }
 
     @Override
-    public NPCManager getNPCManager() {
+    public NPCManager getNPCManager()
+    {
         return plugin.getNPCManager();
     }
 

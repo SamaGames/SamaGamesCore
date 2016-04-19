@@ -65,11 +65,9 @@ public class TeamManager
             if(SamaGamesAPI.get().getServerOptions().hasRankTabColor())
             {
                 final PermissionEntity user = manager.getPlayer(p.getUniqueId());
-                final String prefix = user.getTag();
                 TeamHandler.VTeam newTeam = teamHandler.createNewTeam(getTeamName(p.getName(), user.getRank()), "");
 
-
-                newTeam.setRealName(getTeamName(prefix, user.getRank()));
+                newTeam.setRealName(getTeamName(p.getName(), user.getRank()));
                 newTeam.setPrefix(user.getTag());
                 newTeam.setDisplayName(user.getTag());
                 newTeam.setSuffix(user.getSuffix());
