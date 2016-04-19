@@ -24,7 +24,6 @@ import net.samagames.core.api.settings.SettingsManager;
 import net.samagames.core.api.stats.StatsManager;
 import net.samagames.core.listeners.pubsub.GlobalUpdateListener;
 import net.samagames.persistanceapi.GameServiceManager;
-import net.samagames.tools.BarAPI.BarAPI;
 import net.samagames.tools.SkyFactory;
 import net.samagames.tools.npc.NPCManager;
 import redis.clients.jedis.Jedis;
@@ -49,7 +48,6 @@ public class ApiImplementation extends SamaGamesAPI
     private final ResourcePacksManagerImpl resourcePacksManager;
     private final PermissionManager permissionsManager;
     private final FriendsManager friendsManager;
-    private final BarAPI barAPI;
     private final SkyFactory skyFactory;
     private final StatsManager statsManager;
     private GameManager gameManager;
@@ -79,7 +77,6 @@ public class ApiImplementation extends SamaGamesAPI
         JoinManagerImplement implement = new JoinManagerImplement(this);
         this.joinManager = implement;
 
-        barAPI = new BarAPI(plugin);
         skyFactory = new SkyFactory(plugin);
 
         guiManager = new GuiManager(plugin);
@@ -150,12 +147,6 @@ public class ApiImplementation extends SamaGamesAPI
     public PartiesManager getPartiesManager()
     {
         return partiesManager;
-    }
-
-    @Override
-    public BarAPI getBarAPI()
-    {
-        return barAPI;
     }
 
     @Override

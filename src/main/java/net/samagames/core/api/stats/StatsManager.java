@@ -75,7 +75,8 @@ public class StatsManager implements IStatsManager
         GameServiceManager gameServiceManager = api.getGameServiceManager();
         List<LeaderboardBean> list = new ArrayList<>();
         //TODO add annotation in api for simplify method
-        switch (game)
+
+        /**switch (game)
         {
             case DIMENSION:
                 list = gameServiceManager.getDimmensionLeaderBoard(category);
@@ -97,7 +98,7 @@ public class StatsManager implements IStatsManager
             default:
                 list = new ArrayList<>();
                 break;
-        }
+        }**/
 
         //TODO fill leaderboard
 

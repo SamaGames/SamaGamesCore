@@ -1,9 +1,12 @@
 package net.samagames.core.api.resourcepacks;
 
+import io.netty.channel.Channel;
+import net.minecraft.server.v1_9_R1.PacketPlayInResourcePackStatus;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.resourcepacks.IResourceCallback;
 import net.samagames.api.resourcepacks.IResourcePacksManager;
 import net.samagames.core.APIPlugin;
+import net.samagames.tools.TinyProtocol;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -14,6 +17,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import redis.clients.jedis.Jedis;
 
+import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -26,7 +30,6 @@ import java.util.UUID;
  */
 public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
 {
-
     private final HashSet<UUID> currentlyDownloading = new HashSet<>();
     private final SamaGamesAPI api;
     private final String resetUrl;
