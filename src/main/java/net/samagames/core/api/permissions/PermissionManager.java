@@ -53,6 +53,7 @@ public class PermissionManager implements IPermissionsManager
         return isLobby;
     }
 
+    @Override
     public PermissionEntity getPlayer(UUID player)
     {
         return cache.get(player);
