@@ -48,7 +48,7 @@ public class TeamManager
             vt.setSuffix(groupsBean.getSuffix());
 
             teamHandler.addTeam(vt);
-            APIPlugin.log("[TeamRegister] Team " + teamName + " ajoutée  --> " + vt.getPrefix() + " / " + vt);
+            APIPlugin.log("[TeamRegister] Team " + teamName + " ajoutée  --> " + vt.getPrefix() + " / " + vt.getName());
         }
 
         TeamHandler.VTeam npc = teamHandler.createNewTeam("NPC", "");
@@ -85,6 +85,7 @@ public class TeamManager
             if(SamaGamesAPI.get().getServerOptions().hasRankTabColor())
             {
                 final PermissionEntity user = manager.getPlayer(p.getUniqueId());
+                System.out.print(user.getGroupName());
                 TeamHandler.VTeam teamByName = teamHandler.getTeamByName(user.getGroupName());
                 teamHandler.addPlayerToTeam(p, teamByName);
             }
