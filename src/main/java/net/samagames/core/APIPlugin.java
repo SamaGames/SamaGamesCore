@@ -178,7 +178,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         api.getPubSub().subscribe("*", debugListener);
         //Nickname
         //TODO nickname
-        nicknamePacketListener = new NicknamePacketListener(this);
+        //nicknamePacketListener = new NicknamePacketListener(this);
 
         npcManager = new NPCManager(api);
         Bukkit.getPluginManager().registerEvents(new TabsColorsListener(this), this);

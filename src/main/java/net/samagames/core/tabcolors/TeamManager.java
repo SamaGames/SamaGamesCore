@@ -85,8 +85,11 @@ public class TeamManager
             if(SamaGamesAPI.get().getServerOptions().hasRankTabColor())
             {
                 final PermissionEntity user = manager.getPlayer(p.getUniqueId());
-                System.out.print(user.getGroupName());
                 TeamHandler.VTeam teamByName = teamHandler.getTeamByName(user.getGroupName());
+                if (teamByName == null)
+                {
+                    teamByName = teamHandler.getTeamByName("Joueur");
+                }
                 teamHandler.addPlayerToTeam(p, teamByName);
             }
         });
