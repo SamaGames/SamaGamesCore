@@ -40,7 +40,7 @@ public class TeamManager
             if (teamHandler.getTeamByName(teamName) != null)
                 continue;
 
-            TeamHandler.VTeam vt = teamHandler.createNewTeam(groupsBean.getTag(), "");
+            TeamHandler.VTeam vt = teamHandler.createNewTeam(teamName, "");
 
             vt.setRealName(getTeamName(teamName, groupsBean.getRank()));
             vt.setPrefix(groupsBean.getTag());
@@ -74,7 +74,6 @@ public class TeamManager
     public void playerLeave(final Player p)
     {
         executor.execute(() ->{
-            teamHandler.removeTeam(teamHandler.getTeamByPlayer(p).getName());
             teamHandler.removeReceiver(p);
         });
     }
@@ -86,7 +85,7 @@ public class TeamManager
             if(SamaGamesAPI.get().getServerOptions().hasRankTabColor())
             {
                 final PermissionEntity user = manager.getPlayer(p.getUniqueId());
-                TeamHandler.VTeam teamByName = teamHandler.getTeamByName(user.getTag());
+                TeamHandler.VTeam teamByName = teamHandler.getTeamByName(user.getGroupName());
                 teamHandler.addPlayerToTeam(p, teamByName);
             }
         });

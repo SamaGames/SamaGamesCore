@@ -151,6 +151,11 @@ public class PermissionEntity implements IPermissionsEntity {
         return ChatColor.translateAlternateColorCodes('&', display.replaceAll("&s", " "));
     }
 
+    public String getGroupName()
+    {
+        return groupsBean.getPgroupName();
+    }
+
     @Override
     public int getMultiplier() {
         return groupsBean.getMultiplier();
