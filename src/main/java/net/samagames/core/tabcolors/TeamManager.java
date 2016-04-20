@@ -59,8 +59,6 @@ public class TeamManager
     public void playerJoin(final Player p)
     {
         executor.execute(() -> {
-            teamHandler.addReceiver(p);
-
             if(SamaGamesAPI.get().getServerOptions().hasRankTabColor())
             {
                 final PermissionEntity user = manager.getPlayer(p.getUniqueId());
@@ -73,6 +71,7 @@ public class TeamManager
                 teamHandler.addPlayerToTeam(p, newTeam);
                 teamHandler.addTeam(newTeam);
             }
+            teamHandler.addReceiver(p);
         });
     }
 
