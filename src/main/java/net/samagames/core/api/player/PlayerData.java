@@ -44,6 +44,17 @@ public class PlayerData extends AbstractPlayerData
         this.api = api;
         this.manager = manager;
 
+        playerBean = new PlayerBean(playerUUID,
+                "",
+                null,
+                500,
+                0,
+                null,
+                null,
+                null,
+                null,
+                0);
+
         refreshData();
     }
 
