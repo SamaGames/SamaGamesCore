@@ -5,6 +5,7 @@ import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.api.permissions.PermissionEntity;
 import net.samagames.core.api.permissions.PermissionManager;
+import net.samagames.persistanceapi.beans.players.GroupsBean;
 import net.samagames.tools.scoreboards.TeamHandler;
 import org.bukkit.entity.Player;
 
@@ -27,6 +28,28 @@ public class TeamManager
         manager = pl.getAPI().getPermissionsManager();
 
         teamHandler = new TeamHandler();
+
+        for (long i = 0; ; i++)
+        {
+            GroupsBean groupsBean = manager.getGroupByID(i);
+            if (groupsBean == null)
+                break;
+            //String teamName = pg.getProperty("team-name");
+            String teamName = groupsBean.getPgroupName();
+
+            if (teamHandler.getTeamByName(teamName) != null)
+                continue;
+
+            TeamHandler.VTeam vt = teamHandler.createNewTeam(groupsBean.getTag(), "");
+
+            vt.setRealName(getTeamName(teamName, groupsBean.getRank()));
+            vt.setPrefix(groupsBean.getTag());
+            vt.setDisplayName(groupsBean.getTag());
+            vt.setSuffix(groupsBean.getSuffix());
+
+            teamHandler.addTeam(vt);
+            APIPlugin.log("[TeamRegister] Team " + teamName + " ajoutée  --> " + vt.getPrefix() + " / " + vt);
+        }
 
         TeamHandler.VTeam npc = teamHandler.createNewTeam("NPC", "");
         npc.setRealName("NPC");
@@ -63,15 +86,8 @@ public class TeamManager
             if(SamaGamesAPI.get().getServerOptions().hasRankTabColor())
             {
                 final PermissionEntity user = manager.getPlayer(p.getUniqueId());
-                String teamName = getTeamName(p.getName(), user.getRank());
-                TeamHandler.VTeam newTeam = teamHandler.createNewTeam(teamName, "");
-
-                newTeam.setRealName(teamName);
-                newTeam.setPrefix(user.getTag());
-                newTeam.setDisplayName(user.getTag());
-                newTeam.setSuffix(user.getSuffix());
-                teamHandler.addTeam(newTeam);
-                teamHandler.addPlayerToTeam(p, newTeam);
+                TeamHandler.VTeam teamByName = teamHandler.getTeamByName(user.getTag());
+                teamHandler.addPlayerToTeam(p, teamByName);
             }
         });
     }
