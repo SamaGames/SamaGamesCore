@@ -7,6 +7,7 @@ import net.samagames.core.APIPlugin;
 import net.samagames.persistanceapi.beans.players.GroupsBean;
 import net.samagames.persistanceapi.beans.players.PlayerBean;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -63,17 +64,32 @@ public class PermissionManager implements IPermissionsManager
 
     @Override
     public String getPrefix(IPermissionsEntity entity) {
-        return entity.getPrefix();
+        String value = entity.getPrefix();
+        if (value == null)
+            return "";
+        value = value.replaceAll("&s", " ");
+        value = ChatColor.translateAlternateColorCodes('&', value);
+        return value;
     }
 
     @Override
     public String getSuffix(IPermissionsEntity entity) {
-        return entity.getSuffix();
+        String value = entity.getSuffix();
+        if (value == null)
+            return "";
+        value = value.replaceAll("&s", " ");
+        value = ChatColor.translateAlternateColorCodes('&', value);
+        return value;
     }
 
     @Override
     public String getDisplay(IPermissionsEntity entity) {
-        return entity.getTag();
+        String value = entity.getTag();
+        if (value == null)
+            return "";
+        value = value.replaceAll("&s", " ");
+        value = ChatColor.translateAlternateColorCodes('&', value);
+        return value;
     }
 
     @Override
