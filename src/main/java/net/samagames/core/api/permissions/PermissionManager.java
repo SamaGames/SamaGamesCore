@@ -4,6 +4,8 @@ import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.permissions.IPermissionsEntity;
 import net.samagames.api.permissions.IPermissionsManager;
 import net.samagames.core.APIPlugin;
+import net.samagames.persistanceapi.beans.players.GroupsBean;
+import net.samagames.persistanceapi.beans.players.PlayerBean;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -100,5 +102,16 @@ public class PermissionManager implements IPermissionsManager
         else if (sender instanceof Player)
             return hasPermission((Player) sender, permission);
         return false;
+    }
+
+    public GroupsBean getGroupByID(long id)
+    {
+        PlayerBean group = new PlayerBean(null, null, null, 0, 0, null, null, null, null, id);
+        try {
+            return plugin.getAPI().getGameServiceManager().getGroupPlayer(group);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
