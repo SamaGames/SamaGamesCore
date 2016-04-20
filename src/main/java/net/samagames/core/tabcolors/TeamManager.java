@@ -29,7 +29,7 @@ public class TeamManager
 
         teamHandler = new TeamHandler();
 
-        for (long i = 0; ; i++)
+        for (long i = 1; ; i++)
         {
             GroupsBean groupsBean = manager.getGroupByID(i);
             if (groupsBean == null)
