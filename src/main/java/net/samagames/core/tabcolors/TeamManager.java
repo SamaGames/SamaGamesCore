@@ -59,19 +59,20 @@ public class TeamManager
     public void playerJoin(final Player p)
     {
         executor.execute(() -> {
+            teamHandler.addReceiver(p);
             if(SamaGamesAPI.get().getServerOptions().hasRankTabColor())
             {
                 final PermissionEntity user = manager.getPlayer(p.getUniqueId());
-                TeamHandler.VTeam newTeam = teamHandler.createNewTeam(getTeamName(p.getName(), user.getRank()), "");
+                String teamName = getTeamName(p.getName(), user.getRank());
+                TeamHandler.VTeam newTeam = teamHandler.createNewTeam(teamName, "");
 
-                newTeam.setRealName(getTeamName(p.getName(), user.getRank()));
+                newTeam.setRealName(teamName);
                 newTeam.setPrefix(user.getTag());
                 newTeam.setDisplayName(user.getTag());
                 newTeam.setSuffix(user.getSuffix());
-                teamHandler.addPlayerToTeam(p, newTeam);
                 teamHandler.addTeam(newTeam);
+                teamHandler.addPlayerToTeam(p, newTeam);
             }
-            teamHandler.addReceiver(p);
         });
     }
 
