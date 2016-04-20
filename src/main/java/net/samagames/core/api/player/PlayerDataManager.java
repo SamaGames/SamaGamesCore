@@ -49,13 +49,13 @@ public class PlayerDataManager implements IPlayerDataManager
         if (data == null)
             throw new RuntimeException("Player with uuid: " + player + " not loaded at join !");
 
-        if (forceRefresh)
+        /*if (forceRefresh)
         {
             data.refreshData();
             return data;
-        }
+        }*/
 
-        data.refreshIfNeeded();
+        //data.refreshIfNeeded();
         return data;
     }
 
