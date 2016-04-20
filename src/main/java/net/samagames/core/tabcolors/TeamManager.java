@@ -1,5 +1,6 @@
 package net.samagames.core.tabcolors;
 
+import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_9_R1.ScoreboardTeamBase;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.APIPlugin;
@@ -43,9 +44,9 @@ public class TeamManager
             TeamHandler.VTeam vt = teamHandler.createNewTeam(teamName, "");
 
             vt.setRealName(getTeamName(teamName, groupsBean.getRank()));
-            vt.setPrefix(groupsBean.getTag());
-            vt.setDisplayName(groupsBean.getTag());
-            vt.setSuffix(groupsBean.getSuffix());
+            vt.setPrefix(ChatColor.translateAlternateColorCodes('&', groupsBean.getTag()));
+            vt.setDisplayName(ChatColor.translateAlternateColorCodes('&', groupsBean.getTag()));
+            vt.setSuffix(ChatColor.translateAlternateColorCodes('&', groupsBean.getSuffix()));
 
             teamHandler.addTeam(vt);
             APIPlugin.log("[TeamRegister] Team " + teamName + " ajoutée  --> " + vt.getPrefix() + " / " + vt.getName());
