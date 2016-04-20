@@ -408,7 +408,6 @@ public class Generator {
                     .addParameter(String.class, "key")
                     .addParameter(classe, "objet")
                     .returns(void.class);
-            getter.addStatement("System.out.print(key)");
 
             for (Method method : classe.getDeclaredMethods())
             {
