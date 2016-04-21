@@ -84,7 +84,8 @@ public class NicknamePacketListener extends TinyProtocol
                                 finalGameprofile.getProperties().putAll(victim.getProperties());
 
                             }else{
-                                finalGameprofile = new GameProfile(UUID.randomUUID(), "Michel");
+                                finalGameprofile = new GameProfile(profile.getId(), "Michel");
+                                finalGameprofile.getProperties().putAll(profile.getProperties());
                             }
 
                             Field gameProfile = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredField("d");
