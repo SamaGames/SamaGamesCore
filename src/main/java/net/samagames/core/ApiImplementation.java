@@ -65,6 +65,7 @@ public class ApiImplementation extends SamaGamesAPI
         GlobalUpdateListener listener = new GlobalUpdateListener(plugin);
         this.pubSub.subscribe("groupchange", listener);
         this.pubSub.subscribe("global", listener);
+        this.pubSub.subscribe("networkEvent_WillQuit", listener);
         this.pubSub.subscribe(plugin.getServerName(), listener);
         this.pubSub.subscribe("commands.servers." + getServerName(), new RemoteCommandsHandler());
         this.pubSub.subscribe("commands.servers.all", new RemoteCommandsHandler());

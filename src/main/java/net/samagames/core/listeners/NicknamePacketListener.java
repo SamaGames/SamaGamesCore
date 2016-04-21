@@ -4,14 +4,17 @@ import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
 import net.minecraft.server.v1_9_R1.PacketPlayOutNamedEntitySpawn;
 import net.minecraft.server.v1_9_R1.PacketPlayOutPlayerInfo;
-import net.samagames.core.utils.SkinLoader;
 import net.samagames.tools.Reflection;
 import net.samagames.tools.TinyProtocol;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -24,6 +27,7 @@ import java.util.UUID;
 public class NicknamePacketListener extends TinyProtocol
 {
 
+    private Random random;
 
     /**
      * Construct a new instance of TinyProtocol, and start intercepting packets for all connected clients and future clients.
@@ -35,10 +39,11 @@ public class NicknamePacketListener extends TinyProtocol
     public NicknamePacketListener(Plugin plugin)
     {
         super(plugin);
+        this.random = new Random();
     }
 
     @Override
-    public Object onPacketOutAsync(Player reciever, Channel channel, Object packet) {
+    public Object onPacketOutAsync(Player receiver, Channel channel, Object packet) {
 
         if(packet instanceof PacketPlayOutPlayerInfo)
         {
@@ -51,7 +56,7 @@ public class NicknamePacketListener extends TinyProtocol
                 a.setAccessible(true);
                 if(!a.get(p).equals(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER))
                 {
-                    return super.onPacketOutAsync(reciever, channel, packet);
+                    return super.onPacketOutAsync(receiver, channel, packet);
                 }
                // a.set(newPacket, a.get(p));
 
@@ -59,7 +64,7 @@ public class NicknamePacketListener extends TinyProtocol
                 b.setAccessible(true);
 
                 List list = (List) b.get(p);
-                if(!reciever.getUniqueId().equals(UUID.fromString("ad345a5e-5ae3-45bf-aba4-94f4102f37c0")))
+                if(!receiver.getUniqueId().equals(UUID.fromString("ad345a5e-5ae3-45bf-aba4-94f4102f37c0")))
                 {
                     for(Object data : list)
                     {
@@ -67,9 +72,24 @@ public class NicknamePacketListener extends TinyProtocol
                         GameProfile profile = data1.a();
                         if(profile.getId().equals(UUID.fromString("ad345a5e-5ae3-45bf-aba4-94f4102f37c0")))
                         {
+                            List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+                            players.remove(receiver);
+                            GameProfile finalGameprofile;
+                            if (players.size() > 0)
+                            {
+                                Player showed = players.get(random.nextInt(players.size()));
+                                GameProfile victim = ((CraftPlayer)showed).getHandle().getProfile();
+
+                                finalGameprofile = new GameProfile(victim.getId(), "Michel");
+                                finalGameprofile.getProperties().putAll(victim.getProperties());
+
+                            }else{
+                                finalGameprofile = new GameProfile(UUID.randomUUID(), "Michel");
+                            }
+
                             Field gameProfile = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredField("d");
 
-                            Reflection.setFinal(data, gameProfile, SkinLoader.getSkinProfile("Aurelien_Sama").getHandle());
+                            Reflection.setFinal(data, gameProfile, finalGameprofile);
                         }
                     }
                 }
@@ -93,11 +113,11 @@ public class NicknamePacketListener extends TinyProtocol
 
                 if(!uuid.get(p).equals(UUID.fromString("ad345a5e-5ae3-45bf-aba4-94f4102f37c0")))
                 {
-                    return super.onPacketOutAsync(reciever, channel, packet);
+                    return super.onPacketOutAsync(receiver, channel, packet);
                 }
-                if(reciever.getUniqueId().equals(UUID.fromString("ad345a5e-5ae3-45bf-aba4-94f4102f37c0")))
+                if(receiver.getUniqueId().equals(UUID.fromString("ad345a5e-5ae3-45bf-aba4-94f4102f37c0")))
                 {
-                    return super.onPacketOutAsync(reciever, channel, packet);
+                    return super.onPacketOutAsync(receiver, channel, packet);
                 }
 
                 uuid.set(p, UUID.fromString("c59220b1-662f-4aa8-b9d9-72660eb97c10"));
@@ -123,7 +143,7 @@ public class NicknamePacketListener extends TinyProtocol
             packet = p;
         }
 
-        return super.onPacketOutAsync(reciever, channel, packet);
+        return super.onPacketOutAsync(receiver, channel, packet);
     }
 
 

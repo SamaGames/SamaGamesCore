@@ -50,6 +50,7 @@ public class InvisiblePlayerFixListener implements Listener
             for (Player player : Bukkit.getOnlinePlayers()) {
                 if (player == null)
                     continue;
+                //TODO if moderator don't show
                 EntityPlayer entity = ((CraftPlayer) player).getHandle();
                 if (entity == null || currentNMS == null || currentNMS.playerConnection == null)
                     continue;

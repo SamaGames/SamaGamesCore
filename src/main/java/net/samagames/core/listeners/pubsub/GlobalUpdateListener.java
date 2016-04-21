@@ -7,6 +7,7 @@ import net.samagames.api.pubsub.IPacketsReceiver;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.permissions.PermissionEntity;
+import org.bukkit.Bukkit;
 
 import java.util.UUID;
 
@@ -67,8 +68,10 @@ public class GlobalUpdateListener implements IPacketsReceiver {
             try
             {
                 PlayerLeaveEvent packetObj = gson.fromJson(packet, PlayerLeaveEvent.class);
-                //TODO call other to save data because player will quit
-                plugin.getGlobalJoinListener().onWillLeave(packetObj.player, packetObj.targetServer);
+                if (Bukkit.getOfflinePlayer(packetObj.player).isOnline())
+                {
+                    plugin.getGlobalJoinListener().onWillLeave(packetObj.player, packetObj.targetServer);
+                }
             } catch (JsonSyntaxException ignored)
             {
                 //To be sure
