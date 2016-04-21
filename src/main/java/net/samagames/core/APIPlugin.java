@@ -173,7 +173,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         api.getJoinManager().registerHandler(debugListener, 0);
 
         //Invisible fix
-        getServer().getPluginManager().registerEvents(new InvisiblePlayerFixListener(this), this);
+        //getServer().getPluginManager().registerEvents(new InvisiblePlayerFixListener(this), this);
 
         api.getPubSub().subscribe("*", debugListener);
         //Nickname
