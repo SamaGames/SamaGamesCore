@@ -1,6 +1,7 @@
 package net.samagames.core.api.player;
 
 import com.google.gson.Gson;
+import com.mojang.authlib.GameProfile;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.player.AbstractPlayerData;
@@ -8,6 +9,7 @@ import net.samagames.api.player.IFinancialCallback;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.utils.CacheLoader;
+import net.samagames.core.utils.ProfileLoader;
 import net.samagames.persistanceapi.beans.players.PlayerBean;
 import net.samagames.persistanceapi.beans.players.SanctionBean;
 import org.bukkit.Bukkit;
@@ -33,6 +35,8 @@ public class PlayerData extends AbstractPlayerData
 
     private long lastRefresh;
     private UUID playerUUID;
+
+    private GameProfile fakeProfile;
 
     private UUID fakeUUID;
 
@@ -79,6 +83,8 @@ public class PlayerData extends AbstractPlayerData
                         new Timestamp(Long.valueOf(jedis.hget("mute:" + playerUUID, "expireAt"))),
                         false, null, null);
             }
+
+            this.fakeProfile = new ProfileLoader(fakeUUID.toString(), playerBean.getNickName(), playerBean.getNickName()).loadProfile();
             return true;
         }catch (Exception e)
         {
@@ -286,5 +292,9 @@ public class PlayerData extends AbstractPlayerData
 
     public UUID getFakeUUID() {
         return fakeUUID;
+    }
+
+    public GameProfile getFakeProfile() {
+        return fakeProfile;
     }
 }

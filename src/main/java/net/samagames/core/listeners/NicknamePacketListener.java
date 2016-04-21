@@ -7,7 +7,6 @@ import net.minecraft.server.v1_9_R1.PacketPlayOutPlayerInfo;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.player.PlayerData;
-import net.samagames.core.utils.ProfileLoader;
 import net.samagames.tools.Reflection;
 import net.samagames.tools.TinyProtocol;
 import org.bukkit.entity.Player;
@@ -75,9 +74,7 @@ public class NicknamePacketListener extends TinyProtocol
                     PlayerData playerData = api.getPlayerManager().getPlayerData(profile.getId());
                     if (playerData != null && playerData.hasNickname())
                     {
-                        //TODO cache
-                        String nickname = playerData.getCustomName();
-                        GameProfile gameProfile = new ProfileLoader(playerData.getFakeUUID().toString(), nickname, nickname).loadProfile();
+                        GameProfile gameProfile = playerData.getFakeProfile();
                         Field field = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredField("d");
                         Reflection.setFinal(data, field, gameProfile);
                     }
