@@ -38,7 +38,6 @@ import net.samagames.core.utils.data.temporary.ConcurrentTemporaryDataProvider;
 import net.samagames.core.utils.reflection.resolver.ClassResolver;
 import net.samagames.core.utils.reflection.resolver.FieldResolver;
 import net.samagames.core.utils.reflection.resolver.MethodResolver;
-import net.samagames.core.utils.reflection.resolver.minecraft.NMSClassResolver;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -46,15 +45,13 @@ import javax.annotation.Nullable;
 public class SkinLoader {
 
 	static ClassResolver    classResolver    = new ClassResolver();
-	static NMSClassResolver nmsClassResolver = new NMSClassResolver();
 
-	static Class<?> TileEntitySkull = nmsClassResolver.resolveSilent("TileEntitySkull");
 	static Class<?> Cache           = classResolver.resolveSilent("net.minecraft.util.com.google.common.cache.Cache", "com.google.common.cache.Cache");
 	static Class<?> LoadingCache    = classResolver.resolveSilent("net.minecraft.util.com.google.common.cache.LoadingCache", "com.google.common.cache.LoadingCache");
 	static Class<?> GameProfile     = classResolver.resolveSilent("net.minecraft.util.com.mojang.authlib.GameProfile", "com.mojang.authlib.GameProfile");
 	static Class<?> PropertyMap     = classResolver.resolveSilent("net.minecraft.util.com.mojang.authlib.properties.PropertyMap", "com.mojang.authlib.properties.PropertyMap");
 
-	static FieldResolver TileEntitySkullFieldResolver = new FieldResolver(TileEntitySkull);
+	static FieldResolver TileEntitySkullFieldResolver = new FieldResolver(net.minecraft.server.v1_9_R1.TileEntitySkull.class);
 	static FieldResolver GameProfileFieldResolver     = new FieldResolver(GameProfile);
 
 	static MethodResolver CacheMethodResolver        = new MethodResolver(Cache);
