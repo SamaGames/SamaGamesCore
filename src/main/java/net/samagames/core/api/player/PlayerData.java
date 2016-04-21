@@ -83,8 +83,10 @@ public class PlayerData extends AbstractPlayerData
                         new Timestamp(Long.valueOf(jedis.hget("mute:" + playerUUID, "expireAt"))),
                         false, null, null);
             }
-
-            this.fakeProfile = new ProfileLoader(fakeUUID.toString(), playerBean.getNickName(), playerBean.getNickName()).loadProfile();
+            if (hasNickname())
+            {
+                this.fakeProfile = new ProfileLoader(fakeUUID.toString(), playerBean.getNickName(), playerBean.getNickName()).loadProfile();
+            }
             return true;
         }catch (Exception e)
         {

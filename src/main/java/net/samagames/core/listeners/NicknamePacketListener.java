@@ -62,17 +62,12 @@ public class NicknamePacketListener extends TinyProtocol
                 b.setAccessible(true);
 
                 List list = (List) b.get(p);
-
                 for(Object data : list)
                 {
                     PacketPlayOutPlayerInfo.PlayerInfoData data1 = (PacketPlayOutPlayerInfo.PlayerInfoData) data;
                     GameProfile profile = data1.a();
-                    //Bypass if myself
-                    if (profile.getId().equals(receiver.getUniqueId()))
-                        continue;
-
                     PlayerData playerData = api.getPlayerManager().getPlayerData(profile.getId());
-                    if (playerData != null && playerData.hasNickname())
+                    if (!playerData.equals(receiver.getUniqueId()) && playerData != null && playerData.hasNickname())
                     {
                         GameProfile gameProfile = playerData.getFakeProfile();
                         Field field = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredField("d");
