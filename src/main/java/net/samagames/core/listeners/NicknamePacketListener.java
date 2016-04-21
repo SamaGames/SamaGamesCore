@@ -47,7 +47,6 @@ public class NicknamePacketListener extends TinyProtocol
 
     @Override
     public Object onPacketOutAsync(Player receiver, Channel channel, Object packet) {
-
         if(packet instanceof PacketPlayOutPlayerInfo)
         {
             PacketPlayOutPlayerInfo p = (PacketPlayOutPlayerInfo)packet;
@@ -55,10 +54,10 @@ public class NicknamePacketListener extends TinyProtocol
             try {
                 Field a = p.getClass().getDeclaredField("a");
                 a.setAccessible(true);
-                if(!a.get(p).equals(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER))
+                /*if(!a.get(p).equals(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.))
                 {
                     return super.onPacketOutAsync(receiver, channel, packet);
-                }
+                }*/
 
                 Field b = p.getClass().getDeclaredField("b");
                 b.setAccessible(true);
