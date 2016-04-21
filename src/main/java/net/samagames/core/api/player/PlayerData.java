@@ -34,6 +34,8 @@ public class PlayerData extends AbstractPlayerData
     private long lastRefresh;
     private UUID playerUUID;
 
+    private UUID fakeUUID;
+
     private final static String key = "playerdata:";
 
     private SanctionBean muteSanction = null;
@@ -43,6 +45,7 @@ public class PlayerData extends AbstractPlayerData
         this.playerUUID = playerID;
         this.api = api;
         this.manager = manager;
+        this.fakeUUID = UUID.randomUUID();
 
         playerBean = new PlayerBean(playerUUID,
                 "",
@@ -276,4 +279,12 @@ public class PlayerData extends AbstractPlayerData
         SamaGamesAPI.get().getPubSub().send("apiexec.message", playerUUID + " " + new Gson().toJson(component));
     }
 
+    public boolean hasNickname()
+    {
+        return (this.getCustomName() != null || !this.getCustomName().equals("null"));
+    }
+
+    public UUID getFakeUUID() {
+        return fakeUUID;
+    }
 }

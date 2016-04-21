@@ -46,9 +46,6 @@ public class PlayerDataManager implements IPlayerDataManager
 
         PlayerData data = cache.get(player);
 
-        if (data == null)
-            throw new RuntimeException("Player with uuid: " + player + " not loaded at join !");
-
         /*if (forceRefresh)
         {
             data.refreshData();
