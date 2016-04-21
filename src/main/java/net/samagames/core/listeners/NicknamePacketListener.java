@@ -4,15 +4,19 @@ import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
 import net.minecraft.server.v1_9_R1.PacketPlayOutNamedEntitySpawn;
 import net.minecraft.server.v1_9_R1.PacketPlayOutPlayerInfo;
-import net.samagames.tools.Reflection;
+import net.samagames.core.utils.SkinLoader;
+import net.samagames.core.utils.auth.GameProfileWrapper;
+import net.samagames.core.utils.auth.properties.PropertyMapWrapper;
+import net.samagames.core.utils.reflection.resolver.FieldResolver;
+import net.samagames.core.utils.reflection.resolver.minecraft.NMSClassResolver;
+import net.samagames.core.utils.reflection.resolver.minecraft.OBCClassResolver;
 import net.samagames.tools.TinyProtocol;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -26,6 +30,12 @@ import java.util.UUID;
  */
 public class NicknamePacketListener extends TinyProtocol
 {
+    static NMSClassResolver nmsClassResolver = new NMSClassResolver();
+    static OBCClassResolver obcClassResolver = new OBCClassResolver();
+
+    static Class<?> PlayerInfoData     = nmsClassResolver.resolveSilent("PacketPlayOutPlayerInfo$PlayerInfoData");// 1.8+ only
+
+    static FieldResolver PlayerInfoDataFieldResolver   = PlayerInfoData != null ? new FieldResolver(PlayerInfoData) : null;// 1.8+ only
 
     private Random random;
 
@@ -72,7 +82,7 @@ public class NicknamePacketListener extends TinyProtocol
                         GameProfile profile = data1.a();
                         if(profile.getId().equals(UUID.fromString("ad345a5e-5ae3-45bf-aba4-94f4102f37c0")))
                         {
-                            List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+                           /* List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
                             players.remove(receiver);
                             GameProfile finalGameprofile;
                             if (players.size() > 0)
@@ -86,11 +96,14 @@ public class NicknamePacketListener extends TinyProtocol
                             }else{
                                 finalGameprofile = new GameProfile(profile.getId(), "Michel");
                                 finalGameprofile.getProperties().putAll(profile.getProperties());
-                            }
+                            }*/
 
-                            Field gameProfile = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredField("d");
+                            Field field = PlayerInfoDataFieldResolver.resolve("d");
+                            field.set(data, disguiseProfile(receiver, new GameProfileWrapper(field.get(data))).getHandle());
 
-                            Reflection.setFinal(data, gameProfile, finalGameprofile);
+                            /*Field gameProfile = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredField("d");
+
+                            Reflection.setFinal(data, gameProfile, finalGameprofile);*/
                         }
                     }
                 }
@@ -145,6 +158,35 @@ public class NicknamePacketListener extends TinyProtocol
         }
 
         return super.onPacketOutAsync(receiver, channel, packet);
+    }
+
+    private GameProfileWrapper disguiseProfile(final Player observer, final GameProfileWrapper profileWrapper) throws Exception {
+        final UUID id = profileWrapper.getId();
+        final String name = profileWrapper.getName();
+        final OfflinePlayer toDisguise = Bukkit.getOfflinePlayer(id);
+
+        if (toDisguise == null /*|| !toDisguise.isOnline()*/) {
+            return profileWrapper;//Player to disguise doesn't exist
+        }
+
+        GameProfileWrapper profileClone = new GameProfileWrapper(id, name);// Create a clone of the profile since the server's PlayerList will use the original profiles
+
+        {
+            GameProfileWrapper skinProfile = "" != null ? SkinLoader.getSkinProfile("Nopoza") : null;
+            if (skinProfile != null) {
+                PropertyMapWrapper clonedSkinProperties = profileClone.getProperties();
+                // Copy the skin properties to the cloned profile
+                clonedSkinProperties.clear();
+                clonedSkinProperties.putAll(skinProfile.getProperties());
+            } else {
+                //TODO: loading skin
+            }
+        }
+
+        {
+            profileClone.setName("Michel");
+        }
+        return profileClone;
     }
 
 
