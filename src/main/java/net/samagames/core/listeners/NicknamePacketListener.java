@@ -62,7 +62,7 @@ public class NicknamePacketListener extends TinyProtocol
                 {
                     PacketPlayOutPlayerInfo.PlayerInfoData data1 = (PacketPlayOutPlayerInfo.PlayerInfoData) data;
                     GameProfile profile = data1.a();
-                    if (profile.equals(receiver.getUniqueId()))
+                    if (profile.getId().equals(receiver.getUniqueId()))
                     {
                         continue;
                     }
