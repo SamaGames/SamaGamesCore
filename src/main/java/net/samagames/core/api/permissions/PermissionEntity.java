@@ -2,6 +2,7 @@ package net.samagames.core.api.permissions;
 
 import net.samagames.api.permissions.IPermissionsEntity;
 import net.samagames.core.APIPlugin;
+import net.samagames.core.api.player.PlayerData;
 import net.samagames.core.utils.CacheLoader;
 import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.persistanceapi.beans.players.GroupsBean;
@@ -32,13 +33,14 @@ public class PermissionEntity implements IPermissionsEntity {
     private static final String key = "permissions:";
     private static final String subkeyPerms = ":list";
 
-
+    private PlayerData playerData;
 
     public PermissionEntity(UUID player, APIPlugin plugin)
     {
         this.uuid = player;
         this.plugin = plugin;
         this.manager = plugin.getGameServiceManager();
+        this.playerData = plugin.getAPI().getPlayerManager().getPlayerData(player);
 
         this.attachment = null;
         groupsBean = new GroupsBean();
@@ -102,6 +104,11 @@ public class PermissionEntity implements IPermissionsEntity {
         }
     }
 
+    public GroupsBean getDisplayGroup()
+    {
+        return (playerData.hasNickname()) ? plugin.getAPI().getPermissionsManager().getFakeGroupBean() : this.groupsBean;
+    }
+
     @Override
     public Map<String, Boolean> getPermissions() {
         return permissions;
@@ -115,7 +122,7 @@ public class PermissionEntity implements IPermissionsEntity {
 
     @Override
     public String getPrefix() {
-        String prefix = this.groupsBean.getPrefix();
+        String prefix = getDisplayGroup().getPrefix();
         if (prefix == null)
             return "";
         prefix = prefix.replaceAll("&s", " ");
@@ -125,7 +132,7 @@ public class PermissionEntity implements IPermissionsEntity {
 
     @Override
     public String getSuffix() {
-        String suffix = this.groupsBean.getSuffix();
+        String suffix = getDisplayGroup().getSuffix();
         if (suffix == null)
             return "";
         suffix = suffix.replaceAll("&s", " ");
@@ -145,7 +152,7 @@ public class PermissionEntity implements IPermissionsEntity {
 
     @Override
     public String getTag() {
-        String display = groupsBean.getTag();
+        String display = getDisplayGroup().getTag();
         if (display == null)
             return "";
         return ChatColor.translateAlternateColorCodes('&', display.replaceAll("&s", " "));
@@ -153,7 +160,7 @@ public class PermissionEntity implements IPermissionsEntity {
 
     public String getGroupName()
     {
-        return groupsBean.getPgroupName();
+        return getDisplayGroup().getPgroupName();
     }
 
     @Override

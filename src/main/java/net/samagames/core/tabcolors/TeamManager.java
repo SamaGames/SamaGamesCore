@@ -3,10 +3,13 @@ package net.samagames.core.tabcolors;
 import net.minecraft.server.v1_9_R1.ScoreboardTeamBase;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.APIPlugin;
+import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.permissions.PermissionEntity;
 import net.samagames.core.api.permissions.PermissionManager;
+import net.samagames.core.api.player.PlayerData;
 import net.samagames.persistanceapi.beans.players.GroupsBean;
 import net.samagames.tools.scoreboards.TeamHandler;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.concurrent.ExecutorService;
@@ -20,12 +23,14 @@ public class TeamManager
      */
     public static final char ESCAPE = '\u00A7';
     private final PermissionManager manager;
+    private final ApiImplementation api;
     private final TeamHandler teamHandler;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public TeamManager(APIPlugin pl)
     {
         manager = pl.getAPI().getPermissionsManager();
+        api = pl.getAPI();
 
         teamHandler = new TeamHandler();
 
@@ -74,7 +79,8 @@ public class TeamManager
     public void playerLeave(final Player p)
     {
         executor.execute(() ->{
-            teamHandler.removeReceiver(p);
+            PlayerData playerData = api.getPlayerManager().getPlayerData(p.getUniqueId());
+            teamHandler.removeReceiver(Bukkit.getOfflinePlayer(playerData.getDisplayeName()));
         });
     }
 
@@ -85,12 +91,13 @@ public class TeamManager
             if(SamaGamesAPI.get().getServerOptions().hasRankTabColor())
             {
                 final PermissionEntity user = manager.getPlayer(p.getUniqueId());
+                PlayerData playerData = api.getPlayerManager().getPlayerData(p.getUniqueId());
                 TeamHandler.VTeam teamByName = teamHandler.getTeamByName(user.getGroupName());
                 if (teamByName == null)
                 {
                     teamByName = teamHandler.getTeamByName("Joueur");
                 }
-                teamHandler.addPlayerToTeam(p, teamByName);
+                teamHandler.addPlayerToTeam(playerData.getDisplayeName(), teamByName);
             }
         });
     }

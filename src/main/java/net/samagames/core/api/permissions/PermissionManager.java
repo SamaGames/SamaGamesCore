@@ -27,11 +27,14 @@ public class PermissionManager implements IPermissionsManager
     private final HashMap<UUID, PermissionEntity> cache = new HashMap<>();
     private APIPlugin plugin;
 
+    private GroupsBean fakeGroupBean;
+
     public PermissionManager(APIPlugin plugin)
     {
         this.plugin = plugin;
         this.isLobby = SamaGamesAPI.get().getServerName().startsWith("Hub");
         Bukkit.getLogger().info("Lobby mode was set to : " + isLobby);
+        this.fakeGroupBean = getGroupByID(2);
     }
 
     public void loadPlayer(UUID player)
@@ -129,5 +132,9 @@ public class PermissionManager implements IPermissionsManager
             e.printStackTrace();
         }
         return null;
+    }
+
+    public GroupsBean getFakeGroupBean() {
+        return fakeGroupBean;
     }
 }
