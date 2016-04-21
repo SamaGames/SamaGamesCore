@@ -2,6 +2,7 @@ package net.samagames.core.listeners;
 
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.permissions.PermissionManager;
+import net.samagames.core.api.player.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -48,17 +49,22 @@ public class GlobalJoinListener implements Listener {
 
         //Load in game api
         api.getJoinManager().onLogin(event);
-        api.getPlugin().getLogger().info("AsyncPrelogin Time: " + (System.currentTimeMillis() - startTime));
+        //api.getPlugin().getLogger().info("AsyncPrelogin Time: " + (System.currentTimeMillis() - startTime));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLogin(PlayerLoginEvent event)
     {
+        PlayerData playerData = api.getPlayerManager().getPlayerData(event.getPlayer().getUniqueId());
+        if (playerData.hasNickname())
+        {
+            playerData.applyNickname();
+        }
         long startTime = System.currentTimeMillis();
         //Permissions already loaded in async, just apply them
         PermissionManager permissionManager = api.getPermissionsManager();
         permissionManager.getPlayer(event.getPlayer().getUniqueId()).applyPermissions();
-        api.getPlugin().getLogger().info("Login Time: " + (System.currentTimeMillis() - startTime));
+        //api.getPlugin().getLogger().info("Login Time: " + (System.currentTimeMillis() - startTime));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -68,7 +74,7 @@ public class GlobalJoinListener implements Listener {
         //Remove natural join message
         event.setJoinMessage("");
         api.getJoinManager().onJoin(event.getPlayer());
-        api.getPlugin().getLogger().info("Join Time: " + (System.currentTimeMillis() - startTime));
+        //api.getPlugin().getLogger().info("Join Time: " + (System.currentTimeMillis() - startTime));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

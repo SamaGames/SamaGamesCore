@@ -6,10 +6,8 @@ import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.permissions.PermissionEntity;
 import net.samagames.core.api.permissions.PermissionManager;
-import net.samagames.core.api.player.PlayerData;
 import net.samagames.persistanceapi.beans.players.GroupsBean;
 import net.samagames.tools.scoreboards.TeamHandler;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.concurrent.ExecutorService;
@@ -79,8 +77,7 @@ public class TeamManager
     public void playerLeave(final Player p)
     {
         executor.execute(() ->{
-            PlayerData playerData = api.getPlayerManager().getPlayerData(p.getUniqueId());
-            teamHandler.removeReceiver(Bukkit.getOfflinePlayer(playerData.getDisplayeName()));
+            teamHandler.removeReceiver(p);
         });
     }
 
@@ -91,13 +88,13 @@ public class TeamManager
             if(SamaGamesAPI.get().getServerOptions().hasRankTabColor())
             {
                 final PermissionEntity user = manager.getPlayer(p.getUniqueId());
-                PlayerData playerData = api.getPlayerManager().getPlayerData(p.getUniqueId());
+                //PlayerData playerData = api.getPlayerManager().getPlayerData(p.getUniqueId());
                 TeamHandler.VTeam teamByName = teamHandler.getTeamByName(user.getGroupName());
                 if (teamByName == null)
                 {
                     teamByName = teamHandler.getTeamByName("Joueur");
                 }
-                teamHandler.addPlayerToTeam(playerData.getDisplayeName(), teamByName);
+                teamHandler.addPlayerToTeam(p, teamByName);
             }
         });
     }

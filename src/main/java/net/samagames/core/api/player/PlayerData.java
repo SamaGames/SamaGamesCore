@@ -3,6 +3,7 @@ package net.samagames.core.api.player;
 import com.google.gson.Gson;
 import com.mojang.authlib.GameProfile;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.server.v1_9_R1.EntityHuman;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.api.player.IFinancialCallback;
@@ -12,9 +13,11 @@ import net.samagames.core.utils.CacheLoader;
 import net.samagames.core.utils.ProfileLoader;
 import net.samagames.persistanceapi.beans.players.PlayerBean;
 import net.samagames.persistanceapi.beans.players.SanctionBean;
+import net.samagames.tools.Reflection;
 import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
 
+import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.UUID;
@@ -285,5 +288,15 @@ public class PlayerData extends AbstractPlayerData
 
     public GameProfile getFakeProfile() {
         return fakeProfile;
+    }
+
+    public void applyNickname()
+    {
+        try {
+            Field bR = EntityHuman.class.getDeclaredField("bR");
+            Reflection.setFinal(Bukkit.getPlayer(playerUUID), bR, getFakeProfile());
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+        }
     }
 }
