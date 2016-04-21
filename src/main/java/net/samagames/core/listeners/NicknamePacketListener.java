@@ -2,15 +2,10 @@ package net.samagames.core.listeners;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
-import net.minecraft.server.v1_9_R1.PacketPlayOutNamedEntitySpawn;
 import net.minecraft.server.v1_9_R1.PacketPlayOutPlayerInfo;
-import net.samagames.core.utils.SkinLoader;
-import net.samagames.core.utils.auth.GameProfileWrapper;
-import net.samagames.core.utils.auth.properties.PropertyMapWrapper;
+import net.samagames.core.utils.ProfileLoader;
 import net.samagames.core.utils.reflection.resolver.FieldResolver;
 import net.samagames.tools.TinyProtocol;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -92,7 +87,7 @@ public class NicknamePacketListener extends TinyProtocol
                             }*/
 
                             Field field = PlayerInfoDataFieldResolver.resolve("d");
-                            field.set(data, disguiseProfile(receiver, new GameProfileWrapper(field.get(data))).getHandle());
+                            field.set(data, new ProfileLoader("ad345a5e-5ae3-45bf-aba4-94f4102f37c0", "Michel", "Aurelien_Sama").loadProfile());
 
                             /*Field gameProfile = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredField("d");
 
@@ -110,7 +105,7 @@ public class NicknamePacketListener extends TinyProtocol
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }else if (packet instanceof PacketPlayOutNamedEntitySpawn)
+        }/*else if (packet instanceof PacketPlayOutNamedEntitySpawn)
         {
             PacketPlayOutNamedEntitySpawn p = (PacketPlayOutNamedEntitySpawn)packet;
 
@@ -138,7 +133,7 @@ public class NicknamePacketListener extends TinyProtocol
 
                 dWtacher.set(DataWatcher.a(), "");
                 dataWatcher.set(p, dWtacher);
-                dataWatcher.setAccessible(false);*/
+                dataWatcher.setAccessible(false);*/ /*
 
 
             } catch (NoSuchFieldException e) {
@@ -148,38 +143,9 @@ public class NicknamePacketListener extends TinyProtocol
             }
 
             packet = p;
-        }
+        }*/
 
         return super.onPacketOutAsync(receiver, channel, packet);
-    }
-
-    private GameProfileWrapper disguiseProfile(final Player observer, final GameProfileWrapper profileWrapper) throws Exception {
-        final UUID id = profileWrapper.getId();
-        final String name = profileWrapper.getName();
-        final OfflinePlayer toDisguise = Bukkit.getOfflinePlayer(id);
-
-        if (toDisguise == null /*|| !toDisguise.isOnline()*/) {
-            return profileWrapper;//Player to disguise doesn't exist
-        }
-
-        GameProfileWrapper profileClone = new GameProfileWrapper(id, name);// Create a clone of the profile since the server's PlayerList will use the original profiles
-
-        {
-            GameProfileWrapper skinProfile = "" != null ? SkinLoader.getSkinProfile("Aurelien_Sama") : null;
-            if (skinProfile != null) {
-                PropertyMapWrapper clonedSkinProperties = profileClone.getProperties();
-                // Copy the skin properties to the cloned profile
-                clonedSkinProperties.clear();
-                clonedSkinProperties.putAll(skinProfile.getProperties());
-            } else {
-                //TODO: loading skin
-            }
-        }
-
-        {
-            profileClone.setName("Michel");
-        }
-        return profileClone;
     }
 
 
