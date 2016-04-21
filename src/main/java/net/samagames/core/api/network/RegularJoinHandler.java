@@ -34,10 +34,10 @@ public class RegularJoinHandler implements IPacketsReceiver
         {
             TextComponent component = new TextComponent(response.getReason());
             component.setColor(ChatColor.RED);
-            SamaGamesAPI.get().getPlayerManager().getPlayerData(player).sendMessage(component);
+            SamaGamesAPI.get().getPlayerManager().sendMessage(player, component);
         } else
         {
-            SamaGamesAPI.get().getPlayerManager().getPlayerData(player).connectToServer(SamaGamesAPI.get().getServerName());
+            SamaGamesAPI.get().getPlayerManager().connectToServer(player, SamaGamesAPI.get().getServerName());
             SamaGamesAPI.get().getGameManager().refreshArena();
         }
     }

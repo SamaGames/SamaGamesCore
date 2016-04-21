@@ -1,5 +1,8 @@
 package net.samagames.core.api.player;
 
+import com.google.gson.Gson;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.player.IPlayerDataManager;
 import net.samagames.core.ApiImplementation;
 
@@ -73,6 +76,23 @@ public class PlayerDataManager implements IPlayerDataManager
     }
 
     //TODO nickname
+    @Override
+    public void kickFromNetwork(UUID playerUUID, TextComponent reason)
+    {
+        SamaGamesAPI.get().getPubSub().send("apiexec.kick", playerUUID + " " + new Gson().toJson(reason));
+    }
+
+    @Override
+    public void connectToServer(UUID playerUUID, String server)
+    {
+        SamaGamesAPI.get().getPubSub().send("apiexec.connect", playerUUID + " " + server);
+    }
+
+    @Override
+    public void sendMessage(UUID playerUUID, TextComponent component)
+    {
+        SamaGamesAPI.get().getPubSub().send("apiexec.message", playerUUID + " " + new Gson().toJson(component));
+    }
 
 
     public void onShutdown()

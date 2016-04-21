@@ -274,24 +274,6 @@ public class PlayerData extends AbstractPlayerData
         return playerBean;
     }
 
-    @Override
-    public void kickFromNetwork(TextComponent reason)
-    {
-        SamaGamesAPI.get().getPubSub().send("apiexec.kick", playerUUID + " " + new Gson().toJson(reason));
-    }
-
-    @Override
-    public void connectToServer(String server)
-    {
-        SamaGamesAPI.get().getPubSub().send("apiexec.connect", playerUUID + " " + server);
-    }
-
-    @Override
-    public void sendMessage(TextComponent component)
-    {
-        SamaGamesAPI.get().getPubSub().send("apiexec.message", playerUUID + " " + new Gson().toJson(component));
-    }
-
     public boolean hasNickname()
     {
         return this.getCustomName() != null && !this.getCustomName().equals("null");
