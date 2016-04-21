@@ -17,12 +17,15 @@ package net.samagames.core.utils;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import net.samagames.api.SamaGamesAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import redis.clients.jedis.Jedis;
 
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Scanner;
@@ -52,20 +55,33 @@ public class ProfileLoader {
         return profile;
     }
 
+    private String getData(String uuid) throws IOException {
+        // Get the name from SwordPVP
+        URL url = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false");
+        URLConnection uc = url.openConnection();
+        uc.setUseCaches(false);
+        uc.setDefaultUseCaches(false);
+        uc.addRequestProperty("User-Agent", "Mozilla/5.0");
+        uc.addRequestProperty("Cache-Control", "no-cache, no-store, must-revalidate");
+        uc.addRequestProperty("Pragma", "no-cache");
+
+        // Parse it
+        return new Scanner(uc.getInputStream(), "UTF-8").useDelimiter("\\A").next();
+    }
+
     private void addProperties(GameProfile profile) {
         String uuid = getUUID(skinOwner);
+        Jedis jedis = SamaGamesAPI.get().getBungeeResource();
         try {
-            // Get the name from SwordPVP
-            URL url = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false");
-            URLConnection uc = url.openConnection();
-            uc.setUseCaches(false);
-            uc.setDefaultUseCaches(false);
-            uc.addRequestProperty("User-Agent", "Mozilla/5.0");
-            uc.addRequestProperty("Cache-Control", "no-cache, no-store, must-revalidate");
-            uc.addRequestProperty("Pragma", "no-cache");
 
-            // Parse it
-            String json = new Scanner(uc.getInputStream(), "UTF-8").useDelimiter("\\A").next();
+            String json = jedis.get("cacheSkin:" + uuid);
+            if (json == null)
+            {
+                //Requete
+                json = getData(uuid);
+                jedis.set("cacheSkin:" + uuid, json);
+                jedis.expire("cacheSkin:" + uuid, 172800);//2 jours
+            }
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(json);
             JSONArray properties = (JSONArray) ((JSONObject) obj).get("properties");
@@ -86,6 +102,8 @@ public class ProfileLoader {
             }
         } catch (Exception e) {
             ; // Failed to load skin
+        }finally {
+            jedis.close();
         }
     }
 
