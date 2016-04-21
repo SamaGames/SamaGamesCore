@@ -28,6 +28,7 @@ public class GlobalJoinListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPreJoin(AsyncPlayerPreLoginEvent event)
     {
+        long startTime = System.currentTimeMillis();
         UUID player = event.getUniqueId();
         //First load main data
         api.getPlayerManager().loadPlayer(event.getUniqueId());
@@ -47,22 +48,27 @@ public class GlobalJoinListener implements Listener {
 
         //Load in game api
         api.getJoinManager().onLogin(event);
+        api.getPlugin().getLogger().info("AsyncPrelogin Time: " + (System.currentTimeMillis() - startTime));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLogin(PlayerLoginEvent event)
     {
+        long startTime = System.currentTimeMillis();
         //Permissions already loaded in async, just apply them
         PermissionManager permissionManager = api.getPermissionsManager();
         permissionManager.getPlayer(event.getPlayer().getUniqueId()).applyPermissions();
+        api.getPlugin().getLogger().info("Login Time: " + (System.currentTimeMillis() - startTime));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event)
     {
+        long startTime = System.currentTimeMillis();
         //Remove natural join message
         event.setJoinMessage("");
         api.getJoinManager().onJoin(event.getPlayer());
+        api.getPlugin().getLogger().info("Join Time: " + (System.currentTimeMillis() - startTime));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
