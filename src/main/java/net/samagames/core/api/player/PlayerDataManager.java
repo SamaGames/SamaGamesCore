@@ -91,7 +91,7 @@ public class PlayerDataManager implements IPlayerDataManager
     @Override
     public void sendMessage(UUID playerUUID, TextComponent component)
     {
-        SamaGamesAPI.get().getPubSub().send("apiexec.message", playerUUID + " " + new Gson().toJson(component));
+        SamaGamesAPI.get().getPubSub().send("apiexec.send", playerUUID + " " + new Gson().toJson(component));
     }
 
 

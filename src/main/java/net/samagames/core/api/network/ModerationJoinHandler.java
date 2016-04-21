@@ -26,7 +26,7 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver
     public ModerationJoinHandler(ApiImplementation api)
     {
         this.api = api;
-        manager = (JoinManagerImplement) api.getJoinManager();
+        manager = api.getJoinManager();
     }
 
     @Override
