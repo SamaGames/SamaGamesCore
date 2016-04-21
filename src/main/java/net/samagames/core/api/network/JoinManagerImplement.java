@@ -123,7 +123,7 @@ public class JoinManagerImplement implements IJoinManager
                             Bukkit.getScheduler().runTaskLater(APIPlugin.getInstance(),
                                     () -> playersExpected.remove(player), 20 * 15L);
 
-                            api.getPlayerManager().getPlayerData(player).connectToServer(SamaGamesAPI.get().getServerName());
+                            api.getPlayerManager().connectToServer(player, SamaGamesAPI.get().getServerName());
                         });
             }
 
