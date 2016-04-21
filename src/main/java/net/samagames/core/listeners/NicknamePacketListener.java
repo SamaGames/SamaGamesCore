@@ -33,7 +33,7 @@ public class NicknamePacketListener extends TinyProtocol
     static NMSClassResolver nmsClassResolver = new NMSClassResolver();
     static OBCClassResolver obcClassResolver = new OBCClassResolver();
 
-    static Class<?> PlayerInfoData     = nmsClassResolver.resolveSilent("PacketPlayOutPlayerInfo$PlayerInfoData");// 1.8+ only
+    static Class<?> PlayerInfoData     = nmsClassResolver.resolveSilent("PacketPlayOutPlayerInfo.PlayerInfoData");// 1.8+ only
 
     static FieldResolver PlayerInfoDataFieldResolver   = PlayerInfoData != null ? new FieldResolver(PlayerInfoData) : null;// 1.8+ only
 
