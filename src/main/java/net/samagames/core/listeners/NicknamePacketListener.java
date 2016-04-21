@@ -165,7 +165,7 @@ public class NicknamePacketListener extends TinyProtocol
         GameProfileWrapper profileClone = new GameProfileWrapper(id, name);// Create a clone of the profile since the server's PlayerList will use the original profiles
 
         {
-            GameProfileWrapper skinProfile = "" != null ? SkinLoader.getSkinProfile("Nopoza") : null;
+            GameProfileWrapper skinProfile = "" != null ? SkinLoader.getSkinProfile("Aurelien_Sama") : null;
             if (skinProfile != null) {
                 PropertyMapWrapper clonedSkinProperties = profileClone.getProperties();
                 // Copy the skin properties to the cloned profile
