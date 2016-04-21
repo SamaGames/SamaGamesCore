@@ -281,7 +281,7 @@ public class PlayerData extends AbstractPlayerData
 
     public boolean hasNickname()
     {
-        return (this.getCustomName() != null || !this.getCustomName().equals("null"));
+        return this.getCustomName() != null && !this.getCustomName().equals("null");
     }
 
     public UUID getFakeUUID() {
