@@ -8,8 +8,6 @@ import net.samagames.core.utils.SkinLoader;
 import net.samagames.core.utils.auth.GameProfileWrapper;
 import net.samagames.core.utils.auth.properties.PropertyMapWrapper;
 import net.samagames.core.utils.reflection.resolver.FieldResolver;
-import net.samagames.core.utils.reflection.resolver.minecraft.NMSClassResolver;
-import net.samagames.core.utils.reflection.resolver.minecraft.OBCClassResolver;
 import net.samagames.tools.TinyProtocol;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -30,12 +28,7 @@ import java.util.UUID;
  */
 public class NicknamePacketListener extends TinyProtocol
 {
-    static NMSClassResolver nmsClassResolver = new NMSClassResolver();
-    static OBCClassResolver obcClassResolver = new OBCClassResolver();
-
-    static Class<?> PlayerInfoData     = nmsClassResolver.resolveSilent("PacketPlayOutPlayerInfo.PlayerInfoData");// 1.8+ only
-
-    static FieldResolver PlayerInfoDataFieldResolver   = PlayerInfoData != null ? new FieldResolver(PlayerInfoData) : null;// 1.8+ only
+    static FieldResolver PlayerInfoDataFieldResolver   = new FieldResolver(PacketPlayOutPlayerInfo.PlayerInfoData.class);// 1.8+ only
 
     private Random random;
 
