@@ -17,8 +17,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_9_R1.CraftServer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import redis.clients.jedis.Jedis;
@@ -343,25 +342,27 @@ public class APIPlugin extends JavaPlugin implements Listener
 	 */
 
     @EventHandler
-    public void onLogin(AsyncPlayerPreLoginEvent event)
+    public void onLogin(PlayerLoginEvent event)
     {
         if (!allowJoin)
         {
-            event.disallow(Result.KICK_OTHER, ChatColor.RED + denyJoinReason);
+            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ChatColor.RED + denyJoinReason);
+            event.setResult(PlayerLoginEvent.Result.KICK_WHITELIST);
             event.setKickMessage(ChatColor.RED + denyJoinReason);
 
             return;
         }
 
-        if (!ipWhiteList.contains(event.getAddress().getHostAddress()) && !disableWhitelist)
+        if (joinPermission != null && !api.getPermissionsManager().hasPermission(event.getPlayer(), joinPermission))
         {
-            event.setKickMessage(ChatColor.RED + "Vous n'avez pas la permission de rejoindre ce serveur.");
-            Bukkit.getLogger().log(Level.WARNING, "An user tried to connect from IP " + event.getAddress().getHostAddress());
+            event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, "Vous n'avez pas la permission de rejoindre ce serveur.");
         }
 
-        if (joinPermission != null && !api.getPermissionsManager().hasPermission(event.getUniqueId(), joinPermission))
+        if (!ipWhiteList.contains(event.getRealAddress().getHostAddress()))
         {
-            event.disallow(Result.KICK_WHITELIST, "Vous n'avez pas la permission de rejoindre ce serveur.");
+            event.setResult(PlayerLoginEvent.Result.KICK_WHITELIST);
+            event.setKickMessage(ChatColor.RED + "Erreur de connexion vers le serveur... Merci de bien vouloir ré-essayer plus tard.");
+            Bukkit.getLogger().log(Level.WARNING, "An user tried to connect from IP " + event.getRealAddress().getHostAddress());
         }
     }
 
