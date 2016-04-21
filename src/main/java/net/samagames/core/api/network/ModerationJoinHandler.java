@@ -78,7 +78,7 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver
             }
 
             //On attend un peu avant de tp
-            api.getPlugin().getExecutor().schedule(() -> api.getPlayerManager().getPlayerData(uuid).connectToServer(SamaGamesAPI.get().getServerName()), 50, TimeUnit.MILLISECONDS);
+            api.getPlugin().getExecutor().schedule(() -> api.getPlayerManager().connectToServer(uuid, SamaGamesAPI.get().getServerName()), 50, TimeUnit.MILLISECONDS);
         }
     }
 }
