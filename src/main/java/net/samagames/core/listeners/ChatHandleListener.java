@@ -99,16 +99,17 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
     {
         Player p = event.getPlayer();
         PermissionEntity user = api.getPermissionsManager().getPlayer(p.getUniqueId());
+        PlayerData playerData = api.getPlayerManager().getPlayerData(p.getUniqueId());
         String format = "<display><prefix><name><suffix>: ";
 
-        String display = replaceColors(user.getTag());
-        String prefix = replaceColors(user.getPrefix());
-        String suffix = replaceColors(user.getSuffix());
+        String display = replaceColors(user.getDisplayTag());
+        String prefix = replaceColors(user.getDisplayPrefix());
+        String suffix = replaceColors(user.getDisplaySuffix());
 
         String tmp = format;
         tmp = tmp.replaceAll("<display>", "" + display + org.bukkit.ChatColor.WHITE);
         tmp = tmp.replaceAll("<prefix>", "" + prefix);
-        tmp = tmp.replaceAll("<name>", "" + p.getName());
+        tmp = tmp.replaceAll("<name>", "" + playerData.getDisplayeName());
         tmp = tmp.replaceAll("<suffix>", "" + suffix);
 
         if (p.hasPermission("bungeefilter.bypass"))
