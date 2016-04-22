@@ -11,10 +11,17 @@ import org.bukkit.Bukkit;
  */
 class RemoteCommandsHandler implements IPacketsReceiver
 {
+    private APIPlugin plugin;
+
+    public RemoteCommandsHandler(APIPlugin plugin)
+    {
+        this.plugin = plugin;
+    }
+
     @Override
     public void receive(String channel, String command)
     {
         Bukkit.getLogger().info("Executing command remotely : " + command);
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+        Bukkit.getScheduler().runTask(plugin, () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command));
     }
 }
