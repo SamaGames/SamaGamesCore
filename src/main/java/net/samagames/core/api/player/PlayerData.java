@@ -1,10 +1,7 @@
 package net.samagames.core.api.player;
 
-import com.google.gson.Gson;
 import com.mojang.authlib.GameProfile;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R1.EntityHuman;
-import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.api.player.IFinancialCallback;
 import net.samagames.core.APIPlugin;
@@ -15,6 +12,8 @@ import net.samagames.persistanceapi.beans.players.PlayerBean;
 import net.samagames.persistanceapi.beans.players.SanctionBean;
 import net.samagames.tools.Reflection;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
+import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 
 import java.lang.reflect.Field;
@@ -290,11 +289,11 @@ public class PlayerData extends AbstractPlayerData
         return fakeProfile;
     }
 
-    public void applyNickname()
+    public void applyNickname(Player player)
     {
         try {
             Field bR = EntityHuman.class.getDeclaredField("bR");
-            Reflection.setFinal(Bukkit.getPlayer(playerUUID), bR, getFakeProfile());
+            Reflection.setFinal(((CraftPlayer)player).getHandle(), bR, getFakeProfile());
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }
