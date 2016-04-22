@@ -177,7 +177,7 @@ public class PermissionEntity implements IPermissionsEntity {
     {
         if (value == null)
             return "";
-        return ChatColor.translateAlternateColorCodes('&', display.replaceAll("&s", " "));
+        return ChatColor.translateAlternateColorCodes('&', value.replaceAll("&s", " "));
     }
 
     public String getDisplayGroupName()
