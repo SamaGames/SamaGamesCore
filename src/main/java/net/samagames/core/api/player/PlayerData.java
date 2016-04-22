@@ -289,10 +289,10 @@ public class PlayerData extends AbstractPlayerData
         return fakeProfile;
     }
 
-    public void applyNickname()
+    public void applyNickname(Player player)
     {
         try {
-            GameProfile profile = ((CraftPlayer) Bukkit.getPlayer(playerUUID)).getHandle().getProfile();
+            GameProfile profile = ((CraftPlayer) player).getHandle().getProfile();
             Field name = GameProfile.class.getDeclaredField("name");
             Reflection.setFinal(profile, name, getDisplayeName());
         } catch (ReflectiveOperationException e) {
