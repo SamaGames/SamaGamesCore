@@ -68,7 +68,7 @@ public class GlobalUpdateListener implements IPacketsReceiver {
             try
             {
                 PlayerLeaveEvent packetObj = gson.fromJson(packet, PlayerLeaveEvent.class);
-                if (Bukkit.getOfflinePlayer(packetObj.player).isOnline())
+                if (Bukkit.getPlayer(packetObj.player) != null)
                 {
                     plugin.getGlobalJoinListener().onWillLeave(packetObj.player, packetObj.targetServer);
                 }
