@@ -121,23 +121,31 @@ public class PermissionEntity implements IPermissionsEntity {
     }
 
     @Override
-    public String getPrefix() {
-        String prefix = getDisplayGroup().getPrefix();
-        if (prefix == null)
-            return "";
-        prefix = prefix.replaceAll("&s", " ");
-        prefix = ChatColor.translateAlternateColorCodes('&', prefix);
-        return prefix;
+    public String getDisplayPrefix()
+    {
+        return formatText(getDisplayGroup().getPrefix());
+    }
+
+    @Override
+    public String getPrefix()
+    {
+        return formatText(this.groupsBean.getPrefix());
+    }
+
+    @Override
+    public String getDisplaySuffix()
+    {
+        return formatText(getDisplayGroup().getSuffix());
     }
 
     @Override
     public String getSuffix() {
-        String suffix = getDisplayGroup().getSuffix();
-        if (suffix == null)
-            return "";
-        suffix = suffix.replaceAll("&s", " ");
-        suffix = ChatColor.translateAlternateColorCodes('&', suffix);
-        return suffix;
+        return formatText(this.groupsBean.getSuffix());
+    }
+
+    @Override
+    public long getDisplayGroupId() {
+        return this.getDisplayGroup().getGroupId();
     }
 
     @Override
@@ -146,21 +154,40 @@ public class PermissionEntity implements IPermissionsEntity {
     }
 
     @Override
+    public int getDisplayRank() {
+        return getDisplayGroup().getRank();
+    }
+
+    @Override
     public int getRank() {
         return groupsBean.getRank();
     }
 
     @Override
+    public String getDisplayTag() {
+        return formatText(getDisplayGroup().getTag());
+    }
+
+    @Override
     public String getTag() {
-        String display = getDisplayGroup().getTag();
-        if (display == null)
+        return formatText(this.groupsBean.getTag());
+    }
+
+    private String formatText(String value)
+    {
+        if (value == null)
             return "";
         return ChatColor.translateAlternateColorCodes('&', display.replaceAll("&s", " "));
     }
 
-    public String getGroupName()
+    public String getDisplayGroupName()
     {
         return getDisplayGroup().getPgroupName();
+    }
+
+    public String getGroupName()
+    {
+        return this.groupsBean.getPgroupName();
     }
 
     @Override
