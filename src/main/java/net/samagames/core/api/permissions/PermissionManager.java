@@ -34,7 +34,6 @@ public class PermissionManager implements IPermissionsManager
         this.plugin = plugin;
         this.isLobby = SamaGamesAPI.get().getServerName().startsWith("Hub");
         Bukkit.getLogger().info("Lobby mode was set to : " + isLobby);
-        this.fakeGroupBean = getGroupByID(2L);
     }
 
     public void loadPlayer(UUID player)
@@ -136,5 +135,9 @@ public class PermissionManager implements IPermissionsManager
 
     public GroupsBean getFakeGroupBean() {
         return fakeGroupBean;
+    }
+
+    public void setFakeGroupBean(GroupsBean fakeGroupBean) {
+        this.fakeGroupBean = fakeGroupBean;
     }
 }
