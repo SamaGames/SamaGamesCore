@@ -56,10 +56,10 @@ public class GlobalJoinListener implements Listener {
     public void onPlayerLogin(PlayerLoginEvent event)
     {
         PlayerData playerData = api.getPlayerManager().getPlayerData(event.getPlayer().getUniqueId());
-        if (playerData.hasNickname())
+        /*if (playerData.hasNickname())
         {
             playerData.applyNickname(event.getPlayer());
-        }
+        }*/
         long startTime = System.currentTimeMillis();
         //Permissions already loaded in async, just apply them
         PermissionManager permissionManager = api.getPermissionsManager();
