@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
 import net.minecraft.server.v1_9_R1.PacketPlayOutNamedEntitySpawn;
 import net.minecraft.server.v1_9_R1.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_9_R1.PacketPlayOutScoreboardTeam;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.player.PlayerData;
@@ -12,6 +13,7 @@ import net.samagames.tools.TinyProtocol;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -116,9 +118,38 @@ public class NicknamePacketListener extends TinyProtocol
                 dataWatcher.set(p, dWtacher);
                 dataWatcher.setAccessible(false);*/
 
-            } catch (NoSuchFieldException e) {
+            } catch (NoSuchFieldException | IllegalAccessException e) {
                 e.printStackTrace();
-            } catch (IllegalAccessException e) {
+            }
+
+            packet = p;
+        }else if (packet instanceof PacketPlayOutScoreboardTeam)
+        {
+            PacketPlayOutScoreboardTeam p = (PacketPlayOutScoreboardTeam) packet;
+            try {
+
+                Field h = p.getClass().getDeclaredField("h");
+                h.setAccessible(true);
+                List<String> players = (List<String>) h.get(p);
+                List<String> newPlayers = new ArrayList<>();
+                for (String member : players)
+                {
+                    String newMember = member;
+                    PlayerData playerData = api.getPlayerManager().getPlayerDataByName(member);
+                    if (playerData != null)
+                    {
+                        if (!playerData.getPlayerID().equals(receiver.getUniqueId()) && playerData.hasNickname())
+                        {
+                            newMember = playerData.getCustomName();
+                        }
+                    }
+                    newPlayers.add(newMember);
+                }
+
+                h.set(p, newPlayers);
+                h.setAccessible(false);
+
+            } catch (NoSuchFieldException | IllegalAccessException e) {
                 e.printStackTrace();
             }
 

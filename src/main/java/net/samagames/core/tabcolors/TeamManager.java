@@ -89,7 +89,7 @@ public class TeamManager
             {
                 final PermissionEntity user = manager.getPlayer(p.getUniqueId());
                 //PlayerData playerData = api.getPlayerManager().getPlayerData(p.getUniqueId());
-                TeamHandler.VTeam teamByName = teamHandler.getTeamByName(user.getGroupName());
+                TeamHandler.VTeam teamByName = teamHandler.getTeamByName(user.getDisplayGroupName());
                 if (teamByName == null)
                 {
                     teamByName = teamHandler.getTeamByName("Joueur");

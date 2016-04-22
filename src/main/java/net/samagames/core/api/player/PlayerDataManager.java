@@ -59,6 +59,17 @@ public class PlayerDataManager implements IPlayerDataManager
         return data;
     }
 
+    public PlayerData getPlayerDataByName(String name)
+    {
+        for (PlayerData data : cache.values())
+        {
+            if (data.getEffectiveName().equals(name))
+                return data;
+        }
+
+        return null;
+    }
+
     public void loadPlayer(UUID player)
     {
 
