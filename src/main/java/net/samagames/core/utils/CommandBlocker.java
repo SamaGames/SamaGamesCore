@@ -22,9 +22,10 @@ public class CommandBlocker
             // Minecraft
             removeCommand(MINECRAFT_PREFIX, "help");
             removeCommand(MINECRAFT_PREFIX, "tell");
+            removeCommand(MINECRAFT_PREFIX, "me");
 
             // Bukkit
-            removeCommand(BUKKIT_PREFIX, "version");
+            removeCommand(BUKKIT_PREFIX, "version", "ver");
             removeCommand(BUKKIT_PREFIX, "plugins", "pl");
             removeCommand(BUKKIT_PREFIX, "help", "?");
             removeCommand(BUKKIT_PREFIX, "me");

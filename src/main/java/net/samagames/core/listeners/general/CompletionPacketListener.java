@@ -22,15 +22,19 @@ public class CompletionPacketListener extends TinyProtocol
     }
 
     @Override
-    public Object onPacketOutAsync(Player receiver, Channel channel, Object packet)
+    public Object onPacketInAsync(Player receiver, Channel channel, Object packet)
     {
         if (packet instanceof PacketPlayInTabComplete)
         {
+            PacketPlayInTabComplete p = (PacketPlayInTabComplete) packet;
 
-            PacketPlayOutTabComplete newPacket = new PacketPlayOutTabComplete(new String[0]);
-            return super.onPacketOutAsync(receiver, channel, newPacket);
+            if (p.a().startsWith("/") && p.a().split(" ").length == 1)
+            {
+                PacketPlayOutTabComplete newPacket = new PacketPlayOutTabComplete(new String[0]);
+                this.sendPacket(receiver, newPacket);
+            }
         }
 
-        return super.onPacketOutAsync(receiver, channel, packet);
+        return super.onPacketInAsync(receiver, channel, packet);
     }
 }
