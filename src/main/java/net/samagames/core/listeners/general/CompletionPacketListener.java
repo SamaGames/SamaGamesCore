@@ -3,9 +3,14 @@ package net.samagames.core.listeners.general;
 import io.netty.channel.Channel;
 import net.minecraft.server.v1_9_R1.PacketPlayInTabComplete;
 import net.minecraft.server.v1_9_R1.PacketPlayOutTabComplete;
+import net.samagames.api.SamaGamesAPI;
+import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.core.APIPlugin;
 import net.samagames.tools.TinyProtocol;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CompletionPacketListener extends TinyProtocol
 {
@@ -31,6 +36,27 @@ public class CompletionPacketListener extends TinyProtocol
             if (p.a().startsWith("/") && p.a().split(" ").length == 1)
             {
                 PacketPlayOutTabComplete newPacket = new PacketPlayOutTabComplete(new String[0]);
+                this.sendPacket(receiver, newPacket);
+
+                return null;
+            }
+            else if (p.a().length() >= 1 && !SamaGamesAPI.get().getPermissionsManager().hasPermission(receiver, "network.staff"))
+            {
+                String name = p.a();
+                List<String> players = new ArrayList<>();
+
+                for (Player player : this.plugin.getServer().getOnlinePlayers())
+                {
+                    AbstractPlayerData playerData = SamaGamesAPI.get().getPlayerManager().getPlayerData(player.getUniqueId());
+
+                    if (player.getName().startsWith(name) && !playerData.hasNickname())
+                        players.add(player.getName());
+                    else if (playerData.hasNickname() && playerData.getCustomName().startsWith(name))
+                        players.add(playerData.getCustomName());
+                }
+
+                String[] playersName = (String[]) players.toArray();
+                PacketPlayOutTabComplete newPacket = new PacketPlayOutTabComplete(playersName);
                 this.sendPacket(receiver, newPacket);
 
                 return null;
