@@ -59,11 +59,17 @@ sourceSets {
     }
 }
 
-task bigJar(type: Jar) {
+jar {
+    from{
+        configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+/*task bigJar(type: Jar) {
     baseName = project.name + '-jar-with-dependencies'
     from { configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
-}
+}*/
 
 compileJava.dependsOn(':PersistanceGeneratorCore:runSimple')
-build.dependsOn('bigJar')
+//build.dependsOn('bigJar')
