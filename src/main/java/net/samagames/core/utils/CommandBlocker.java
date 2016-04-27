@@ -23,13 +23,15 @@ public class CommandBlocker
             removeCommand(MINECRAFT_PREFIX, "help");
             removeCommand(MINECRAFT_PREFIX, "tell");
             removeCommand(MINECRAFT_PREFIX, "me");
+            removeCommand(MINECRAFT_PREFIX, "trigger");
 
             // Bukkit
-            removeCommand(BUKKIT_PREFIX, "version", "ver");
+            removeCommand(BUKKIT_PREFIX, "about", "version", "ver");
             removeCommand(BUKKIT_PREFIX, "plugins", "pl");
             removeCommand(BUKKIT_PREFIX, "help", "?");
             removeCommand(BUKKIT_PREFIX, "me");
             removeCommand(BUKKIT_PREFIX, "save-all", "save-off", "save-on");
+            removeCommand(BUKKIT_PREFIX, "trigger");
 
             // ProtocolLib
             removeCommand(PROTOCOLLIB_PREFIX, "protocol");

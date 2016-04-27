@@ -32,6 +32,8 @@ public class CompletionPacketListener extends TinyProtocol
             {
                 PacketPlayOutTabComplete newPacket = new PacketPlayOutTabComplete(new String[0]);
                 this.sendPacket(receiver, newPacket);
+
+                return null;
             }
         }
 
