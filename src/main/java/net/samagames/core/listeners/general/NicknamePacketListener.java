@@ -64,20 +64,16 @@ public class NicknamePacketListener extends TinyProtocol
                 {
                     PacketPlayOutPlayerInfo.PlayerInfoData data1 = (PacketPlayOutPlayerInfo.PlayerInfoData) data;
                     GameProfile profile = data1.a();
-                    if (profile.getId().equals(receiver.getUniqueId()))
-                    {
-                        continue;
-                    }
+
                     PlayerData playerData = api.getPlayerManager().getPlayerData(profile.getId());
-                    if (playerData != null && playerData.hasNickname())
+                    if (playerData != null && playerData.hasNickname() &&
+                            !profile.getId().equals(receiver.getUniqueId()))
                     {
                         GameProfile gameProfile = playerData.getFakeProfile();
                         Field field = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredField("d");
                         Reflection.setFinal(data, field, gameProfile);
                     }
                 }
-
-                packet = p;
 
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
@@ -121,8 +117,6 @@ public class NicknamePacketListener extends TinyProtocol
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 e.printStackTrace();
             }
-
-            packet = p;
         }else if (packet instanceof PacketPlayOutScoreboardTeam)
         {
             PacketPlayOutScoreboardTeam p = (PacketPlayOutScoreboardTeam) packet;
