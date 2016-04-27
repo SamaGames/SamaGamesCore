@@ -232,6 +232,7 @@ public class PlayerData extends AbstractPlayerData
         return playerBean.getStars();
     }
 
+    @Override
     public String getDisplayeName()
     {
         return hasNickname() ? getCustomName() : getEffectiveName();

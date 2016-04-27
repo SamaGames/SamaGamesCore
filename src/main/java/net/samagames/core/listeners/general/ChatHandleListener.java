@@ -1,4 +1,4 @@
-package net.samagames.core.listeners;
+package net.samagames.core.listeners.general;
 
 import io.netty.util.internal.ConcurrentSet;
 import net.md_5.bungee.api.ChatColor;

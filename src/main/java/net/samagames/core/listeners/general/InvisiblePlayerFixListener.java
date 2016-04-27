@@ -1,4 +1,4 @@
-package net.samagames.core.listeners;
+package net.samagames.core.listeners.general;
 
 import net.minecraft.server.v1_9_R1.EntityPlayer;
 import net.minecraft.server.v1_9_R1.PacketPlayOutPlayerInfo;

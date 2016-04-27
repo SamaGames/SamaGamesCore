@@ -1,4 +1,4 @@
-package net.samagames.core.listeners;
+package net.samagames.core.listeners.general;
 
 import net.samagames.api.gui.AbstractGui;
 import net.samagames.core.api.gui.GuiManager;

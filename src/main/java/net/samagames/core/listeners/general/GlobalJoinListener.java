@@ -1,4 +1,4 @@
-package net.samagames.core.listeners;
+package net.samagames.core.listeners.general;
 
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.permissions.PermissionManager;

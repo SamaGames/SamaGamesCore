@@ -5,7 +5,7 @@ import net.samagames.api.achievements.IAchievementManager;
 import net.samagames.api.gui.IGuiManager;
 import net.samagames.api.names.IUUIDTranslator;
 import net.samagames.api.pubsub.IPubSubAPI;
-import net.samagames.api.shops.AbstractShopsManager;
+import net.samagames.api.shops.IShopsManager;
 import net.samagames.core.api.friends.FriendsManager;
 import net.samagames.core.api.games.GameManager;
 import net.samagames.core.api.gui.GuiManager;
@@ -21,6 +21,7 @@ import net.samagames.core.api.player.PlayerDataManager;
 import net.samagames.core.api.pubsub.PubSubAPI;
 import net.samagames.core.api.resourcepacks.ResourcePacksManagerImpl;
 import net.samagames.core.api.settings.SettingsManager;
+import net.samagames.core.api.shops.ShopsManager;
 import net.samagames.core.api.stats.StatsManager;
 import net.samagames.core.listeners.pubsub.GlobalUpdateListener;
 import net.samagames.persistanceapi.GameServiceManager;
@@ -49,6 +50,7 @@ public class ApiImplementation extends SamaGamesAPI
     private final FriendsManager friendsManager;
     private final SkyFactory skyFactory;
     private final StatsManager statsManager;
+    private final ShopsManager shopsManager;
     private GameManager gameManager;
 
     private final ServerOptions serverOptions;
@@ -96,6 +98,7 @@ public class ApiImplementation extends SamaGamesAPI
         partiesManager = new PartiesManager(this);
         permissionsManager = new PermissionManager(plugin);
         friendsManager = new FriendsManager(this);
+        this.shopsManager = new ShopsManager(this);
     }
 
     public void onShutdown()
@@ -169,9 +172,9 @@ public class ApiImplementation extends SamaGamesAPI
     }
 
     @Override
-    public AbstractShopsManager getShopsManager()
+    public ShopsManager getShopsManager()
     {
-        return null;
+        return this.shopsManager;
     }
 
     @Override

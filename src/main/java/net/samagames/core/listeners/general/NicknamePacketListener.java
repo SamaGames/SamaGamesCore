@@ -1,4 +1,4 @@
-package net.samagames.core.listeners;
+package net.samagames.core.listeners.general;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;

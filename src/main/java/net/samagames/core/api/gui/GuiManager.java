@@ -3,7 +3,7 @@ package net.samagames.core.api.gui;
 import net.samagames.api.gui.AbstractGui;
 import net.samagames.api.gui.IGuiManager;
 import net.samagames.core.APIPlugin;
-import net.samagames.core.listeners.GuiListener;
+import net.samagames.core.listeners.general.GuiListener;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;

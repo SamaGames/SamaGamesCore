@@ -4,7 +4,8 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import net.samagames.core.database.DatabaseConnector;
 import net.samagames.core.database.RedisServer;
-import net.samagames.core.listeners.*;
+import net.samagames.core.listeners.general.*;
+import net.samagames.core.listeners.pluginmessages.PluginMessageListener;
 import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.tools.Reflection;
 import net.samagames.tools.npc.NPCManager;
@@ -194,6 +195,9 @@ public class APIPlugin extends JavaPlugin implements Listener
             Bukkit.getLogger().info("Blocked WorldDownloader of " + player.getDisplayName());
             player.sendPluginMessage(this, "WDL|CONTROL", out.toByteArray());
         });
+
+        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "Network");
+        this.getServer().getMessenger().registerIncomingPluginChannel(this, "Network", new PluginMessageListener());
 
         /*
         Loading commands

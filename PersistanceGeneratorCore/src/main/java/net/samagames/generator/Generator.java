@@ -151,10 +151,12 @@ public class Generator {
         }
         toBuild.add(JavaFile.builder("net.samagames.core.api.stats", playerStatsBuilder.build()).build());
 
+        //SETTINGS
         String settingPackage = "net.samagames.core.api.settings";
         String settingPackageI = "net.samagames.api.settings";
         TypeSpec implClass = createImplementationClass(settingPackageI, PlayerSettingsBean.class, "settings:");
         toBuild.add(JavaFile.builder(settingPackage, implClass).build());
+        //END SETTINGS
     }
 
     public static List<JavaFile> loadGameStats()
@@ -275,8 +277,8 @@ public class Generator {
         object.addMethod(constructor2.build());
         //CONSTRUCTOR 2 END
 
-        object.addField(pdata, "playerData", Modifier.PRIVATE);
-        object.addField(apimpl, "api", Modifier.PRIVATE);
+        object.addField(pdata, "playerData", Modifier.PROTECTED);
+        object.addField(apimpl, "api", Modifier.PROTECTED);
 
         List<String> createdFields = new ArrayList<>();
 

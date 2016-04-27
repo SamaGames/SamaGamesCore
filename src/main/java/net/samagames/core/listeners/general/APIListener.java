@@ -1,6 +1,5 @@
-package net.samagames.core.listeners;
+package net.samagames.core.listeners.general;
 
-import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import org.bukkit.event.Listener;
