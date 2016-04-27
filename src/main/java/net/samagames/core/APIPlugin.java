@@ -59,6 +59,7 @@ public class APIPlugin extends JavaPlugin implements Listener
     private DebugListener debugListener;
 
     private NicknamePacketListener nicknamePacketListener;
+    private CompletionPacketListener completionPacketListener;
     private NPCManager npcManager;
     private BukkitTask startTimer;
 
@@ -173,6 +174,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         //Nickname
         //TODO nickname
         nicknamePacketListener = new NicknamePacketListener(this);
+        completionPacketListener = new CompletionPacketListener(this);
 
         npcManager = new NPCManager(api);
         Bukkit.getPluginManager().registerEvents(new TabsColorsListener(this), this);
@@ -248,6 +250,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         rb_jedis.close();
         api.getPubSub().send("servers", "stop " + bungeename);
         nicknamePacketListener.close();
+        completionPacketListener.close();
         databaseConnector.killConnection();
         executor.shutdownNow();
         api.onShutdown();
