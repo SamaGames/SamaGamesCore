@@ -7,6 +7,7 @@ import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.core.APIPlugin;
 import net.samagames.tools.TinyProtocol;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -33,6 +34,9 @@ public class CompletionPacketListener extends TinyProtocol
         {
             PacketPlayInTabComplete p = (PacketPlayInTabComplete) packet;
 
+            if (SamaGamesAPI.get().getPermissionsManager().hasPermission(receiver, "network.staff"))
+                return super.onPacketInAsync(receiver, channel, packet);
+
             if (p.a().startsWith("/") && p.a().split(" ").length == 1)
             {
                 PacketPlayOutTabComplete newPacket = new PacketPlayOutTabComplete(new String[0]);
@@ -40,22 +44,36 @@ public class CompletionPacketListener extends TinyProtocol
 
                 return null;
             }
-            else if (p.a().length() >= 1 && !SamaGamesAPI.get().getPermissionsManager().hasPermission(receiver, "network.staff"))
+            else if (p.a().length() >= 1)
             {
                 String name = p.a();
                 List<String> players = new ArrayList<>();
+
+                Bukkit.broadcastMessage("Base: " + name);
 
                 for (Player player : this.plugin.getServer().getOnlinePlayers())
                 {
                     AbstractPlayerData playerData = SamaGamesAPI.get().getPlayerManager().getPlayerData(player.getUniqueId());
 
                     if (player.getName().startsWith(name) && !playerData.hasNickname())
+                    {
+                        Bukkit.broadcastMessage(player.getName() + "'s normal name matches.");
                         players.add(player.getName());
+                    }
                     else if (playerData.hasNickname() && playerData.getCustomName().startsWith(name))
+                    {
+                        Bukkit.broadcastMessage(player.getName() + "'s custom name matches.");
                         players.add(playerData.getCustomName());
+                    }
                 }
 
-                String[] playersName = (String[]) players.toArray();
+                String[] playersName = new String[players.size()];
+
+                for (int i = 0; i < players.size(); i++)
+                    playersName[i] = players.get(i);
+
+                Bukkit.broadcastMessage("Autocompletion: " + String.join(", ", playersName));
+
                 PacketPlayOutTabComplete newPacket = new PacketPlayOutTabComplete(playersName);
                 this.sendPacket(receiver, newPacket);
 
