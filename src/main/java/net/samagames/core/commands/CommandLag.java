@@ -57,7 +57,7 @@ public class CommandLag extends AbstractCommand
         player.sendMessage(ChatColor.YELLOW + "Date : " + ChatColor.GRAY + this.dateFormat.format(new Date()));
         player.sendMessage(ChatColor.YELLOW + "Serveur : " + ChatColor.GRAY + APIPlugin.getInstance().getServerName().replace("_", " "));
 		player.sendMessage("");
-		player.sendMessage(ChatColor.YELLOW + "Latence : " + this.formatLag(latency) + ChatColor.GRAY + "ms");
+		player.sendMessage(ChatColor.YELLOW + "Latence : " + (latency < 0 ? ChatColor.RED + "Erreur" : this.formatLag(latency) + ChatColor.GRAY + "ms"));
 		player.sendMessage(ChatColor.YELLOW + "Charge serveur : " + ChatColor.GRAY + tps.toString());
         player.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
 
