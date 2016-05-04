@@ -5,7 +5,6 @@ import net.samagames.api.achievements.IAchievementManager;
 import net.samagames.api.gui.IGuiManager;
 import net.samagames.api.names.IUUIDTranslator;
 import net.samagames.api.pubsub.IPubSubAPI;
-import net.samagames.api.shops.IShopsManager;
 import net.samagames.core.api.friends.FriendsManager;
 import net.samagames.core.api.games.GameManager;
 import net.samagames.core.api.gui.GuiManager;
@@ -51,6 +50,7 @@ public class ApiImplementation extends SamaGamesAPI
     private final SkyFactory skyFactory;
     private final StatsManager statsManager;
     private final ShopsManager shopsManager;
+    private final NPCManager npcManager;
     private GameManager gameManager;
 
     private final ServerOptions serverOptions;
@@ -73,6 +73,8 @@ public class ApiImplementation extends SamaGamesAPI
         this.pubSub.subscribe("commands.servers.all", new RemoteCommandsHandler(plugin));
 
         this.serverOptions = new ServerOptions();
+
+        npcManager = new NPCManager(this);
 
         this.statsManager = new StatsManager(this);
 
@@ -115,7 +117,7 @@ public class ApiImplementation extends SamaGamesAPI
     @Override
     public NPCManager getNPCManager()
     {
-        return plugin.getNPCManager();
+        return npcManager;
     }
 
     @Override

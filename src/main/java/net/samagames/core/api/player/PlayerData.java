@@ -1,13 +1,12 @@
 package net.samagames.core.api.player;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.server.v1_9_R1.EntityHuman;
 import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.api.player.IFinancialCallback;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.utils.CacheLoader;
-import net.samagames.core.utils.ProfileLoader;
+import net.samagames.tools.gameprofile.ProfileLoader;
 import net.samagames.persistanceapi.beans.players.PlayerBean;
 import net.samagames.persistanceapi.beans.players.SanctionBean;
 import net.samagames.tools.Reflection;

@@ -46,7 +46,7 @@ public class JoinManagerImplement implements IJoinManager
     public JoinManagerImplement(ApiImplementation api)
     {
         this.api = api;
-        this.isPartyLimited = !this.api.getServerName().startsWith("Hub");
+        this.isPartyLimited = !api.getPlugin().isHub();
     }
 
     private boolean isPartyLimited()

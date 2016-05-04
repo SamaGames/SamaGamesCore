@@ -6,6 +6,7 @@ import net.samagames.api.stats.IStatsManager;
 import net.samagames.persistanceapi.beans.players.GroupsBean;
 import net.samagames.persistanceapi.beans.players.PlayerBean;
 import net.samagames.persistanceapi.beans.players.PlayerSettingsBean;
+import net.samagames.persistanceapi.beans.shop.ItemDescriptionBean;
 import net.samagames.persistanceapi.beans.statistics.PlayerStatisticsBean;
 
 import javax.lang.model.element.Modifier;
@@ -157,6 +158,9 @@ public class Generator {
         TypeSpec implClass = createImplementationClass(settingPackageI, PlayerSettingsBean.class, "settings:");
         toBuild.add(JavaFile.builder(settingPackage, implClass).build());
         //END SETTINGS
+
+        /*TypeSpec itemDesc = createImplementationClass("net.samagames.api.shops", ItemDescriptionBean.class, "settings:", false);
+        toBuild.add(JavaFile.builder("net.samagames.core.api.shops", itemDesc).build());*/
     }
 
     public static List<JavaFile> loadGameStats()
@@ -177,6 +181,11 @@ public class Generator {
     }
 
     public static TypeSpec createImplementationClass(String package_, Class type, String serializeKey)
+    {
+        return createImplementationClass(package_, type, serializeKey, true);
+    }
+
+    public static TypeSpec createImplementationClass(String package_, Class type, String serializeKey, boolean isUpdatable)
     {
         String name = type.getSimpleName().replaceAll("Bean", "");
         Method[] subDeclaredMethods = type.getDeclaredMethods();

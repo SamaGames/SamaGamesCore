@@ -8,7 +8,6 @@ import net.samagames.core.listeners.general.*;
 import net.samagames.core.listeners.pluginmessages.PluginMessageListener;
 import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.tools.Reflection;
-import net.samagames.tools.npc.NPCManager;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -58,7 +57,6 @@ public class APIPlugin extends JavaPlugin implements Listener
     private DebugListener debugListener;
 
     private NicknamePacketListener nicknamePacketListener;
-    private NPCManager npcManager;
     private BukkitTask startTimer;
 
     private ChatHandleListener chatHandleListener;
@@ -180,7 +178,6 @@ public class APIPlugin extends JavaPlugin implements Listener
         //TODO nickname
         nicknamePacketListener = new NicknamePacketListener(this);
 
-        npcManager = new NPCManager(api);
         Bukkit.getPluginManager().registerEvents(new TabsColorsListener(this), this);
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "WDL|CONTROL");
         Bukkit.getMessenger().registerIncomingPluginChannel(this, "WDL|INIT", (s, player, bytes) -> {
@@ -375,13 +372,14 @@ public class APIPlugin extends JavaPlugin implements Listener
         return globalJoinListener;
     }
 
+    public boolean isHub()
+    {
+        return !getServerName().startsWith("Hub");
+    }
+
     public DatabaseConnector getDatabaseConnector()
     {
         return databaseConnector;
-    }
-
-    public NPCManager getNPCManager() {
-        return npcManager;
     }
 
     public GameServiceManager getGameServiceManager() {

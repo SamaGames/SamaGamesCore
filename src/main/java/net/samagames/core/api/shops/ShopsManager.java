@@ -3,10 +3,14 @@ package net.samagames.core.api.shops;
 import net.samagames.api.shops.IShopsManager;
 import net.samagames.api.stats.IStatsManager;
 import net.samagames.core.ApiImplementation;
+import net.samagames.persistanceapi.beans.shop.ItemDescriptionBean;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * This file is a part of the SamaGames Project CodeBase
@@ -20,6 +24,7 @@ public class ShopsManager implements IShopsManager
 {
     private boolean[] shopToLoad;
 
+    private List<ItemDescription> itemsCache;
     private ConcurrentHashMap<UUID, PlayerShop> cache;
     private ApiImplementation api;
 
@@ -27,12 +32,25 @@ public class ShopsManager implements IShopsManager
     {
         this.api = api;
         this.cache = new ConcurrentHashMap<>();
+        this.itemsCache = new ArrayList<>();
 
         this.shopToLoad = new boolean[IStatsManager.StatsNames.values().length];
         for (int i = 0; i < shopToLoad.length; i++)
         {
-            shopToLoad[i] = false;
+            shopToLoad[i] = api.getPlugin().isHub();
         }
+
+        // load all item desc and refresh every 5 min
+        api.getPlugin().getExecutor().scheduleAtFixedRate(() -> {
+            try
+            {
+                List<ItemDescriptionBean> allItemDescription = api.getGameServiceManager().getAllItemDescription();
+                itemsCache = allItemDescription.stream().map(bean -> (ItemDescription) bean).collect(Collectors.toList());
+            }catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }, 0, 5, TimeUnit.MINUTES);
     }
 
     public void loadPlayer(UUID player)
@@ -62,33 +80,16 @@ public class ShopsManager implements IShopsManager
         return shopToLoad[game.intValue()];
     }
 
-    public void getItemDescription(int itemID) throws Exception {
-        /*ItemDescriptionBean itemDescription = api.getGameServiceManager().getItemDescription(itemID);
-        itemDescription.*/
+    public ItemDescription getItemDescription(int itemID) throws Exception {
+        try {
+            return itemsCache.get(itemID);
+        } catch (Exception e) {
+            throw new Exception("Item with id: " + itemID + " not found");
+        }
     }
 
-    @Override
-    public String getItemLevelForPlayer(UUID player, String item) {
-        return null;
-    }
-
-    @Override
-    public List<String> getOwnedLevels(UUID player, String item) {
-        return null;
-    }
-
-    @Override
-    public void addOwnedLevel(UUID player, String item, String itemLevel) {
-
-    }
-
-    @Override
-    public void setCurrentLevel(UUID player, String item, String level) {
-
-    }
-
-    @Override
-    public void resetLevel(UUID uuid, String item) {
-
+    public PlayerShop getPlayer(UUID player)
+    {
+        return cache.get(player);
     }
 }
