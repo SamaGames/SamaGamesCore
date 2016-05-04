@@ -6,6 +6,7 @@ import net.samagames.core.database.DatabaseConnector;
 import net.samagames.core.database.RedisServer;
 import net.samagames.core.listeners.general.*;
 import net.samagames.core.listeners.pluginmessages.PluginMessageListener;
+import net.samagames.core.utils.CommandBlocker;
 import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.tools.Reflection;
 import org.apache.commons.lang.StringUtils;
@@ -57,6 +58,9 @@ public class APIPlugin extends JavaPlugin implements Listener
     private DebugListener debugListener;
 
     private NicknamePacketListener nicknamePacketListener;
+
+    private CompletionPacketListener completionPacketListener;
+
     private BukkitTask startTimer;
 
     private ChatHandleListener chatHandleListener;
@@ -83,13 +87,6 @@ public class APIPlugin extends JavaPlugin implements Listener
     public ApiImplementation getAPI()
     {
         return api;
-    }
-
-    private void removeCommand(String str) throws NoSuchFieldException, IllegalAccessException
-    {
-        SimpleCommandMap scm = ((CraftServer)Bukkit.getServer()).getCommandMap();
-        Map knownCommands = (Map) Reflection.getValue(scm, true, "knownCommands");
-        knownCommands.remove(str);
     }
 
     public void onEnable()
@@ -177,6 +174,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         //Nickname
         //TODO nickname
         nicknamePacketListener = new NicknamePacketListener(this);
+        completionPacketListener = new CompletionPacketListener(this);
 
         Bukkit.getPluginManager().registerEvents(new TabsColorsListener(this), this);
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "WDL|CONTROL");
@@ -237,24 +235,10 @@ public class APIPlugin extends JavaPlugin implements Listener
     private void postInit()
     {
         this.startTimer.cancel();
-        
-        try
-        {
-            log("Removing private commands...");
-            removeCommand("me");
-            removeCommand("minecraft:me");
-            removeCommand("tell");
-            removeCommand("minecraft:tell");
-            removeCommand("bukkit:help");
-            removeCommand("pl");
-            removeCommand("plugins");
-            log("Removed private commands.");
-        }
-        catch (ReflectiveOperationException e)
-        {
-            log("Patching error");
-            e.printStackTrace();
-        }
+
+        log("Removing private commands...");
+        CommandBlocker.removeCommands();
+        log("Removed private commands.");
     }
 
     public void onDisable()
@@ -265,6 +249,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         rb_jedis.close();
         api.getPubSub().send("servers", "stop " + bungeename);
         nicknamePacketListener.close();
+        completionPacketListener.close();
         databaseConnector.killConnection();
         executor.shutdownNow();
         api.onShutdown();
