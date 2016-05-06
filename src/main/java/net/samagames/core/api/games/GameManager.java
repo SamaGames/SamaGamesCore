@@ -106,9 +106,7 @@ public class GameManager implements IGameManager
         if (!p.isOnline())
             return;
 
-        //TODO kick offline
-        /*this.api.getPlayerManager()
-        this.api.getProxyDataManager().apiexec("connect", p.getUniqueId().toString(), "lobby");*/
+        api.getPlayerManager().connectToServer(p.getUniqueId(), "lobby");
     }
 
     @Override
