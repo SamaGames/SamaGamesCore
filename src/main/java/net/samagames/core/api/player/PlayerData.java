@@ -232,7 +232,7 @@ public class PlayerData extends AbstractPlayerData
     }
 
     @Override
-    public String getDisplayeName()
+    public String getDisplayName()
     {
         return hasNickname() ? getCustomName() : getEffectiveName();
     }
@@ -294,7 +294,7 @@ public class PlayerData extends AbstractPlayerData
         try {
             GameProfile profile = ((CraftPlayer) player).getHandle().getProfile();
             Field name = GameProfile.class.getDeclaredField("name");
-            Reflection.setFinal(profile, name, getDisplayeName());
+            Reflection.setFinal(profile, name, getDisplayName());
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }
