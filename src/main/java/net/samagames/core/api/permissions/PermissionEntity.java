@@ -91,16 +91,13 @@ public class PermissionEntity implements IPermissionsEntity {
 
     public void applyPermissions(Player player)
     {
-        if(attachment != null)
-        {
-            attachment.remove();
-        }
-
         if(player != null)
         {
-
-            attachment = player.addAttachment(plugin);
-
+            if(attachment == null)
+            {
+                attachment = player.addAttachment(plugin);
+            }
+            //attachment.getPermissions().keySet().stream().forEach(attachment::unsetPermission);
             for (Map.Entry<String, Boolean> data : permissions.entrySet())
             {
                 attachment.setPermission(data.getKey(), data.getValue());
