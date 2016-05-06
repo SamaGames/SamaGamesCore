@@ -109,7 +109,7 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
         String tmp = format;
         tmp = tmp.replaceAll("<display>", "" + display + org.bukkit.ChatColor.WHITE);
         tmp = tmp.replaceAll("<prefix>", "" + prefix);
-        tmp = tmp.replaceAll("<name>", "" + playerData.getDisplayeName());
+        tmp = tmp.replaceAll("<name>", "" + playerData.getDisplayName());
         tmp = tmp.replaceAll("<suffix>", "" + suffix);
 
         if (p.hasPermission("bungeefilter.bypass"))
