@@ -56,7 +56,6 @@ public class Generator {
                     javaFile.typeSpec.name.toLowerCase(), Modifier.PRIVATE);
         }
         ClassName playerData = ClassName.get("net.samagames.core.api.player", "PlayerData");
-        ClassName statsNamesCLass = ClassName.get("net.samagames.api.stats.IStatsManager", "StatsNames");
         MethodSpec.Builder constructor = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(apimpl, "api")
@@ -65,7 +64,7 @@ public class Generator {
                 .addStatement("this.$N = $N", "api", "api")
                 .addStatement("this.$N = $N.getPlayerID()", "playerUUID", "player")
                 .addStatement("this.$N = $N", "statsToLoad", "statsToLoad");
-        constructor.addStatement("boolean global = statsToLoad[" + IStatsManager.StatsNames.GLOBAL.intValue() + "]");
+        constructor.addStatement("boolean global = statsToLoad[" + GamesNames.GLOBAL.intValue() + "]");
         for (JavaFile javaFile : typeStats)
         {
             double value = 0;
