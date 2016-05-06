@@ -294,7 +294,7 @@ public class PlayerData extends AbstractPlayerData
         try {
             GameProfile profile = ((CraftPlayer) player).getHandle().getProfile();
             Field name = GameProfile.class.getDeclaredField("name");
-            Reflection.setFinal(profile, name, getDisplayeName());
+            Reflection.setFinal(profile, name, getDisplayName());
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }
