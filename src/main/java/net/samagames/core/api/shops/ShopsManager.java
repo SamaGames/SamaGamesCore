@@ -84,9 +84,9 @@ public class ShopsManager implements IShopsManager
     }
 
     @Override
-    public ItemDescription getItemDescription(int itemID) throws Exception {
+    public IItemDescription getItemDescription(int itemID) throws Exception {
         try {
-            return itemsCache.get(itemID);
+            return (IItemDescription) itemsCache.get(itemID);
         } catch (Exception e) {
             throw new Exception("Item with id: " + itemID + " not found");
         }
@@ -98,7 +98,7 @@ public class ShopsManager implements IShopsManager
         {
             if (description.getItemName().equals(itemName))
             {
-                return description;
+                return (IItemDescription) description;
             }
         }
         throw new Exception("Item with name: " + itemName + " not found");

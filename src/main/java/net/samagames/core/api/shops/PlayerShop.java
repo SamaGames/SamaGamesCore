@@ -30,7 +30,7 @@ public class PlayerShop implements IPlayerShop {
     private ApiImplementation api;
     private boolean[] shopToLoad;
     private UUID uuid;
-    private List<TransactionItem> items;
+    private List<Transaction> items;
 
     private long lastUpdate = 0;
 
@@ -53,14 +53,14 @@ public class PlayerShop implements IPlayerShop {
         if (force || System.currentTimeMillis() - lastUpdate > 1000*60*5)
         {
             PlayerData playerData = api.getPlayerManager().getPlayerData(uuid);
-            List<TransactionItem> items = new ArrayList<>();
+            List<Transaction> items = new ArrayList<>();
             for (int i = 0; i < shopToLoad.length; i++)
             {
                 if (shopToLoad[i])
                 {
                     try {
                         List<TransactionBean> transactionBeen = api.getGameServiceManager().getPlayerGameSelectedTransactions(playerData.getPlayerBean(), i);
-                        items.addAll(transactionBeen.stream().map(bean -> (TransactionItem) bean).collect(Collectors.toList()));
+                        items.addAll(transactionBeen.stream().map(bean -> (Transaction) bean).collect(Collectors.toList()));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -81,7 +81,12 @@ public class PlayerShop implements IPlayerShop {
     public void addItem(int itemID, int priceCoins, int priceStars, boolean selected, CallBack<Boolean> callBack)
     {
         PlayerData playerData = api.getPlayerManager().getPlayerData(uuid);
-        TransactionItem transactionItem = new TransactionItem(0, itemID, priceCoins, priceStars, null, selected, uuid);
+        Transaction transactionItem = new Transaction();
+        transactionItem.setItemId(itemID);
+        transactionItem.setPriceCoins(priceCoins);
+        transactionItem.setPriceStars(priceStars);
+        transactionItem.setSelected(selected);
+        transactionItem.setUuidBuyer(uuid);
 
         //Directly update in base for security
         api.getPlugin().getExecutor().execute(() -> {
@@ -104,7 +109,7 @@ public class PlayerShop implements IPlayerShop {
         refresh();
 
         //Cache
-        TransactionItem transactionItem = getTransactionsByID(itemID);
+        Transaction transactionItem = getTransactionsByID(itemID);
         if (transactionItem == null)
         {
             throw new Exception("Item with id: " + itemID + " not found");
@@ -124,7 +129,7 @@ public class PlayerShop implements IPlayerShop {
     @Override
     public boolean isSelectedItem(int itemID) throws Exception {
         //Cache
-        TransactionItem transactionItem = getTransactionsByID(itemID);
+        Transaction transactionItem = getTransactionsByID(itemID);
         if (transactionItem == null)
         {
             throw new Exception("Item with id: " + itemID + " not found");
@@ -134,11 +139,11 @@ public class PlayerShop implements IPlayerShop {
 
 
     @Override
-    public TransactionItem getTransactionsByID(int itemID)
+    public Transaction getTransactionsByID(int itemID)
     {
         //Auto refresh if more than 5min
         refresh();
-        for (TransactionItem item : items)
+        for (Transaction item : items)
         {
             if (item.getItemId() == itemID)
             {

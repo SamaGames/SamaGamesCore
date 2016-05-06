@@ -160,11 +160,11 @@ public class Generator {
         toBuild.add(JavaFile.builder(settingPackage, implClass).build());
         //END SETTINGS
 
-        TypeSpec shop = createSImplementationClass("net.samagames.api.shop", ItemDescriptionBean.class);
-        toBuild.add(JavaFile.builder("net.samagames.core.api.shop", shop).build());
+        TypeSpec shop = createSImplementationClass("net.samagames.api.shops", ItemDescriptionBean.class);
+        toBuild.add(JavaFile.builder("net.samagames.core.api.shops", shop).build());
 
-        TypeSpec transaction = createSImplementationClass("net.samagames.api.shop", TransactionBean.class);
-        toBuild.add(JavaFile.builder("net.samagames.core.api.shop", transaction).build());
+        TypeSpec transaction = createSImplementationClass("net.samagames.api.shops", TransactionBean.class);
+        toBuild.add(JavaFile.builder("net.samagames.core.api.shops", transaction).build());
 
     }
 
@@ -423,15 +423,8 @@ public class Generator {
         ConstructorProperties annotation = (ConstructorProperties) constructor1.getAnnotation(ConstructorProperties.class);
 
         //Not efficiency but do the job and don't care for compilation
-        int i = 0;
         for (String parameterName : annotation.value())
         {
-            //Don't do the first iteration
-            if (i == 0)
-            {
-                i++;
-                continue;
-            }
             double similitudeMax = 0.0;
             String methodName = "";
             for (Method method : subDeclaredMethods)
@@ -462,14 +455,8 @@ public class Generator {
 
         String instruction = "super(\n";
 
-        boolean lol = true;
         for (Parameter parameter : type.getConstructors()[0].getParameters())
         {
-            if (lol)
-            {
-                lol = false;
-                continue;
-            }
 
             if (parameter.getType().equals(int.class))
             {
@@ -495,45 +482,6 @@ public class Generator {
         object.addMethod(constructor2.build());
         //CONSTRUCTOR 2 END
 
-        List<String> createdFields = new ArrayList<>();
-
-        for (Method method : subDeclaredMethods)
-        {
-            String methodName = method.getName();
-            if (method.getParameters().length > 0)
-            {
-                boolean isIncrementable = false;
-                Class<?> type1 = method.getParameters()[0].getType();
-                if (type1.equals(int.class)
-                        || type1.equals(long.class)
-                        || type1.equals(double.class)
-                        || type1.equals(float.class))
-                    isIncrementable = true;
-
-                if (methodName.startsWith("set") && isIncrementable)
-                {
-                    methodName = "incrBy" + methodName.substring(3);
-                    String fieldName = method.getName().substring(3) + "Vector";
-                    createdFields.add(fieldName);
-                    FieldSpec vector = FieldSpec.builder(type1, fieldName)
-                            .addModifiers(Modifier.PRIVATE).initializer("0").build();
-                    object.addField(vector);
-
-                    MethodSpec.Builder builder = MethodSpec.methodBuilder(methodName);
-                    if (method.getParameterCount() > 0)
-                    {
-                        for (Parameter parameter : method.getParameters())
-                        {
-                            builder.addParameter(parameter.getType(), parameter.getName());
-                        }
-                    }
-                    builder.addModifiers(Modifier.PUBLIC);
-                    builder.returns(method.getReturnType());
-                    builder.addStatement("$N += arg0", vector);
-                    object.addMethod(builder.build());
-                }
-            }
-        }
 
         return object.build();
     }
