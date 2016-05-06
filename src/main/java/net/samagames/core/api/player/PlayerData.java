@@ -232,7 +232,7 @@ public class PlayerData extends AbstractPlayerData
     }
 
     @Override
-    public String getDisplayeName()
+    public String getDisplayName()
     {
         return hasNickname() ? getCustomName() : getEffectiveName();
     }
