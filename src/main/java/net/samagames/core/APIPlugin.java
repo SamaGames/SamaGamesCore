@@ -8,14 +8,11 @@ import net.samagames.core.listeners.general.*;
 import net.samagames.core.listeners.pluginmessages.PluginMessageListener;
 import net.samagames.core.utils.CommandBlocker;
 import net.samagames.persistanceapi.GameServiceManager;
-import net.samagames.tools.Reflection;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_9_R1.CraftServer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -26,7 +23,6 @@ import redis.clients.jedis.Jedis;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
@@ -250,9 +246,14 @@ public class APIPlugin extends JavaPlugin implements Listener
         api.getPubSub().send("servers", "stop " + bungeename);
         nicknamePacketListener.close();
         completionPacketListener.close();
-        databaseConnector.killConnection();
-        executor.shutdownNow();
+        executor.shutdown();
+        try {
+            executor.awaitTermination(30, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         api.onShutdown();
+        databaseConnector.killConnection();
         getServer().shutdown();
     }
 

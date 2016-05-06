@@ -1,7 +1,8 @@
 package net.samagames.core.api.shops;
 
+import net.samagames.api.games.GamesNames;
+import net.samagames.api.shops.IItemDescription;
 import net.samagames.api.shops.IShopsManager;
-import net.samagames.api.stats.IStatsManager;
 import net.samagames.core.ApiImplementation;
 import net.samagames.persistanceapi.beans.shop.ItemDescriptionBean;
 
@@ -34,7 +35,7 @@ public class ShopsManager implements IShopsManager
         this.cache = new ConcurrentHashMap<>();
         this.itemsCache = new ArrayList<>();
 
-        this.shopToLoad = new boolean[IStatsManager.StatsNames.values().length];
+        this.shopToLoad = new boolean[GamesNames.values().length];
         for (int i = 0; i < shopToLoad.length; i++)
         {
             shopToLoad[i] = api.getPlugin().isHub();
@@ -65,21 +66,24 @@ public class ShopsManager implements IShopsManager
         PlayerShop playerShop = cache.get(player);
         if (playerShop != null)
         {
-            playerShop.update();
+            //playerShop.update();
         }
         cache.remove(player);
     }
 
-    public void setShopToLoad(IStatsManager.StatsNames game, boolean value)
+    @Override
+    public void setShopToLoad(GamesNames game, boolean value)
     {
         shopToLoad[game.intValue()] = value;
     }
 
-    public boolean isShopLoading(IStatsManager.StatsNames game)
+    @Override
+    public boolean isShopLoading(GamesNames game)
     {
         return shopToLoad[game.intValue()];
     }
 
+    @Override
     public ItemDescription getItemDescription(int itemID) throws Exception {
         try {
             return itemsCache.get(itemID);
@@ -88,6 +92,19 @@ public class ShopsManager implements IShopsManager
         }
     }
 
+    @Override
+    public IItemDescription getItemDescriptionByName(String itemName) throws Exception {
+        for (ItemDescription description : itemsCache)
+        {
+            if (description.getItemName().equals(itemName))
+            {
+                return description;
+            }
+        }
+        throw new Exception("Item with name: " + itemName + " not found");
+    }
+
+    @Override
     public PlayerShop getPlayer(UUID player)
     {
         return cache.get(player);

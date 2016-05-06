@@ -63,7 +63,7 @@ public class GlobalJoinListener implements Listener {
         long startTime = System.currentTimeMillis();
         //Permissions already loaded in async, just apply them
         PermissionManager permissionManager = api.getPermissionsManager();
-        permissionManager.getPlayer(event.getPlayer().getUniqueId()).applyPermissions();
+        permissionManager.getPlayer(event.getPlayer().getUniqueId()).applyPermissions(event.getPlayer());
         //api.getPlugin().getLogger().info("Login Time: " + (System.currentTimeMillis() - startTime));
     }
 
@@ -123,9 +123,18 @@ public class GlobalJoinListener implements Listener {
     public void onWillLeave(UUID player, String targetServer)
     {
         //TODO save all data in redis
-        api.getPlayerManager().getPlayerData(player).updateData();
-        api.getSettingsManager().getSettings(player).update();
-        api.getStatsManager().getPlayerStats(player).updateStats();
+        try{
+            api.getPlayerManager().getPlayerData(player).updateData();
+        }catch (Exception ignored){
+        }
+        try{
+            api.getSettingsManager().getSettings(player).update();
+        }catch (Exception ignored){
+        }
+        try{
+            api.getStatsManager().getPlayerStats(player).updateStats();
+        }catch (Exception ignored){
+        }
 
     }
 }

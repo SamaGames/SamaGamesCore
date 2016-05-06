@@ -1,5 +1,6 @@
 package net.samagames.core.api.stats;
 
+import net.samagames.api.games.GamesNames;
 import net.samagames.api.stats.IStatsManager;
 import net.samagames.api.stats.Leaderboard;
 import net.samagames.core.ApiImplementation;
@@ -27,7 +28,7 @@ public class StatsManager implements IStatsManager
     {
         this.api = apiImplementation;
         this.caches = new HashMap<>();
-        this.statsToLoad = new boolean[StatsNames.values().length];
+        this.statsToLoad = new boolean[GamesNames.values().length];
         for (int i = 0; i < statsToLoad.length; i++)
         {
             statsToLoad[i] = false;
@@ -60,17 +61,17 @@ public class StatsManager implements IStatsManager
         caches.values().forEach(PlayerStats::updateStats);
     }
 
-    public void setStatsToLoad(StatsNames game, boolean value)
+    public void setStatsToLoad(GamesNames game, boolean value)
     {
         statsToLoad[game.intValue()] = value;
     }
 
-    public boolean isStatsLoading(StatsNames game)
+    public boolean isStatsLoading(GamesNames game)
     {
         return statsToLoad[game.intValue()];
     }
 
-    public Leaderboard getLeaderboard(StatsNames game, String category)
+    public Leaderboard getLeaderboard(GamesNames game, String category)
     {
         GameServiceManager gameServiceManager = api.getGameServiceManager();
         List<LeaderboardBean> list = new ArrayList<>();

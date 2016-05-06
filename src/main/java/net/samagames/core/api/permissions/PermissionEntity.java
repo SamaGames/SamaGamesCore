@@ -84,15 +84,18 @@ public class PermissionEntity implements IPermissionsEntity {
             jedis.close();
         }
     }
-
     public void applyPermissions()
+    {
+        applyPermissions(Bukkit.getPlayer(uuid));
+    }
+
+    public void applyPermissions(Player player)
     {
         if(attachment != null)
         {
             attachment.remove();
         }
 
-        Player player = Bukkit.getPlayer(uuid);
         if(player != null && player.isOnline())
         {
             attachment = player.addAttachment(plugin);
@@ -103,6 +106,7 @@ public class PermissionEntity implements IPermissionsEntity {
             }
         }
     }
+
 
     public GroupsBean getDisplayGroup()
     {

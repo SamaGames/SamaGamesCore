@@ -123,6 +123,7 @@ public class GameManager implements IGameManager
         long currentTime = System.currentTimeMillis();
         Long decoTime = this.playerDisconnectedTime.get(player.getUniqueId());
 
+        //TODO Louche http://i.imgur.com/qfcakoQ.png
         if (decoTime != null && currentTime - decoTime >= this.maxReconnectTime * 60 * 2)
         {
             this.game.handleReconnectTimeOut(player, true);

@@ -1,10 +1,10 @@
 package net.samagames.core.api.shops;
 
 import net.samagames.api.shops.IPlayerShop;
-import net.samagames.api.shops.ITransaction;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.player.PlayerData;
 import net.samagames.persistanceapi.beans.shop.TransactionBean;
+import net.samagames.tools.CallBack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,12 @@ public class PlayerShop implements IPlayerShop {
     @Override
     public void refresh()
     {
-        if (System.currentTimeMillis() - lastUpdate > 1000*60*5)
+        refresh(false);
+    }
+
+    public void refresh(boolean force)
+    {
+        if (force || System.currentTimeMillis() - lastUpdate > 1000*60*5)
         {
             PlayerData playerData = api.getPlayerManager().getPlayerData(uuid);
             List<TransactionItem> items = new ArrayList<>();
@@ -66,52 +71,81 @@ public class PlayerShop implements IPlayerShop {
         }
     }
 
-    public void update()
+    @Override
+    public void addItem(int itemID, int priceCoins, int priceStars, boolean selected)
     {
-
-        //Nothing to save yet we update every time
+        addItem(itemID, priceCoins, priceStars, selected, null);
     }
 
     @Override
-    public boolean addItem(ITransaction item)
+    public void addItem(int itemID, int priceCoins, int priceStars, boolean selected, CallBack<Boolean> callBack)
     {
         PlayerData playerData = api.getPlayerManager().getPlayerData(uuid);
+        TransactionItem transactionItem = new TransactionItem(0, itemID, priceCoins, priceStars, null, selected, uuid);
+
         //Directly update in base for security
         api.getPlugin().getExecutor().execute(() -> {
             try {
-                api.getGameServiceManager().createTransaction(playerData.getPlayerBean(),
-                        (TransactionBean) item);
+                api.getGameServiceManager().createTransaction(playerData.getPlayerBean(), transactionItem);
+                //May be optimised
+                refresh(true);
+                if (callBack != null)
+                    callBack.done(true, null);
+            } catch (Exception e) {
+                if (callBack != null)
+                    callBack.done(false, e);
+            }
+        });
+    }
+
+    @Override
+    public void setSelectedItem(int itemID, boolean selected) throws Exception {
+        //Auto refresh if more than 5min
+        refresh();
+
+        //Cache
+        TransactionItem transactionItem = getTransactionsByID(itemID);
+        if (transactionItem == null)
+        {
+            throw new Exception("Item with id: " + itemID + " not found");
+        }
+        transactionItem.setSelected(selected);
+
+        //Directly update in base for security
+        api.getPlugin().getExecutor().execute(() -> {
+            try {
+                api.getGameServiceManager().updateTransaction(transactionItem);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
+    }
+
+    @Override
+    public boolean isSelectedItem(int itemID) throws Exception {
         //Cache
-        items.add((TransactionItem) item);
-
-        return true;
+        TransactionItem transactionItem = getTransactionsByID(itemID);
+        if (transactionItem == null)
+        {
+            throw new Exception("Item with id: " + itemID + " not found");
+        }
+        return transactionItem.isSelected();
     }
 
-    @Override
-    public List<ITransaction> getTransactionsByID(int itemID)
-    {
-        //Auto refresh if more than 5min
-        refresh();
-        return items.stream().filter(item -> item.getItem_id() == itemID).collect(Collectors.toList());
-    }
 
     @Override
-    public TransactionItem getTransactionSelectedByID(int itemID)
+    public TransactionItem getTransactionsByID(int itemID)
     {
         //Auto refresh if more than 5min
         refresh();
         for (TransactionItem item : items)
         {
-            if (item.getItem_id() == itemID && item.isSelected())
+            if (item.getItem_id() == itemID)
             {
                 return item;
             }
         }
-        //No item selected
+        //No item bought
         return null;
     }
 }
