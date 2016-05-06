@@ -100,6 +100,7 @@ public class PermissionEntity implements IPermissionsEntity {
             //attachment.getPermissions().keySet().stream().forEach(attachment::unsetPermission);
             for (Map.Entry<String, Boolean> data : permissions.entrySet())
             {
+                System.out.print("Permission " + data.getKey() + " value: " + data.getValue());
                 attachment.setPermission(data.getKey(), data.getValue());
             }
         }
