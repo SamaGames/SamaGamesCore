@@ -96,7 +96,7 @@ public class PermissionEntity implements IPermissionsEntity {
             attachment.remove();
         }
 
-        if(player != null && player.isOnline())
+        if(player != null)
         {
             attachment = player.addAttachment(plugin);
 
