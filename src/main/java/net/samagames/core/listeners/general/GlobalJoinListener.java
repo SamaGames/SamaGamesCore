@@ -61,9 +61,6 @@ public class GlobalJoinListener implements Listener {
             playerData.applyNickname(event.getPlayer());
         }*/
         long startTime = System.currentTimeMillis();
-        //Permissions already loaded in async, just apply them
-        PermissionManager permissionManager = api.getPermissionsManager();
-        permissionManager.getPlayer(event.getPlayer().getUniqueId()).applyPermissions(event.getPlayer());
         //api.getPlugin().getLogger().info("Login Time: " + (System.currentTimeMillis() - startTime));
     }
 
@@ -71,9 +68,15 @@ public class GlobalJoinListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event)
     {
         long startTime = System.currentTimeMillis();
+        //Permissions already loaded in async, just apply them
+        PermissionManager permissionManager = api.getPermissionsManager();
+        permissionManager.getPlayer(event.getPlayer().getUniqueId()).applyPermissions(event.getPlayer());
+
         //Remove natural join message
         event.setJoinMessage("");
         api.getJoinManager().onJoin(event.getPlayer());
+
+
         //api.getPlugin().getLogger().info("Join Time: " + (System.currentTimeMillis() - startTime));
     }
 

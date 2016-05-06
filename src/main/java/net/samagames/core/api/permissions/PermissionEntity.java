@@ -98,6 +98,7 @@ public class PermissionEntity implements IPermissionsEntity {
 
         if(player != null)
         {
+
             attachment = player.addAttachment(plugin);
 
             for (Map.Entry<String, Boolean> data : permissions.entrySet())
