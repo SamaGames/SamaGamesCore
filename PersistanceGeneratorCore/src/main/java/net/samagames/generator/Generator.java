@@ -473,21 +473,22 @@ public class Generator {
 
             if (parameter.getType().equals(int.class))
             {
-                instruction += ",0\n";
+                instruction += "0\n,";
             }else if (parameter.getType().equals(long.class))
             {
-                instruction += ",0\n";
+                instruction += "0\n,";
             }else if (parameter.getType().equals(double.class))
             {
-                instruction += ",0.0\n";
+                instruction += "0.0\n,";
             }else if (parameter.getType().equals(boolean.class))
             {
-                instruction += ",false\n";
+                instruction += "false\n,";
             }else
             {
-                instruction += ", null\n";
+                instruction += "null\n,";
             }
         }
+        instruction = instruction.substring(0, instruction.length()-1);
         instruction += ")";
 
         constructor2.addStatement(instruction);
