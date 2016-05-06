@@ -447,8 +447,9 @@ public class Generator {
                     }
                 }
             }
-            sup += ",bean." + methodName + "()\n";
+            sup += "bean." + methodName + "()\n,";
         }
+        sup = sup.substring(0, sup.length()-1);
         sup += ")";
 
         constructor.addStatement(sup);
