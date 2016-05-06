@@ -7,6 +7,8 @@ import net.samagames.api.stats.IStatsManager;
 import net.samagames.persistanceapi.beans.players.GroupsBean;
 import net.samagames.persistanceapi.beans.players.PlayerBean;
 import net.samagames.persistanceapi.beans.players.PlayerSettingsBean;
+import net.samagames.persistanceapi.beans.shop.ItemDescriptionBean;
+import net.samagames.persistanceapi.beans.shop.TransactionBean;
 import net.samagames.persistanceapi.beans.statistics.PlayerStatisticsBean;
 
 import javax.lang.model.element.Modifier;
@@ -158,8 +160,12 @@ public class Generator {
         toBuild.add(JavaFile.builder(settingPackage, implClass).build());
         //END SETTINGS
 
-        /*TypeSpec itemDesc = createImplementationClass("net.samagames.api.shops", ItemDescriptionBean.class, "settings:", false);
-        toBuild.add(JavaFile.builder("net.samagames.core.api.shops", itemDesc).build());*/
+        TypeSpec shop = createSImplementationClass("net.samagames.api.shop", ItemDescriptionBean.class);
+        toBuild.add(JavaFile.builder("net.samagames.core.api.shop", shop).build());
+
+        TypeSpec transaction = createSImplementationClass("net.samagames.api.shop", TransactionBean.class);
+        toBuild.add(JavaFile.builder("net.samagames.core.api.shop", transaction).build());
+
     }
 
     public static List<JavaFile> loadGameStats()
@@ -391,6 +397,141 @@ public class Generator {
         refresh.addStatement("jedis.close()");
         object.addMethod(refresh.build());
         //REFRESH END
+
+        return object.build();
+    }
+
+    public static TypeSpec createSImplementationClass(String package_, Class type)
+    {
+        String name = type.getSimpleName().replaceAll("Bean", "");
+        Method[] subDeclaredMethods = type.getDeclaredMethods();
+
+        TypeSpec.Builder object = TypeSpec.classBuilder(name)
+                .addModifiers(Modifier.PUBLIC)
+                .addSuperinterface(ClassName.get(package_, "I"+name))
+                .superclass(type);
+        MethodSpec.Builder constructor = MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(type, "bean");
+
+        String sup = "super(\n";
+
+        //CONSTRUCTOR START
+        Constructor constructor1 = type.getConstructors()[0];
+        if (!constructor1.isAnnotationPresent(ConstructorProperties.class))
+            return null;
+        ConstructorProperties annotation = (ConstructorProperties) constructor1.getAnnotation(ConstructorProperties.class);
+
+        //Not efficiency but do the job and don't care for compilation
+        int i = 0;
+        for (String parameterName : annotation.value())
+        {
+            //Don't do the first iteration
+            if (i == 0)
+            {
+                i++;
+                continue;
+            }
+            double similitudeMax = 0.0;
+            String methodName = "";
+            for (Method method : subDeclaredMethods)
+            {
+                if (method.getName().startsWith("get")
+                        || method.getName().startsWith("is"))
+                {
+                    double similitude = similarity(parameterName.toLowerCase(), method.getName().toLowerCase());
+                    if (similitude > similitudeMax)
+                    {
+                        similitudeMax = similitude;
+                        methodName = method.getName();
+                    }
+                }
+            }
+            sup += ",bean." + methodName + "()\n";
+        }
+        sup += ")";
+
+        constructor.addStatement(sup);
+        object.addMethod(constructor.build());
+        //CONSTRUCTOR END
+
+        //Constructor 2 START
+        MethodSpec.Builder constructor2 = MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PUBLIC);
+
+        String instruction = "super(\n";
+
+        boolean lol = true;
+        for (Parameter parameter : type.getConstructors()[0].getParameters())
+        {
+            if (lol)
+            {
+                lol = false;
+                continue;
+            }
+
+            if (parameter.getType().equals(int.class))
+            {
+                instruction += ",0\n";
+            }else if (parameter.getType().equals(long.class))
+            {
+                instruction += ",0\n";
+            }else if (parameter.getType().equals(double.class))
+            {
+                instruction += ",0.0\n";
+            }else if (parameter.getType().equals(boolean.class))
+            {
+                instruction += ",false\n";
+            }else
+            {
+                instruction += ", null\n";
+            }
+        }
+        instruction += ")";
+
+        constructor2.addStatement(instruction);
+        object.addMethod(constructor2.build());
+        //CONSTRUCTOR 2 END
+
+        List<String> createdFields = new ArrayList<>();
+
+        for (Method method : subDeclaredMethods)
+        {
+            String methodName = method.getName();
+            if (method.getParameters().length > 0)
+            {
+                boolean isIncrementable = false;
+                Class<?> type1 = method.getParameters()[0].getType();
+                if (type1.equals(int.class)
+                        || type1.equals(long.class)
+                        || type1.equals(double.class)
+                        || type1.equals(float.class))
+                    isIncrementable = true;
+
+                if (methodName.startsWith("set") && isIncrementable)
+                {
+                    methodName = "incrBy" + methodName.substring(3);
+                    String fieldName = method.getName().substring(3) + "Vector";
+                    createdFields.add(fieldName);
+                    FieldSpec vector = FieldSpec.builder(type1, fieldName)
+                            .addModifiers(Modifier.PRIVATE).initializer("0").build();
+                    object.addField(vector);
+
+                    MethodSpec.Builder builder = MethodSpec.methodBuilder(methodName);
+                    if (method.getParameterCount() > 0)
+                    {
+                        for (Parameter parameter : method.getParameters())
+                        {
+                            builder.addParameter(parameter.getType(), parameter.getName());
+                        }
+                    }
+                    builder.addModifiers(Modifier.PUBLIC);
+                    builder.returns(method.getReturnType());
+                    builder.addStatement("$N += arg0", vector);
+                    object.addMethod(builder.build());
+                }
+            }
+        }
 
         return object.build();
     }

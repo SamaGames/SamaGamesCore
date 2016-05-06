@@ -140,7 +140,7 @@ public class PlayerShop implements IPlayerShop {
         refresh();
         for (TransactionItem item : items)
         {
-            if (item.getItem_id() == itemID)
+            if (item.getItemId() == itemID)
             {
                 return item;
             }

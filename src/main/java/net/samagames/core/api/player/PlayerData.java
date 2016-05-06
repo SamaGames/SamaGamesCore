@@ -45,6 +45,8 @@ public class PlayerData extends AbstractPlayerData
 
     private SanctionBean muteSanction = null;
 
+    private boolean loaded = false;
+
     protected PlayerData(UUID playerID, ApiImplementation api, PlayerDataManager manager)
     {
         this.playerUUID = playerID;
@@ -88,6 +90,7 @@ public class PlayerData extends AbstractPlayerData
             {
                 this.fakeProfile = new ProfileLoader(fakeUUID.toString(), playerBean.getNickName(), playerBean.getNickName()).loadProfile();
             }
+            loaded = true;
             return true;
         }catch (Exception e)
         {
@@ -100,7 +103,7 @@ public class PlayerData extends AbstractPlayerData
 
     public void updateData()
     {
-        if(playerBean != null)
+        if(playerBean != null && loaded)
         {
             //Save in redis
             Jedis jedis = api.getBungeeResource();
