@@ -1,17 +1,14 @@
 package net.samagames.core.api.shops;
 
 import net.samagames.api.games.GamesNames;
-import net.samagames.api.shops.IItemDescription;
 import net.samagames.api.shops.IShopsManager;
 import net.samagames.core.ApiImplementation;
 import net.samagames.persistanceapi.beans.shop.ItemDescriptionBean;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * This file is a part of the SamaGames Project CodeBase
@@ -25,7 +22,7 @@ public class ShopsManager implements IShopsManager
 {
     private boolean[] shopToLoad;
 
-    private List<ItemDescription> itemsCache;
+    private ItemDescription[] itemsCache;
     private ConcurrentHashMap<UUID, PlayerShop> cache;
     private ApiImplementation api;
 
@@ -33,7 +30,7 @@ public class ShopsManager implements IShopsManager
     {
         this.api = api;
         this.cache = new ConcurrentHashMap<>();
-        this.itemsCache = new ArrayList<>();
+        this.itemsCache = new ItemDescription[0];
 
         this.shopToLoad = new boolean[GamesNames.values().length];
         for (int i = 0; i < shopToLoad.length; i++)
@@ -46,7 +43,13 @@ public class ShopsManager implements IShopsManager
             try
             {
                 List<ItemDescriptionBean> allItemDescription = api.getGameServiceManager().getAllItemDescription();
-                itemsCache = allItemDescription.stream().map(bean -> (ItemDescription) bean).collect(Collectors.toList());
+                int n = allItemDescription.size();
+
+                itemsCache = new ItemDescription[Math.max(n, allItemDescription.get(n-1).getItemId())];
+                for (ItemDescriptionBean bean : allItemDescription)
+                {
+                    itemsCache[bean.getItemId()] = new ItemDescription(bean);
+                }
             }catch (Exception e)
             {
                 e.printStackTrace();
@@ -84,21 +87,21 @@ public class ShopsManager implements IShopsManager
     }
 
     @Override
-    public IItemDescription getItemDescription(int itemID) throws Exception {
+    public ItemDescription getItemDescription(int itemID) throws Exception {
         try {
-            return (IItemDescription) itemsCache.get(itemID);
+            return itemsCache[itemID];
         } catch (Exception e) {
             throw new Exception("Item with id: " + itemID + " not found");
         }
     }
 
     @Override
-    public IItemDescription getItemDescriptionByName(String itemName) throws Exception {
+    public ItemDescription getItemDescriptionByName(String itemName) throws Exception {
         for (ItemDescription description : itemsCache)
         {
             if (description.getItemName().equals(itemName))
             {
-                return (IItemDescription) description;
+                return description;
             }
         }
         throw new Exception("Item with name: " + itemName + " not found");
