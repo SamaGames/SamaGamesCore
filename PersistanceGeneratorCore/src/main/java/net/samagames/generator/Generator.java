@@ -1,12 +1,12 @@
 package net.samagames.generator;
 
 import com.squareup.javapoet.*;
+import net.samagames.api.games.GamesNames;
 import net.samagames.api.stats.IPlayerStats;
 import net.samagames.api.stats.IStatsManager;
 import net.samagames.persistanceapi.beans.players.GroupsBean;
 import net.samagames.persistanceapi.beans.players.PlayerBean;
 import net.samagames.persistanceapi.beans.players.PlayerSettingsBean;
-import net.samagames.persistanceapi.beans.shop.ItemDescriptionBean;
 import net.samagames.persistanceapi.beans.statistics.PlayerStatisticsBean;
 
 import javax.lang.model.element.Modifier;
@@ -69,14 +69,14 @@ public class Generator {
         for (JavaFile javaFile : typeStats)
         {
             double value = 0;
-            IStatsManager.StatsNames stat = null;
-            for (IStatsManager.StatsNames statsNames : IStatsManager.StatsNames.values())
+            GamesNames stat = null;
+            for (GamesNames names : GamesNames.values())
             {
-                double sim = similarity(statsNames.name().toLowerCase(), javaFile.typeSpec.name.toLowerCase());
+                double sim = similarity(names.name().toLowerCase(), javaFile.typeSpec.name.toLowerCase());
                 if ( sim > value )
                 {
                     value = sim;
-                    stat = statsNames;
+                    stat = names;
                 }
             }
             constructor.addStatement("if (global || statsToLoad[" + stat.intValue() + "]) \n"
