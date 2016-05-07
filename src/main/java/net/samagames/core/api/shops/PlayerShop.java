@@ -45,7 +45,7 @@ public class PlayerShop implements IPlayerShop {
     @Override
     public void refresh()
     {
-        refresh(true);
+        refresh(false);
     }
 
     public void refresh(boolean force)
