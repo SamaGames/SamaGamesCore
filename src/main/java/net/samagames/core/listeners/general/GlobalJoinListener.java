@@ -31,8 +31,9 @@ public class GlobalJoinListener implements Listener {
     {
         long startTime = System.currentTimeMillis();
         UUID player = event.getUniqueId();
+
         //First load main data
-        api.getPlayerManager().loadPlayer(event.getUniqueId());
+        api.getPlayerManager().loadPlayer(player);
 
         //Load permissions
         api.getPermissionsManager().loadPlayer(event.getUniqueId());
@@ -41,9 +42,7 @@ public class GlobalJoinListener implements Listener {
 
         api.getStatsManager().loadPlayer(player);
 
-        //TODO load shop
-
-        api.getPlayerManager().loadPlayer(player);
+        api.getShopsManager().loadPlayer(player);
 
         api.getFriendsManager().loadPlayer(player);
 
@@ -116,6 +115,9 @@ public class GlobalJoinListener implements Listener {
 
         //Unload stats from cache
         api.getStatsManager().unloadPlayer(p.getUniqueId());
+
+        //Unload shops
+        api.getShopsManager().unloadPlayer(p.getUniqueId());
 
         //Unload permission player cache
         api.getPermissionsManager().unloadPlayer(p);
