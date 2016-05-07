@@ -360,7 +360,7 @@ public class APIPlugin extends JavaPlugin implements Listener
 
     public boolean isHub()
     {
-        return !getServerName().startsWith("Hub");
+        return getServerName().startsWith("Hub");
     }
 
     public DatabaseConnector getDatabaseConnector()
