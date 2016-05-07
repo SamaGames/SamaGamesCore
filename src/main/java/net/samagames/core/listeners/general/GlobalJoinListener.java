@@ -41,7 +41,7 @@ public class GlobalJoinListener implements Listener {
 
         api.getStatsManager().loadPlayer(player);
 
-        //TODO load shop
+        api.getShopsManager().loadPlayer(player);
 
         api.getPlayerManager().loadPlayer(player);
 
@@ -116,6 +116,9 @@ public class GlobalJoinListener implements Listener {
 
         //Unload stats from cache
         api.getStatsManager().unloadPlayer(p.getUniqueId());
+
+        //Unload shops from cache
+        api.getShopsManager().unloadPlayer(p.getUniqueId());
 
         //Unload permission player cache
         api.getPermissionsManager().unloadPlayer(p);
