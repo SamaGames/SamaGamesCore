@@ -53,6 +53,7 @@ public class PlayerShop implements IPlayerShop {
         if (force || System.currentTimeMillis() - lastUpdate > 1000*60*5)
         {
             PlayerData playerData = api.getPlayerManager().getPlayerData(uuid);
+           /* //TODO satch methode
             List<Transaction> items = new ArrayList<>();
             for (int i = 0; i < shopToLoad.length; i++)
             {
@@ -65,6 +66,14 @@ public class PlayerShop implements IPlayerShop {
                         e.printStackTrace();
                     }
                 }
+            }
+            this.items = items;*/
+            List<Transaction> items = new ArrayList<>();
+            try {
+                List<TransactionBean> transactionBeen = api.getGameServiceManager().getPlayerTransactions(playerData.getPlayerBean());
+                items.addAll(transactionBeen.stream().map(bean -> (Transaction) bean).collect(Collectors.toList()));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             this.items = items;
             lastUpdate = System.currentTimeMillis();
