@@ -67,15 +67,6 @@ public class Permissible extends PermissibleBase
         this.oldpermissible = oldPermissible;
     }
 
-    public boolean hasSuperPerm(String perm)
-    {
-        if (oldpermissible == null)
-        {
-            return super.hasPermission(perm);
-        }
-        return oldpermissible.hasPermission(perm);
-    }
-
     @Override
     public boolean hasPermission(String permission)
     {
