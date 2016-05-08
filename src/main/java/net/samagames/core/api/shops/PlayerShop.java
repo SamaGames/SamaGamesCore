@@ -75,6 +75,10 @@ public class PlayerShop implements IPlayerShop {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            for (Transaction item : items)
+            {
+                System.out.print("Item for " + uuid + item.getItemId());
+            }
             this.items.clear();
             this.items.addAll(items);
             lastUpdate = System.currentTimeMillis();
