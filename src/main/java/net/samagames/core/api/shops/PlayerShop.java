@@ -137,12 +137,13 @@ public class PlayerShop implements IPlayerShop {
     }
 
     @Override
-    public int getSelectedItem(int[] itemsIDs) throws Exception {
+    public int getSelectedItemFromList(int[] itemsIDs) throws Exception {
         int selected = -1;
 
         for (int itemID : itemsIDs)
         {
-            if (this.getTransactionsByID(itemID) != null)
+            Transaction transactionsByID = this.getTransactionsByID(itemID);
+            if (transactionsByID != null && transactionsByID.isSelected())
             {
                 selected = itemID;
                 break;
@@ -151,7 +152,7 @@ public class PlayerShop implements IPlayerShop {
 
         if (selected == -1)
         {
-            throw new Exception("The player doesn't have any of this ids");
+            throw new Exception("None of these items were found: " + itemsIDs);
         }
 
         return selected;
