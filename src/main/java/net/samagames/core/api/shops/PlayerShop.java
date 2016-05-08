@@ -137,6 +137,27 @@ public class PlayerShop implements IPlayerShop {
     }
 
     @Override
+    public int getSelectedItem(int[] itemsIDs) throws Exception {
+        int selected = -1;
+
+        for (int itemID : itemsIDs)
+        {
+            if (this.getTransactionsByID(itemID) != null)
+            {
+                selected = itemID;
+                break;
+            }
+        }
+
+        if (selected == -1)
+        {
+            throw new Exception("The player doesn't have any of this ids");
+        }
+
+        return selected;
+    }
+
+    @Override
     public boolean isSelectedItem(int itemID) throws Exception {
         //Cache
         Transaction transactionItem = getTransactionsByID(itemID);
