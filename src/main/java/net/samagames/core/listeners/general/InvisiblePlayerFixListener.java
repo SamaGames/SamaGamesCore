@@ -1,7 +1,6 @@
 package net.samagames.core.listeners.general;
 
 import net.minecraft.server.v1_9_R1.EntityPlayer;
-import net.minecraft.server.v1_9_R1.PacketPlayOutPlayerInfo;
 import net.samagames.core.APIPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
@@ -44,17 +43,22 @@ public class InvisiblePlayerFixListener implements Listener
     {
         if (current == null)
             return;
-        final EntityPlayer currentNMS = ((CraftPlayer) current).getHandle();
+        //final EntityPlayer currentNMS = ((CraftPlayer) current).getHandle();
         Bukkit.getScheduler().runTaskAsynchronously(pluginAPI, () -> {
 
             for (Player player : Bukkit.getOnlinePlayers()) {
                 if (player == null)
                     continue;
-                //TODO if moderator don't show
+
+                current.hidePlayer(player);
+                //TODO show if not moderator
+                current.showPlayer(player);
+
+                /*
                 EntityPlayer entity = ((CraftPlayer) player).getHandle();
                 if (entity == null || currentNMS == null || currentNMS.playerConnection == null)
                     continue;
-                currentNMS.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entity));
+                currentNMS.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entity));*/
             }
         });
     }
@@ -65,15 +69,18 @@ public class InvisiblePlayerFixListener implements Listener
             return;
         final EntityPlayer currentNMS = ((CraftPlayer) current).getHandle();
         Bukkit.getScheduler().runTaskAsynchronously(pluginAPI, () -> {
-            PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, currentNMS);
+            //PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, currentNMS);
 
             for (Player p : Bukkit.getOnlinePlayers()) {
                 if (p == null)
                     continue;
-                EntityPlayer entity = ((CraftPlayer) p).getHandle();
+
+                p.hidePlayer(current);
+                p.showPlayer(current);
+                /*EntityPlayer entity = ((CraftPlayer) p).getHandle();
                 if (entity == null|| currentNMS == null || entity.playerConnection == null)
                     continue;
-                entity.playerConnection.sendPacket(packet);
+                entity.playerConnection.sendPacket(packet);*/
             }
         });
     }

@@ -104,7 +104,6 @@ public class PermissionEntity implements IPermissionsEntity {
             {
                 //System.out.print("Permission " + data.getKey() + " value: " + data.getValue());
                 attachment.setPermission(data.getKey(), data.getValue());
-
             }
         }
     }

@@ -67,7 +67,8 @@ public class NicknamePacketListener extends TinyProtocol
 
                     PlayerData playerData = api.getPlayerManager().getPlayerData(profile.getId());
                     if (playerData != null && playerData.hasNickname() &&
-                            !profile.getId().equals(receiver.getUniqueId()))
+                            !profile.getId().equals(receiver.getUniqueId()) &&
+                            !profile.getName().equals(receiver.getName()))
                     {
                         GameProfile gameProfile = playerData.getFakeProfile();
                         Field field = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredField("d");
@@ -75,10 +76,6 @@ public class NicknamePacketListener extends TinyProtocol
                     }
                 }
 
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }
