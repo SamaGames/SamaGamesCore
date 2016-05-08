@@ -71,7 +71,7 @@ public class PlayerShop implements IPlayerShop {
             List<Transaction> items = new ArrayList<>();
             try {
                 List<TransactionBean> transactionBeen = api.getGameServiceManager().getPlayerTransactions(playerData.getPlayerBean());
-                items.addAll(transactionBeen.stream().map(bean -> (Transaction) bean).collect(Collectors.toList()));
+                items.addAll(transactionBeen.stream().map(Transaction::new).collect(Collectors.toList()));
             } catch (Exception e) {
                 e.printStackTrace();
             }
