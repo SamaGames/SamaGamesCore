@@ -4,12 +4,11 @@ import net.samagames.api.permissions.IPermissionsEntity;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.api.player.PlayerData;
 import net.samagames.core.utils.CacheLoader;
+import net.samagames.core.utils.Injector;
 import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.persistanceapi.beans.players.GroupsBean;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.PermissionAttachment;
 import redis.clients.jedis.Jedis;
 
 import java.util.HashMap;
@@ -27,7 +26,7 @@ public class PermissionEntity implements IPermissionsEntity {
 
     private GroupsBean groupsBean;
 
-    private PermissionAttachment attachment;
+    //private PermissionAttachment attachment;
 
     private Map<String, Boolean> permissions = new HashMap<>();
     private static final String key = "permissions:";
@@ -42,7 +41,7 @@ public class PermissionEntity implements IPermissionsEntity {
         this.manager = plugin.getGameServiceManager();
         this.playerData = plugin.getAPI().getPlayerManager().getPlayerData(player);
 
-        this.attachment = null;
+        //this.attachment = null;
         groupsBean = new GroupsBean();
     }
 
@@ -73,9 +72,6 @@ public class PermissionEntity implements IPermissionsEntity {
                     //Save cache
                     permissions.put(entry.getKey(), Boolean.valueOf(entry.getValue()));
                 }
-
-                //Apply to bukkit system
-                applyPermissions();
             }
         }catch (Exception e)
         {
@@ -84,25 +80,24 @@ public class PermissionEntity implements IPermissionsEntity {
             jedis.close();
         }
     }
-    public void applyPermissions()
-    {
-        applyPermissions(Bukkit.getPlayer(uuid));
-    }
 
     public void applyPermissions(Player player)
     {
         if(player != null)
         {
-            if(attachment == null)
+            Permissible permissible = new Permissible(player, this);
+            org.bukkit.permissions.Permissible oldpermissible = Injector.inject(player, permissible);
+            permissible.setOldPermissible(oldpermissible);
+            /*if(attachment == null)
             {
                 attachment = player.addAttachment(plugin);
-            }
+            }*/
             //attachment.getPermissions().keySet().stream().forEach(attachment::unsetPermission);
-            for (Map.Entry<String, Boolean> data : permissions.entrySet())
+            /*for (Map.Entry<String, Boolean> data : permissions.entrySet())
             {
                 System.out.print("Permission " + data.getKey() + " value: " + data.getValue());
                 attachment.setPermission(data.getKey(), data.getValue());
-            }
+            }*/
         }
     }
 
