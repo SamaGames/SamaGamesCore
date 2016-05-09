@@ -12,7 +12,7 @@ public class SettingsManager implements ISettingsManager
     private ApiImplementation api;
 
     //Thread safe to be sure
-    private ConcurrentHashMap<UUID, PlayerSettings> cache;
+    private ConcurrentHashMap<UUID, ImpPlayerSettings> cache;
 
     public SettingsManager(ApiImplementation api)
     {
@@ -20,16 +20,14 @@ public class SettingsManager implements ISettingsManager
         this.cache = new ConcurrentHashMap<>();
     }
 
-    //TODO load at join
     public void loadPlayer(UUID uuid)
     {
         PlayerData playerData = api.getPlayerManager().getPlayerData(uuid);
-        PlayerSettings playerSettings = new PlayerSettings(playerData);
+        ImpPlayerSettings playerSettings = new ImpPlayerSettings(playerData);
         playerSettings.refresh();
         cache.put(uuid, playerSettings);
     }
 
-    //TODO unload at leave
     public void unloadPlayer(UUID uuid)
     {
         //Update data to be sure we don't loose data
@@ -39,7 +37,7 @@ public class SettingsManager implements ISettingsManager
     }
 
     @Override
-    public PlayerSettings getSettings(UUID uuid)
+    public ImpPlayerSettings getSettings(UUID uuid)
     {
         return cache.get(uuid);
     }

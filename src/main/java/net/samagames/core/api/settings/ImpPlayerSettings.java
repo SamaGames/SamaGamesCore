@@ -1,5 +1,8 @@
 package net.samagames.core.api.settings;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
+import net.samagames.core.APIPlugin;
 import net.samagames.core.api.player.PlayerData;
 import net.samagames.persistanceapi.beans.players.PlayerSettingsBean;
 import org.bukkit.Bukkit;
@@ -33,6 +36,13 @@ public class ImpPlayerSettings extends PlayerSettings {
     public void update() {
         super.update();
         Player player = Bukkit.getPlayer(playerData.getPlayerID());
-        //TODO plugin message for update settings bungee side
+
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        //Comamnd type
+        out.writeUTF("settingsChanges");
+        //The player to refresh settings on bungee
+        out.writeUTF(player.getUniqueId().toString());
+        //Send data on network channel
+        player.sendPluginMessage(APIPlugin.getInstance(), "Network", out.toByteArray());
     }
 }

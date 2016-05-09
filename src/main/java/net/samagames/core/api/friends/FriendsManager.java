@@ -119,6 +119,11 @@ public class FriendsManager implements IFriendsManager
         }
     }
 
+    public FriendPlayer getFriendPlayer(UUID uuid)
+    {
+        return cache.get(uuid);
+    }
+
     @Override
     public List<String> requests(UUID asking)
     {

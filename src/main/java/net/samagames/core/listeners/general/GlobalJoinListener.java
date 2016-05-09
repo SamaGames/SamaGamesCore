@@ -2,7 +2,6 @@ package net.samagames.core.listeners.general;
 
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.permissions.PermissionManager;
-import net.samagames.core.api.player.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,7 +22,6 @@ public class GlobalJoinListener implements Listener {
     {
 
         this.api = api;
-        //TODO register the object in listeners
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -56,7 +54,7 @@ public class GlobalJoinListener implements Listener {
     {
         long startTime = System.currentTimeMillis();
 
-        PlayerData playerData = api.getPlayerManager().getPlayerData(event.getPlayer().getUniqueId());
+        //PlayerData playerData = api.getPlayerManager().getPlayerData(event.getPlayer().getUniqueId());
         /*if (playerData.hasNickname())
         {
             playerData.applyNickname(event.getPlayer());
@@ -79,7 +77,6 @@ public class GlobalJoinListener implements Listener {
 
         //Game join handle
         api.getJoinManager().onJoin(event.getPlayer());
-
 
         //api.getPlugin().getLogger().info("Join Time: " + (System.currentTimeMillis() - startTime));
     }
