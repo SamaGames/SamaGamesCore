@@ -51,10 +51,14 @@ public class NicknamePacketListener extends TinyProtocol
         if(packet instanceof PacketPlayOutPlayerInfo)
         {
             PacketPlayOutPlayerInfo p = (PacketPlayOutPlayerInfo)packet;
-
             try {
                 Field a = p.getClass().getDeclaredField("a");
                 a.setAccessible(true);
+
+                if (!a.get(p).equals(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER))
+                {
+                    return super.onPacketOutAsync(receiver, channel, packet);
+                }
 
                 Field b = p.getClass().getDeclaredField("b");
                 b.setAccessible(true);
