@@ -57,7 +57,8 @@ public class NicknamePacketListener extends TinyProtocol
 
                 Field b = p.getClass().getDeclaredField("b");
                 b.setAccessible(true);
-
+                //TODO when player disconnect, his playerdata are deleted before call the remove
+                //So you need to add a list with all nickname and remove player when disconnect from here
                 List list = (List) b.get(p);
                 for(Object data : list)
                 {
