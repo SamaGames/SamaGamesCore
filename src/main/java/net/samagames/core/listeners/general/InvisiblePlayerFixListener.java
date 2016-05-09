@@ -47,7 +47,7 @@ public class InvisiblePlayerFixListener implements Listener
         Bukkit.getScheduler().runTaskAsynchronously(pluginAPI, () -> {
 
             for (Player player : Bukkit.getOnlinePlayers()) {
-                if (player == null)
+                if (player == null || current.getName().equals(player.getName()))
                     continue;
 
                 current.hidePlayer(player);
@@ -72,7 +72,7 @@ public class InvisiblePlayerFixListener implements Listener
             //PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, currentNMS);
 
             for (Player p : Bukkit.getOnlinePlayers()) {
-                if (p == null)
+                if (p == null || current.getName().equals(p.getName()))
                     continue;
 
                 p.hidePlayer(current);
