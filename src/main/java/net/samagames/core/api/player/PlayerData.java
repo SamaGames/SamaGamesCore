@@ -52,7 +52,8 @@ public class PlayerData extends AbstractPlayerData
         this.playerUUID = playerID;
         this.api = api;
         this.manager = manager;
-        this.fakeUUID = UUID.randomUUID();
+       // this.fakeUUID = UUID.randomUUID();
+        this.fakeUUID = playerID;
 
         playerBean = new PlayerBean(playerUUID,
                 "",
