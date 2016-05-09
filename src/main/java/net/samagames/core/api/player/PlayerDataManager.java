@@ -8,6 +8,7 @@ import net.samagames.core.ApiImplementation;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This file is a part of the SamaGames project
@@ -80,10 +81,12 @@ public class PlayerDataManager implements IPlayerDataManager
     public void unloadPlayer(UUID player)
     {
         //Update data before delete
-        if(cache.contains(player))
+        if(cache.containsKey(player))
             cache.get(player).updateData();
 
-        cache.remove(player);
+        //Schedule that because of nickname needs
+        api.getPlugin().getExecutor().schedule((Runnable) () -> cache.remove(player), 50L, TimeUnit.MILLISECONDS);
+
     }
 
     //TODO nickname

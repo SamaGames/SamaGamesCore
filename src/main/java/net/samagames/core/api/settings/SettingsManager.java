@@ -30,10 +30,14 @@ public class SettingsManager implements ISettingsManager
 
     public void unloadPlayer(UUID uuid)
     {
-        //Update data to be sure we don't loose data
-        cache.get(uuid).update();
-        //Then remove
-        cache.remove(uuid);
+        if (cache.containsKey(uuid))
+        {
+            //Update data to be sure we don't loose data
+            cache.get(uuid).update();
+            //Then remove
+            cache.remove(uuid);
+        }
+
     }
 
     @Override
