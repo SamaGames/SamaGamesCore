@@ -188,7 +188,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         });
 
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "Network");
-        this.getServer().getMessenger().registerIncomingPluginChannel(this, "Network", new PluginMessageListener());
+        this.getServer().getMessenger().registerIncomingPluginChannel(this, "Network", new PluginMessageListener(api));
 
         /*
         Loading commands
