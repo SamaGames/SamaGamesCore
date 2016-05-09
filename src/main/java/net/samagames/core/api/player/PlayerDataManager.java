@@ -5,10 +5,10 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.player.IPlayerDataManager;
 import net.samagames.core.ApiImplementation;
+import org.bukkit.Bukkit;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 /**
  * This file is a part of the SamaGames project
@@ -85,7 +85,7 @@ public class PlayerDataManager implements IPlayerDataManager
             cache.get(player).updateData();
 
         //Schedule that because of nickname needs
-        api.getPlugin().getExecutor().schedule((Runnable) () -> cache.remove(player), 50L, TimeUnit.MILLISECONDS);
+        Bukkit.getScheduler().runTaskLater(api.getPlugin(), () -> cache.remove(player), 2L);
 
     }
 
