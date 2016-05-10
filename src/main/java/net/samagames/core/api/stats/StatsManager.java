@@ -31,7 +31,7 @@ public class StatsManager implements IStatsManager
         this.statsToLoad = new boolean[GamesNames.values().length];
         for (int i = 0; i < statsToLoad.length; i++)
         {
-            statsToLoad[i] = false;
+            statsToLoad[i] = api.getPlugin().isHub();
         }
     }
 
