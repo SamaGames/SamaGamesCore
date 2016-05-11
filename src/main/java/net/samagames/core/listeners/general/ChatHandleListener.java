@@ -169,7 +169,7 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
         MessageData last = lastMessages.get(player.getUniqueId());
         if (last != null)
         {
-            if (!user.hasPermission("chat.bypass"))
+            if (!user.hasPermission("api.chat.bypass"))
             {
                 if (last.isTooEarly(time))
                 {
