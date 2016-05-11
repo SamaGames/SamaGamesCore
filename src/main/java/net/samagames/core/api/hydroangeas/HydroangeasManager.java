@@ -9,7 +9,6 @@ import net.samagames.core.api.hydroangeas.packets.queues.QueuePacket;
 import net.samagames.core.api.hydroangeas.packets.queues.QueueRemovePlayerPacket;
 import net.samagames.core.api.parties.Party;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -19,8 +18,6 @@ public class HydroangeasManager
 {
     private final ConnectionManager connectionManager;
     private final PacketReceiver packetReceiver;
-
-    private String templateName;
 
     private APIPlugin plugin;
     private ApiImplementation api;
@@ -44,12 +41,6 @@ public class HydroangeasManager
                 e.printStackTrace();
             }
         });
-
-        //Load current template
-        File file  = new File("template.json");
-        //TODO Parse json
-
-        this.templateName = "TODO";
 
     }
 
@@ -110,9 +101,5 @@ public class HydroangeasManager
     public PacketReceiver getPacketReceiver()
     {
         return this.packetReceiver;
-    }
-
-    public String getTemplateName() {
-        return templateName;
     }
 }

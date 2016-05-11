@@ -3,10 +3,12 @@ package net.samagames.core.api.games;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.games.*;
 import net.samagames.api.games.themachine.ICoherenceMachine;
+import net.samagames.api.parties.IParty;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.games.themachine.CoherenceMachineImpl;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -24,7 +26,7 @@ public class GameManager implements IGameManager
     private final ApiImplementation api;
 
     private final ConcurrentHashMap<UUID, Long> playerDisconnectedTime;
-    private final IGameProperties gameProperties;
+    private final GameProperties gameProperties;
     private Game game;
     private int maxReconnectTime;
     private boolean freeMode;
@@ -92,6 +94,28 @@ public class GameManager implements IGameManager
         }.runTaskTimerAsynchronously(api.getPlugin(), 20, 20);
 
         APIPlugin.log(Level.INFO, "Registered game '" + game.getGameName() + "' successfuly!");
+    }
+
+    public void rejoinTemplateQueue(Player p)
+    {
+        api.getPlugin().getServer().getScheduler().runTaskAsynchronously(api.getPlugin(), () -> {
+            IParty party = SamaGamesAPI.get().getPartiesManager().getPartyForPlayer(p.getUniqueId());
+
+            if(party == null)
+            {
+                this.api.getHydroangeasManager().addPlayerToQueue(p.getUniqueId(), getGameProperties().getTemplateID());
+            }
+            else
+            {
+                if(!party.getLeader().equals(p.getUniqueId()))
+                {
+                    p.sendMessage(ChatColor.RED + "Vous n'êtes pas le leader de votre partie, vous ne pouvez donc pas l'ajouter dans une file d'attente.");
+                    return;
+                }
+
+                this.api.getHydroangeasManager().addPartyToQueue(p.getUniqueId(), party.getParty(), getGameProperties().getTemplateID());
+            }
+        });
     }
 
     @Override
@@ -198,7 +222,7 @@ public class GameManager implements IGameManager
     }
 
     @Override
-    public IGameProperties getGameProperties()
+    public GameProperties getGameProperties()
     {
         return this.gameProperties;
     }

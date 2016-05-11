@@ -2,6 +2,7 @@ package net.samagames.core;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import net.samagames.core.api.hydroangeas.HydroangeasManager;
 import net.samagames.core.database.DatabaseConnector;
 import net.samagames.core.database.RedisServer;
 import net.samagames.core.listeners.general.*;
@@ -63,6 +64,8 @@ public class APIPlugin extends JavaPlugin implements Listener
     private GlobalJoinListener globalJoinListener;
 
     private GameServiceManager gameServiceManager;
+
+    private HydroangeasManager hydroangeasManager;
 
 
     public static APIPlugin getInstance()
@@ -144,6 +147,8 @@ public class APIPlugin extends JavaPlugin implements Listener
             databaseConnector = new DatabaseConnector(this, bungee);
 
         }
+
+        hydroangeasManager = new HydroangeasManager(this);
 
         api = new ApiImplementation(this);
         /*
@@ -370,5 +375,9 @@ public class APIPlugin extends JavaPlugin implements Listener
 
     public GameServiceManager getGameServiceManager() {
         return gameServiceManager;
+    }
+
+    public HydroangeasManager getHydroangeasManager() {
+        return hydroangeasManager;
     }
 }

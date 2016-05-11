@@ -8,6 +8,7 @@ import net.samagames.api.pubsub.IPubSubAPI;
 import net.samagames.core.api.friends.FriendsManager;
 import net.samagames.core.api.games.GameManager;
 import net.samagames.core.api.gui.GuiManager;
+import net.samagames.core.api.hydroangeas.HydroangeasManager;
 import net.samagames.core.api.names.UUIDTranslator;
 import net.samagames.core.api.network.JoinManagerImplement;
 import net.samagames.core.api.network.ModerationJoinHandler;
@@ -222,6 +223,11 @@ public class ApiImplementation extends SamaGamesAPI
     public GameServiceManager getGameServiceManager()
     {
         return plugin.getGameServiceManager();
+    }
+
+    public HydroangeasManager getHydroangeasManager()
+    {
+        return plugin.getHydroangeasManager();
     }
 
     @Override
