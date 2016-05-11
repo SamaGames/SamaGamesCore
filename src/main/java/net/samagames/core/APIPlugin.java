@@ -148,7 +148,7 @@ public class APIPlugin extends JavaPlugin implements Listener
 
         }
 
-        //hydroangeasManager = new HydroangeasManager(this);
+        hydroangeasManager = new HydroangeasManager(this);
 
         api = new ApiImplementation(this);
         /*

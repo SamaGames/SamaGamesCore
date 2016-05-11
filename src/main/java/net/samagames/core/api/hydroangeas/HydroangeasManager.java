@@ -30,7 +30,7 @@ public class HydroangeasManager
         this.packetReceiver = new PacketReceiver(plugin);
 
         //TODO save all template data in redis
-        plugin.getAPI().getPubSub().subscribe("hydroHubReceiver", (channel, packet) ->
+       /* plugin.getAPI().getPubSub().subscribe("hydroHubReceiver", (channel, packet) ->
         {
             try
             {
@@ -40,7 +40,7 @@ public class HydroangeasManager
             {
                 e.printStackTrace();
             }
-        });
+        });*/
 
     }
 
