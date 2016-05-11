@@ -1,9 +1,7 @@
 package net.samagames.core.listeners.general;
 
-import net.minecraft.server.v1_9_R1.EntityPlayer;
 import net.samagames.core.APIPlugin;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -44,7 +42,7 @@ public class InvisiblePlayerFixListener implements Listener
         if (current == null)
             return;
         //final EntityPlayer currentNMS = ((CraftPlayer) current).getHandle();
-        Bukkit.getScheduler().runTaskAsynchronously(pluginAPI, () -> {
+       // Bukkit.getScheduler().runTaskAsynchronously(pluginAPI, () -> {
 
             for (Player player : Bukkit.getOnlinePlayers()) {
                 if (player == null || current.getName().equals(player.getName()))
@@ -60,15 +58,15 @@ public class InvisiblePlayerFixListener implements Listener
                     continue;
                 currentNMS.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entity));*/
             }
-        });
+       // });
     }
 
     public void sendPlayerToAll(Player current)
     {
         if (current == null)
             return;
-        final EntityPlayer currentNMS = ((CraftPlayer) current).getHandle();
-        Bukkit.getScheduler().runTaskAsynchronously(pluginAPI, () -> {
+       // final EntityPlayer currentNMS = ((CraftPlayer) current).getHandle();
+       // Bukkit.getScheduler().runTaskAsynchronously(pluginAPI, () -> {
             //PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, currentNMS);
 
             for (Player p : Bukkit.getOnlinePlayers()) {
@@ -82,7 +80,7 @@ public class InvisiblePlayerFixListener implements Listener
                     continue;
                 entity.playerConnection.sendPacket(packet);*/
             }
-        });
+        //});
     }
 
 }

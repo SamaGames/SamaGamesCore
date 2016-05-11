@@ -35,7 +35,6 @@ public class StatsManager implements IStatsManager
         }
     }
 
-    //TODO load at join
     public void loadPlayer(UUID player)
     {
         PlayerData playerData = api.getPlayerManager().getPlayerData(player);
@@ -44,7 +43,6 @@ public class StatsManager implements IStatsManager
         caches.put(player, playerStats);
     }
 
-    //TODO unload at leave
     public void unloadPlayer(UUID player)
     {
         PlayerStats playerStats = caches.get(player);
