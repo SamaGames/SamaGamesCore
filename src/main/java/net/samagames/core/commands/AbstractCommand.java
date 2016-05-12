@@ -1,6 +1,5 @@
 package net.samagames.core.commands;
 
-import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.APIPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

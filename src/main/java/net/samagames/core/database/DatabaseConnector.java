@@ -43,6 +43,7 @@ public class DatabaseConnector
 
     public void killConnection()
     {
+        cachePool.close();
         cachePool.destroy();
     }
 

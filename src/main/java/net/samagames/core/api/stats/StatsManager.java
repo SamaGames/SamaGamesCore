@@ -1,109 +1,115 @@
 package net.samagames.core.api.stats;
 
-import com.google.gson.reflect.TypeToken;
+import net.samagames.api.games.GamesNames;
 import net.samagames.api.stats.IStatsManager;
 import net.samagames.api.stats.Leaderboard;
 import net.samagames.core.ApiImplementation;
-import net.samagames.restfull.RestAPI;
-import net.samagames.restfull.request.Request;
-import net.samagames.restfull.response.ErrorResponse;
-import net.samagames.restfull.response.elements.LeaderboradElement;
+import net.samagames.core.api.player.PlayerData;
+import net.samagames.persistanceapi.GameServiceManager;
+import net.samagames.persistanceapi.beans.statistics.LeaderboardBean;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.logging.Logger;
+import java.util.*;
+
 
 /**
  * This file is a part of the SamaGames project
  * This code is absolutely confidential.
- * (C) Copyright Elydra Network 2015
+ * (C) Copyright Elydra Network 2016 & 2017
  * All rights reserved.
  */
 public class StatsManager implements IStatsManager
 {
-    private final Logger logger;
-    private final String game;
-    private final ApiImplementation api;
-    private final Map<String, PlayerStat> caches;
+    private ApiImplementation api;
+    private Map<UUID, PlayerStats> caches;
 
-    public StatsManager(String game, ApiImplementation apiImplementation)
+    private boolean[] statsToLoad;
+
+    public StatsManager(ApiImplementation apiImplementation)
     {
-        this.game = game;
         this.api = apiImplementation;
         this.caches = new HashMap<>();
-        logger = api.getPlugin().getLogger();
+        this.statsToLoad = new boolean[GamesNames.values().length];
+        for (int i = 0; i < statsToLoad.length; i++)
+        {
+            statsToLoad[i] = api.getPlugin().isHub();
+        }
     }
 
-    @Override
-    public void increase(final UUID player, final String stat, final int amount)
+    public void loadPlayer(UUID player)
     {
-        this.setValue(player, stat, amount);
+        PlayerData playerData = api.getPlayerManager().getPlayerData(player);
+        PlayerStats playerStats = new PlayerStats(api, playerData, statsToLoad);
+        playerStats.refreshStats();
+        caches.put(player, playerStats);
     }
 
-    @Override
-    public void setValue(UUID player, String stat, int value)
+    public void unloadPlayer(UUID player)
     {
-        this.setValue(player, stat, (double) value);
+        PlayerStats playerStats = caches.get(player);
+        if(playerStats != null)
+        {
+            playerStats.updateStats();
+            caches.remove(player);
+        }
     }
-
-    public void setValue(UUID player, String stat, double value)
-    {
-        PlayerStat stats = caches.get(player.toString() + ":" + stat);
-
-        if (stats == null)
-            return;
-
-        stats.setValue(value);
-    }
-
 
     @Override
     public void finish()
     {
-        caches.values().forEach(net.samagames.core.api.stats.PlayerStat::send);
+        caches.values().forEach(PlayerStats::updateStats);
     }
 
-    @Override
-    public double getStatValue(UUID player, String stat)
+    public void setStatsToLoad(GamesNames game, boolean value)
     {
-        if (caches.containsKey(player.toString() + ":" + stat))
-            return caches.get(player.toString() + ":" + stat).getValue();
-        else
+        statsToLoad[game.intValue()] = value;
+    }
+
+    public boolean isStatsLoading(GamesNames game)
+    {
+        return statsToLoad[game.intValue()];
+    }
+
+    public Leaderboard getLeaderboard(GamesNames game, String category)
+    {
+        GameServiceManager gameServiceManager = api.getGameServiceManager();
+        List<LeaderboardBean> list = new ArrayList<>();
+        //TODO add annotation in api for simplify method
+
+        /**switch (game)
         {
-            PlayerStat playerStat = new PlayerStat(player, game, stat);
-            playerStat.fill();
-            caches.put(player.toString() + ":" + stat, playerStat);
-            return playerStat.getValue();
-        }
-    }
+            case DIMENSION:
+                list = gameServiceManager.getDimmensionLeaderBoard(category);
+            case HEROBATTLE:
+                list = gameServiceManager.getHeroBattleLeaderBoard(category);
+                break;
+            case JUKEBOX:
+                list = gameServiceManager.getJukeBoxLeaderBoard(category);
+                break;
+            case QUAKE:
+                list = gameServiceManager.getQuakeLeaderBoard(category);
+                break;
+            case UHCRUN:
+                list = gameServiceManager.getUhcLeaderBoard(category);
+                break;
+            case UPPERVOID:
+                list = gameServiceManager.getUpperVoidLeaderBoard(category);
+                break;
+            default:
+                list = new ArrayList<>();
+                break;
+        }**/
 
-    public double getRankValue(UUID player, String stat)
-    {
-        if (caches.containsKey(player.toString() + ":" + stat))
-            return caches.get(player.toString() + ":" + stat).getRank();
-        else
-        {
-            PlayerStat playerStat = new PlayerStat(player, game, stat);
-            playerStat.fill();
-            caches.put(player.toString() + ":" + stat, playerStat);
-            return playerStat.getRank();
-        }
-    }
+        //TODO fill leaderboard
 
-    @Override
-    public Leaderboard getLeaderboard(String stat)
-    {
-        Object response = RestAPI.getInstance().sendRequest("statistics/leaderboard", new Request().addProperty("category", game).addProperty("key", stat), new TypeToken<List<LeaderboradElement>>() {}.getType(), "POST");
+        /*Object response = RestAPI.getInstance().sendRequest("statistics/leaderboard", new Request().addProperty("category", game).addProperty("key", stat), new TypeToken<List<LeaderboradElement>>() {}.getType(), "POST");
 
         if (response instanceof List && ((List) response).size() == 3)
         {
             List<LeaderboradElement> responseList = (List<LeaderboradElement>) response;
-            return new Leaderboard(new PlayerStat(game, stat).readResponse(responseList.get(0)), new PlayerStat(game, stat).readResponse(responseList.get(1)), new PlayerStat(game, stat).readResponse(responseList.get(2)));
+            return new Leaderboard(new PlayerStats(game, stat).readResponse(responseList.get(0)), new PlayerStats(game, stat).readResponse(responseList.get(1)), new PlayerStats(game, stat).readResponse(responseList.get(2)));
         }
         else if (response instanceof ErrorResponse)
-            logger.warning(String.format("Error during recuperation of leaderboard for category %s and key %s (response: %s)", game, stat, response.toString()));
+            logger.warning(String.format("Error during recuperation of leaderboard for category %s and key %s (response: %s)", game, stat, response.toString()));*/
         return null;
     }
 
@@ -111,5 +117,10 @@ public class StatsManager implements IStatsManager
     public void clearCache()
     {
         this.caches.clear();
+    }
+
+    @Override
+    public PlayerStats getPlayerStats(UUID player) {
+        return caches.get(player);
     }
 }

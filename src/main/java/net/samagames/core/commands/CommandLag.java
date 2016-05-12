@@ -1,11 +1,11 @@
 package net.samagames.core.commands;
 
-import net.minecraft.server.v1_8_R3.MinecraftServer;
+import net.minecraft.server.v1_9_R1.MinecraftServer;
 import net.samagames.core.APIPlugin;
 import net.samagames.tools.chat.ChatUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.text.SimpleDateFormat;
@@ -57,7 +57,7 @@ public class CommandLag extends AbstractCommand
         player.sendMessage(ChatColor.YELLOW + "Date : " + ChatColor.GRAY + this.dateFormat.format(new Date()));
         player.sendMessage(ChatColor.YELLOW + "Serveur : " + ChatColor.GRAY + APIPlugin.getInstance().getServerName().replace("_", " "));
 		player.sendMessage("");
-		player.sendMessage(ChatColor.YELLOW + "Latence : " + this.formatLag(latency) + ChatColor.GRAY + "ms");
+		player.sendMessage(ChatColor.YELLOW + "Latence : " + (latency < 0 ? ChatColor.RED + "Erreur" : this.formatLag(latency) + ChatColor.GRAY + "ms"));
 		player.sendMessage(ChatColor.YELLOW + "Charge serveur : " + ChatColor.GRAY + tps.toString());
         player.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
 

@@ -2,42 +2,28 @@ package net.samagames.core;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import net.samagames.api.permissions.rawtypes.ICacheHandler;
+import net.samagames.core.api.hydroangeas.HydroangeasManager;
 import net.samagames.core.database.DatabaseConnector;
 import net.samagames.core.database.RedisServer;
-import net.samagames.core.hook.RestCacheLoader;
-import net.samagames.core.listeners.*;
-import net.samagames.core.rest.RestListener;
-import net.samagames.restfull.RestAPI;
-import net.samagames.tools.Reflection;
-import net.samagames.tools.npc.NPCManager;
+import net.samagames.core.listeners.general.*;
+import net.samagames.core.listeners.pluginmessages.PluginMessageListener;
+import net.samagames.core.utils.CommandBlocker;
+import net.samagames.persistanceapi.GameServiceManager;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.world.ChunkUnloadEvent;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.util.permissions.DefaultPermissions;
 import redis.clients.jedis.Jedis;
-import sun.misc.GC;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
@@ -61,18 +47,25 @@ public class APIPlugin extends JavaPlugin implements Listener
     private String serverName;
     private FileConfiguration configuration;
     private boolean allowJoin;
+    private boolean disableWhitelist;
     private final String denyJoinReason = ChatColor.RED + "Serveur non initialisé.";
     private boolean serverRegistered;
     private String joinPermission = null;
     private ScheduledExecutorService executor;
     private DebugListener debugListener;
-    private ICacheHandler cacheHandler;
 
     private NicknamePacketListener nicknamePacketListener;
-    private NPCManager npcManager;
+
+    private CompletionPacketListener completionPacketListener;
+
     private BukkitTask startTimer;
 
     private ChatHandleListener chatHandleListener;
+    private GlobalJoinListener globalJoinListener;
+
+    private GameServiceManager gameServiceManager;
+
+    private HydroangeasManager hydroangeasManager;
 
 
     public static APIPlugin getInstance()
@@ -93,13 +86,6 @@ public class APIPlugin extends JavaPlugin implements Listener
     public ApiImplementation getAPI()
     {
         return api;
-    }
-
-    private void removeCommand(String str) throws NoSuchFieldException, IllegalAccessException
-    {
-        SimpleCommandMap scm = ((CraftServer)Bukkit.getServer()).getCommandMap();
-        Map knownCommands = (Map) Reflection.getValue(scm, true, "knownCommands");
-        knownCommands.remove(str);
     }
 
     public void onEnable()
@@ -131,6 +117,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         }
 
         joinPermission = getConfig().getString("join-permission");
+        disableWhitelist = getConfig().getBoolean("disable-whitelist", false);
 
         File conf = new File(getDataFolder().getAbsoluteFile().getParentFile().getParentFile(), "data.yml");
         this.getLogger().info("Searching data.yml in " + conf.getAbsolutePath());
@@ -148,74 +135,48 @@ public class APIPlugin extends JavaPlugin implements Listener
             int bungeePort = dataYML.getInt("redis-bungee-port", 4242);
             String bungeePassword = dataYML.getString("redis-bungee-password", "passw0rd");
             RedisServer bungee = new RedisServer(bungeeIp, bungeePort, bungeePassword);
-            String restIP = dataYML.getString("restfull-ip", "127.0.0.1");
-            int restPort = dataYML.getInt("restfull-port", 80);
-            String restUser = dataYML.getString("restfull-user", "test");
-            String restPass = dataYML.getString("restfull-pass", "test");
-            RestAPI.getInstance().setup("http://" + restIP + ":" + restPort + "/", restUser, restPass);
+
+            String sqlUrl = dataYML.getString("sql-url", "127.0.0.1");
+            String sqlUsername = dataYML.getString("sql-user", "root");
+            String sqlPassword = dataYML.getString("sql-pass", "passw0rd");
+            int sqlMinPoolSize = dataYML.getInt("sql-minpoolsize", 1);
+            int sqlMaxPoolSize = dataYML.getInt("sql-maxpoolsize", 10);
+
+            gameServiceManager = new GameServiceManager(sqlUrl, sqlUsername, sqlPassword, sqlMinPoolSize, sqlMaxPoolSize);
+
             databaseConnector = new DatabaseConnector(this, bungee);
-            this.cacheHandler = new ICacheHandler()
-            {
-                @Override
-                public void set(String key, String value) throws IOException
-                {
-                    Jedis jedis = databaseConnector.getBungeeResource();
-                    jedis.set(key, value);
-                    jedis.expire(key, 86400); // Expire every 24h
-                    jedis.close();
-                }
-
-                @Override
-                public String get(String key) throws IOException
-                {
-                    Jedis jedis = databaseConnector.getBungeeResource();
-                    String result = jedis.get(key);
-                    jedis.close();
-                    return result;
-                }
-
-                @Override
-                public boolean exist(String key) throws IOException
-                {
-                    Jedis jedis = databaseConnector.getBungeeResource();
-                    boolean result = jedis.exists(key);
-                    jedis.close();
-                    return result;
-                }
-            };
 
         }
 
+        hydroangeasManager = new HydroangeasManager(this);
+
         api = new ApiImplementation(this);
-		/*
+        /*
         Loading listeners
 		 */
 
         chatHandleListener = new ChatHandleListener(this);
-
-        debugListener = new DebugListener();
-        api.getJoinManager().registerHandler(debugListener, 0);
-
-        // Web
-        getServer().getPluginManager().registerEvents(new RestListener(this), this);
-        //api.getJoinManager().registerHandler(new RestListener(this), 1000);
-
-        //Invisible fix
-        api.getPlugin().getServer().getPluginManager().registerEvents(new InvisiblePlayerFixListener(this), this);
-
-        api.getPubSub().subscribe("*", debugListener);
-        //Nickname
-
         //Mute
         api.getPubSub().subscribe("mute.add", chatHandleListener);
         api.getPubSub().subscribe("mute.remove", chatHandleListener);
 
-        nicknamePacketListener = new NicknamePacketListener(this);
-        npcManager = new NPCManager(api);
-
-        Bukkit.getPluginManager().registerEvents(new PlayerDataListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new ChatFormatter(this), this);
         Bukkit.getPluginManager().registerEvents(chatHandleListener, this);
+
+        globalJoinListener = new GlobalJoinListener(api);
+        Bukkit.getPluginManager().registerEvents(globalJoinListener, this);
+
+        debugListener = new DebugListener();
+        api.getJoinManager().registerHandler(debugListener, 0);
+
+        //Invisible fix
+        getServer().getPluginManager().registerEvents(new InvisiblePlayerFixListener(this), this);
+
+        api.getPubSub().subscribe("*", debugListener);
+        //Nickname
+        //TODO nickname
+        nicknamePacketListener = new NicknamePacketListener(this);
+        completionPacketListener = new CompletionPacketListener(this);
+
         Bukkit.getPluginManager().registerEvents(new TabsColorsListener(this), this);
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "WDL|CONTROL");
         Bukkit.getMessenger().registerIncomingPluginChannel(this, "WDL|INIT", (s, player, bytes) -> {
@@ -230,9 +191,11 @@ public class APIPlugin extends JavaPlugin implements Listener
             Bukkit.getLogger().info("Blocked WorldDownloader of " + player.getDisplayName());
             player.sendPluginMessage(this, "WDL|CONTROL", out.toByteArray());
         });
-        RestCacheLoader.hook();
 
-		/*
+        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "Network");
+        this.getServer().getMessenger().registerIncomingPluginChannel(this, "Network", new PluginMessageListener(api));
+
+        /*
         Loading commands
 		 */
 
@@ -273,24 +236,10 @@ public class APIPlugin extends JavaPlugin implements Listener
     private void postInit()
     {
         this.startTimer.cancel();
-        
-        try
-        {
-            log("Removing private commands...");
-            removeCommand("me");
-            removeCommand("minecraft:me");
-            removeCommand("tell");
-            removeCommand("minecraft:tell");
-            removeCommand("bukkit:help");
-            removeCommand("pl");
-            removeCommand("plugins");
-            log("Removed private commands.");
-        }
-        catch (ReflectiveOperationException e)
-        {
-            log("Patching error");
-            e.printStackTrace();
-        }
+
+        log("Removing private commands...");
+        CommandBlocker.removeCommands();
+        log("Removed private commands.");
     }
 
     public void onDisable()
@@ -301,9 +250,15 @@ public class APIPlugin extends JavaPlugin implements Listener
         rb_jedis.close();
         api.getPubSub().send("servers", "stop " + bungeename);
         nicknamePacketListener.close();
-        databaseConnector.killConnection();
-        executor.shutdownNow();
+        completionPacketListener.close();
+        executor.shutdown();
+        try {
+            executor.awaitTermination(30, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         api.onShutdown();
+        databaseConnector.killConnection();
         getServer().shutdown();
     }
 
@@ -374,7 +329,7 @@ public class APIPlugin extends JavaPlugin implements Listener
     }
 
 
-	/*
+    /*
     Listen for join
 	 */
 
@@ -403,17 +358,26 @@ public class APIPlugin extends JavaPlugin implements Listener
         }
     }
 
+    public GlobalJoinListener getGlobalJoinListener()
+    {
+        return globalJoinListener;
+    }
+
+    public boolean isHub()
+    {
+        return getServerName().startsWith("Hub");
+    }
+
     public DatabaseConnector getDatabaseConnector()
     {
         return databaseConnector;
     }
 
-    public ICacheHandler getCacheHandler()
-    {
-        return cacheHandler;
+    public GameServiceManager getGameServiceManager() {
+        return gameServiceManager;
     }
 
-    public NPCManager getNPCManager() {
-        return npcManager;
+    public HydroangeasManager getHydroangeasManager() {
+        return hydroangeasManager;
     }
 }

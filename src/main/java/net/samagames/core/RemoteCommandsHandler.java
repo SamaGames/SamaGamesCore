@@ -6,16 +6,22 @@ import org.bukkit.Bukkit;
 /**
  * This file is a part of the SamaGames project
  * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
+ * (C) Copyright Elydra Network 2016 & 2017
  * All rights reserved.
  */
 class RemoteCommandsHandler implements IPacketsReceiver
 {
+    private APIPlugin plugin;
+
+    public RemoteCommandsHandler(APIPlugin plugin)
+    {
+        this.plugin = plugin;
+    }
+
     @Override
     public void receive(String channel, String command)
     {
         Bukkit.getLogger().info("Executing command remotely : " + command);
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+        Bukkit.getScheduler().runTask(plugin, () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command));
     }
 }

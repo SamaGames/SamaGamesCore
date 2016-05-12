@@ -26,7 +26,7 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver
     public ModerationJoinHandler(ApiImplementation api)
     {
         this.api = api;
-        manager = (JoinManagerImplement) api.getJoinManager();
+        manager = api.getJoinManager();
     }
 
     @Override
@@ -78,7 +78,7 @@ public class ModerationJoinHandler implements IJoinHandler, IPacketsReceiver
             }
 
             //On attend un peu avant de tp
-            api.getPlugin().getExecutor().schedule(() -> api.getProxyDataManager().getProxiedPlayer(uuid).connect(SamaGamesAPI.get().getServerName()), 50, TimeUnit.MILLISECONDS);
+            api.getPlugin().getExecutor().schedule(() -> api.getPlayerManager().connectToServer(uuid, SamaGamesAPI.get().getServerName()), 50, TimeUnit.MILLISECONDS);
         }
     }
 }

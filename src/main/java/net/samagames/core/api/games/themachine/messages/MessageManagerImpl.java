@@ -1,12 +1,16 @@
 package net.samagames.core.api.games.themachine.messages;
 
+import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.games.themachine.ICoherenceMachine;
 import net.samagames.api.games.themachine.messages.IMessageManager;
 import net.samagames.api.games.themachine.messages.Message;
+import net.samagames.api.permissions.IPermissionsEntity;
+import net.samagames.api.player.AbstractPlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class MessageManagerImpl implements IMessageManager
@@ -30,7 +34,7 @@ public class MessageManagerImpl implements IMessageManager
     @Override
     public Message writePlayerJoinToAll(Player player)
     {
-        return new Message(String.valueOf(ChatColor.YELLOW) + player.getName() + " a rejoint la partie ! " + ChatColor.DARK_GRAY + "[" + ChatColor.RED + this.machine.getGame().getConnectedPlayers() + ChatColor.DARK_GRAY + "/" + ChatColor.RED + this.machine.getGameProperties().getMaxSlots() + ChatColor.DARK_GRAY + "]", this.machine.getGameTag()).displayToAll();
+        return new Message(String.valueOf(ChatColor.YELLOW) + this.getName(player.getUniqueId()) + " a rejoint la partie ! " + ChatColor.DARK_GRAY + "[" + ChatColor.RED + this.machine.getGame().getConnectedPlayers() + ChatColor.DARK_GRAY + "/" + ChatColor.RED + this.machine.getGameProperties().getMaxSlots() + ChatColor.DARK_GRAY + "]", this.machine.getGameTag()).displayToAll();
     }
 
     @Override
@@ -60,25 +64,30 @@ public class MessageManagerImpl implements IMessageManager
     @Override
     public Message writePlayerQuited(Player player)
     {
-        return new Message(ChatColor.WHITE + player.getName() + " s'est déconnecté du jeu.", this.machine.getGameTag()).displayToAll();
+        return new Message(ChatColor.WHITE + this.getName(player.getUniqueId()) + " s'est déconnecté du jeu.", this.machine.getGameTag()).displayToAll();
     }
 
     @Override
     public Message writePlayerDisconnected(Player player, int remainingTime)
     {
-        return new Message(ChatColor.RED + player.getName() + " s'est déconnecté ! Il a " + formatTime(remainingTime) + " pour revenir.", this.machine.getGameTag()).displayToAll();
+        return new Message(ChatColor.RED + this.getName(player.getUniqueId()) + " s'est déconnecté ! Il a " + formatTime(remainingTime) + " pour revenir.", this.machine.getGameTag()).displayToAll();
     }
 
     @Override
     public Message writePlayerReconnected(Player player)
     {
-        return new Message(ChatColor.GREEN + player.getName() + " s'est reconnecté !", this.machine.getGameTag()).displayToAll();
+        return new Message(ChatColor.GREEN + this.getName(player.getUniqueId()) + " s'est reconnecté !", this.machine.getGameTag()).displayToAll();
     }
 
     @Override
     public Message writePlayerReconnectTimeOut(OfflinePlayer player)
     {
-        return new Message(ChatColor.RED + player.getName() + " ne s'est pas reconnecté à temps !");
+        return new Message(ChatColor.RED + this.getName(player.getUniqueId()) + " ne s'est pas reconnecté à temps !");
+    }
+
+    private String getName(UUID player)
+    {
+        return SamaGamesAPI.get().getPlayerManager().getPlayerData(player).getDisplayName();
     }
 
     private String formatTime(long time)

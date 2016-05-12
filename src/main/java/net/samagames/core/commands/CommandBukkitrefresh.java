@@ -1,7 +1,7 @@
 package net.samagames.core.commands;
 
 import net.samagames.core.APIPlugin;
-import net.samagames.api.permissions.PermissionsAPI;
+import net.samagames.core.api.permissions.PermissionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -9,18 +9,17 @@ import org.bukkit.command.CommandSender;
 /**
  * This file is a part of the SamaGames project
  * This code is absolutely confidential.
- * Created by Thog
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
 public class CommandBukkitrefresh extends AbstractCommand {
 
-    private final PermissionsAPI api;
+    private final PermissionManager api;
 
     public CommandBukkitrefresh(APIPlugin plugin) {
         super(plugin);
 
-        api = plugin.getAPI().getPermissionsManager().getApi();
+        api = plugin.getAPI().getPermissionsManager();
     }
 
     @Override
@@ -29,7 +28,7 @@ public class CommandBukkitrefresh extends AbstractCommand {
             return true;
 
         Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
-            api.getManager().refresh();
+            Bukkit.getOnlinePlayers().forEach(api::refreshPlayer);
             commandSender.sendMessage(ChatColor.GREEN + "Les permissions locales ont été raffraichies !");
         });
         return true;

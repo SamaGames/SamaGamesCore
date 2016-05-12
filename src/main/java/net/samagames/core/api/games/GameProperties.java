@@ -13,6 +13,7 @@ import java.util.logging.Level;
 
 class GameProperties implements IGameProperties
 {
+    private String templateID;
     private String mapName;
     private JsonObject options;
     private JsonObject mapProperties;
@@ -37,7 +38,7 @@ class GameProperties implements IGameProperties
             }
 
             JsonObject rootJson = new JsonParser().parse(new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8"))).getAsJsonObject();
-
+            templateID = rootJson.get("template-id").getAsString();
             mapName = rootJson.get("map-name").getAsString();
             minSlots = rootJson.get("min-slots").getAsInt();
             maxSlots = rootJson.get("max-slots").getAsInt();
@@ -102,5 +103,9 @@ class GameProperties implements IGameProperties
     public JsonObject getConfigs()
     {
         return mapProperties;
+    }
+
+    public String getTemplateID() {
+        return templateID;
     }
 }
