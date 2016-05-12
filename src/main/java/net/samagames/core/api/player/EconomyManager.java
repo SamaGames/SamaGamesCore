@@ -1,112 +1,84 @@
 package net.samagames.core.api.player;
 
-import com.google.gson.reflect.TypeToken;
 import net.md_5.bungee.api.ChatColor;
-import net.samagames.api.permissions.permissions.PermissionUser;
 import net.samagames.core.ApiImplementation;
-import net.samagames.restfull.RestAPI;
-import net.samagames.restfull.request.Request;
-import net.samagames.restfull.response.elements.PromotionResponseElement;
-import org.bukkit.Bukkit;
+import net.samagames.persistanceapi.beans.shop.PromotionsBean;
+import org.bukkit.scheduler.BukkitTask;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * This file is a part of the SamaGames Project CodeBase
  * This code is absolutely confidential.
- * Created by Thog
- * (C) Copyright Elydra Network 2014 & 2015
+ * Created by Silvanosky
+ * (C) Copyright Elydra Network 2016 & 2017
  * All rights reserved.
  */
 public class EconomyManager
 {
     private final ApiImplementation api;
-    private Map<String, Multiplier> starsMultiplier;
-    private Map<String, Multiplier> coinsMultiplier;
+    private List<PromotionsBean> promotions;
+
+    private final BukkitTask discountTask;
 
     public EconomyManager(ApiImplementation api)
     {
         this.api = api;
-        this.coinsMultiplier = new HashMap<>();
-        this.starsMultiplier = new HashMap<>();
+        this.promotions = new ArrayList<>();
+
+        // Run task every 30 minutes
+        discountTask = api.getPlugin().getServer().getScheduler().runTaskTimerAsynchronously(this.api.getPlugin(), this::reload, 0L, 36000L);
     }
 
     public void reload()
     {
-        this.internalGenericReload("coins", coinsMultiplier);
-        this.internalGenericReload("stars", starsMultiplier);
+        promotions.clear();
+        try {
+            promotions.addAll(api.getGameServiceManager().getAllActivePromotions());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    private final void internalGenericReload(String type, Map<String, Multiplier> data)
+    public Multiplier getCurrentMultiplier(UUID player, int type, int game)
     {
-        Object result = RestAPI.getInstance().sendRequest("promotion/" + type, new Request(), new TypeToken<List<PromotionResponseElement>>() {}.getType(), "POST");
-        if (!(result instanceof List))
-        {
-            Bukkit.getLogger().warning("Error during " + type + " discount reload (" + result + ")");
-            return;
+        long currentTime = System.currentTimeMillis();
+
+        //TODO cache and get promotions
+        PlayerData user = api.getPlayerManager().getPlayerData(player);
+        int groupMultiplier = 0;
+        try {
+            groupMultiplier = api.getGameServiceManager().getGroupPlayer(user.getPlayerBean()).getMultiplier();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        Map<String, Multiplier> newData = new HashMap<>();
-        List<PromotionResponseElement> rawData = (List<PromotionResponseElement>) result;
-        for (PromotionResponseElement element : rawData)
+        Multiplier result = new Multiplier(groupMultiplier, 0);
+        for (PromotionsBean promotion : promotions)
         {
-            // Security if something is break in the API
-            if (element.getEnd() == null)
-                continue;
-
-            Multiplier multiplier = new Multiplier(element.getMultiplier(), element.getEnd().getTime(), element.getMessage());
-
-            // Security if something is break in the API
-            if (element.getType() != type || !multiplier.isValid())
-                continue;
-            if (newData.containsKey(element.getGame()))
+            if (promotion.getTypePromotion() == 0 || promotion.getTypePromotion() == type) //Check type (global coins or stars)
             {
-                Bukkit.getLogger().warning("Duplicate entry for game " + element.getGame() + ", type " + element.getType() + "! Ignore it...");
-                continue;
+                if (promotion.getGame() == game //Check Game number
+                    && promotion.getStartDate().getTime() < currentTime
+                    && promotion.getEndDate().getTime() > currentTime)
+                {
+                    Multiplier multiplier = new Multiplier(promotion.getMultiplier(),
+                            promotion.getEndDate().getTime(),
+                            promotion.getMessage());
+
+                    result.cross(multiplier);
+                }
             }
-            newData.put(element.getGame() != null ? element.getGame() : "global", multiplier);
         }
 
-        data.clear();
-        data.putAll(newData);
+        return result;
     }
 
-    public Multiplier getCurrentMultiplier(UUID player, String type, String game)
-    {
-        PermissionUser user = api.getPermissionsManager().getApi().getUser(player);
-        int groupMultiplier = (user != null && user.getParents().first().getProperty("multiplier") != null) ? Integer.parseInt(user.getProperty("multiplier")) : 1;
-        Multiplier result = new Multiplier(1, 0);
-        Map<String, Multiplier> data = null;
-        switch (type)
-        {
-            case "coins":
-                data = coinsMultiplier;
-                break;
-            case "stars":
-                data = starsMultiplier;
-                break;
-            default:
-                break;
-        }
-
-        if (data != null && !data.isEmpty())
-        {
-            Multiplier globalDiscount = data.get("global");
-            Multiplier gameDiscount = data.get(game);
-
-            if (globalDiscount != null && globalDiscount.isValid())
-                result = result.cross(globalDiscount);
-            if (gameDiscount != null && gameDiscount.isValid())
-                result = result.cross(gameDiscount);
-        }
-
-        return result.cross(groupMultiplier);
-    }
-
-    public String getCreditMessage(long amount, String type, String reason, Multiplier multiplier)
+    public String getCreditMessage(long amount, int type, String reason, Multiplier multiplier)
     {
         StringBuilder builder = new StringBuilder();
-        builder.append(type.equals("coins") ? ChatColor.GOLD + "+" + amount + " pièces (" + reason + ")" : ChatColor.AQUA + "+" + amount + " étoiles (" + reason + ")");
+        builder.append(type == 1 ? ChatColor.GOLD + "+" + amount + " pièces (" + reason + ")" : ChatColor.AQUA + "+" + amount + " étoiles (" + reason + ")");
 
         if (multiplier != null)
         {
@@ -127,5 +99,10 @@ public class EconomyManager
         }
 
         return builder.toString();
+    }
+
+    public void onShutdown()
+    {
+        discountTask.cancel();
     }
 }

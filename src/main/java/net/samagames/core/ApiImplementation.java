@@ -2,74 +2,59 @@ package net.samagames.core;
 
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.achievements.IAchievementManager;
-import net.samagames.api.friends.IFriendsManager;
-import net.samagames.api.games.IGameManager;
 import net.samagames.api.gui.IGuiManager;
 import net.samagames.api.names.IUUIDTranslator;
-import net.samagames.api.network.IJoinManager;
-import net.samagames.api.network.IProxyDataManager;
-import net.samagames.api.options.ServerOptions;
-import net.samagames.api.parties.IPartiesManager;
-import net.samagames.api.permissions.IPermissionsManager;
-import net.samagames.api.player.IPlayerDataManager;
 import net.samagames.api.pubsub.IPubSubAPI;
-import net.samagames.api.resourcepacks.IResourcePacksManager;
-import net.samagames.api.settings.ISettingsManager;
-import net.samagames.api.shops.AbstractShopsManager;
-import net.samagames.api.stats.IStatsManager;
-import net.samagames.core.api.friends.FriendsManagement;
-import net.samagames.core.api.games.GameManagerImpl;
+import net.samagames.core.api.friends.FriendsManager;
+import net.samagames.core.api.games.GameManager;
 import net.samagames.core.api.gui.GuiManager;
+import net.samagames.core.api.hydroangeas.HydroangeasManager;
 import net.samagames.core.api.names.UUIDTranslator;
-import net.samagames.core.api.network.*;
-import net.samagames.core.api.options.IServerOptions;
+import net.samagames.core.api.network.JoinManagerImplement;
+import net.samagames.core.api.network.ModerationJoinHandler;
+import net.samagames.core.api.network.PartiesPubSub;
+import net.samagames.core.api.network.RegularJoinHandler;
+import net.samagames.core.api.options.ServerOptions;
 import net.samagames.core.api.parties.PartiesManager;
-import net.samagames.core.api.permissions.BasicPermissionManager;
-import net.samagames.core.api.permissions.PermissionsManager;
+import net.samagames.core.api.permissions.PermissionManager;
 import net.samagames.core.api.player.PlayerDataManager;
 import net.samagames.core.api.pubsub.PubSubAPI;
 import net.samagames.core.api.resourcepacks.ResourcePacksManagerImpl;
 import net.samagames.core.api.settings.SettingsManager;
 import net.samagames.core.api.shops.ShopsManager;
 import net.samagames.core.api.stats.StatsManager;
-import net.samagames.core.listeners.GlobalChannelHandler;
-import net.samagames.core.rest.AchievementManagerRest;
-import net.samagames.tools.BarAPI.BarAPI;
+import net.samagames.core.listeners.pubsub.GlobalUpdateListener;
+import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.tools.SkyFactory;
 import net.samagames.tools.npc.NPCManager;
-import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
-
-import java.util.HashMap;
 
 /**
  * This file is a part of the SamaGames project
  * This code is absolutely confidential.
- * Created by zyuiop
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
 public class ApiImplementation extends SamaGamesAPI
 {
     private final APIPlugin plugin;
-    private final IGuiManager guiManager;
-    private final ISettingsManager settingsManager;
+    private final GuiManager guiManager;
+    private final SettingsManager settingsManager;
     private final PlayerDataManager playerDataManager;
-    private final IAchievementManager achievementManager;
     private final PubSubAPI pubSub;
-    private final IUUIDTranslator uuidTranslator;
-    private final IJoinManager joinManager;
-    private final IProxyDataManager proxyDataManager;
-    private final IPartiesManager partiesManager;
-    private final IResourcePacksManager resourcePacksManager;
-    private final BasicPermissionManager permissionsManager;
-    private final IFriendsManager friendsManager;
-    private final BarAPI barAPI;
+    private final UUIDTranslator uuidTranslator;
+    private final JoinManagerImplement joinManager;
+    private final PartiesManager partiesManager;
+    private final ResourcePacksManagerImpl resourcePacksManager;
+    private final PermissionManager permissionsManager;
+    private final FriendsManager friendsManager;
     private final SkyFactory skyFactory;
-    private final HashMap<String, StatsManager> statsManagerCache;
-    private IGameManager gameApi;
+    private final StatsManager statsManager;
+    private final ShopsManager shopsManager;
+    private final NPCManager npcManager;
+    private GameManager gameManager;
 
-    private final IServerOptions serverOptions;
+    private final ServerOptions serverOptions;
 
     public ApiImplementation(APIPlugin plugin)
     {
@@ -77,46 +62,46 @@ public class ApiImplementation extends SamaGamesAPI
 
         this.plugin = plugin;
 
-        serverOptions = new IServerOptions();
+        this.pubSub = new PubSubAPI();
+        this.pubSub.init(this);
+        //TODO redo
+        GlobalUpdateListener listener = new GlobalUpdateListener(plugin);
+        this.pubSub.subscribe("groupchange", listener);
+        this.pubSub.subscribe("global", listener);
+        this.pubSub.subscribe("networkEvent_WillQuit", listener);
+        this.pubSub.subscribe(plugin.getServerName(), listener);
+        this.pubSub.subscribe("commands.servers." + getServerName(), new RemoteCommandsHandler(plugin));
+        this.pubSub.subscribe("commands.servers.all", new RemoteCommandsHandler(plugin));
 
-        this.statsManagerCache = new HashMap<>();
+        this.serverOptions = new ServerOptions();
 
-        JoinManagerImplement implement = new JoinManagerImplement();
-        Bukkit.getServer().getPluginManager().registerEvents(implement, plugin);
+        npcManager = new NPCManager(this);
+
+        this.statsManager = new StatsManager(this);
+
+        JoinManagerImplement implement = new JoinManagerImplement(this);
         this.joinManager = implement;
 
-        barAPI = new BarAPI(plugin);
         skyFactory = new SkyFactory(plugin);
 
         guiManager = new GuiManager(plugin);
 
         resourcePacksManager = new ResourcePacksManagerImpl(this);
-        settingsManager = new SettingsManager();
+        settingsManager = new SettingsManager(this);
         playerDataManager = new PlayerDataManager(this);
-        achievementManager = new AchievementManagerRest(this);
-
-        pubSub = new PubSubAPI();
-        pubSub.init(this);
-        pubSub.subscribe("global", new GlobalChannelHandler(plugin));
-        pubSub.subscribe(plugin.getServerName(), new GlobalChannelHandler(plugin));
-        pubSub.subscribe("commands.servers." + getServerName(), new RemoteCommandsHandler());
-        pubSub.subscribe("commands.servers.all", new RemoteCommandsHandler());
 
         ModerationJoinHandler moderationJoinHandler = new ModerationJoinHandler(this);
         implement.registerHandler(moderationJoinHandler, -1);
 
         pubSub.subscribe(plugin.getServerName(), moderationJoinHandler);
-        pubSub.subscribe("partyjoin." + getServerName(), new PartiesPubSub(implement));
+        pubSub.subscribe("partyjoin." + getServerName(), new PartiesPubSub(this, implement));
         pubSub.subscribe("join." + getServerName(), new RegularJoinHandler(implement));
 
         uuidTranslator = new UUIDTranslator(plugin, this);
-        proxyDataManager = new ProxyDataManagerImpl(this);
         partiesManager = new PartiesManager(this);
-        permissionsManager = new PermissionsManager(plugin);
-        friendsManager = new FriendsManagement(this);
-
-        // Init Group change listener
-        pubSub.subscribe("groupchange", new GroupChangeHandler(permissionsManager));
+        permissionsManager = new PermissionManager(plugin);
+        friendsManager = new FriendsManager(this);
+        this.shopsManager = new ShopsManager(this);
     }
 
     public void onShutdown()
@@ -125,14 +110,15 @@ public class ApiImplementation extends SamaGamesAPI
     }
 
     @Override
-    public IPermissionsManager getPermissionsManager()
+    public PermissionManager getPermissionsManager()
     {
         return permissionsManager;
     }
 
     @Override
-    public NPCManager getNPCManager() {
-        return plugin.getNPCManager();
+    public NPCManager getNPCManager()
+    {
+        return npcManager;
     }
 
     @Override
@@ -141,42 +127,33 @@ public class ApiImplementation extends SamaGamesAPI
     }
 
     @Override
-    public IResourcePacksManager getResourcePacksManager()
+    public ResourcePacksManagerImpl getResourcePacksManager()
     {
         return resourcePacksManager;
     }
 
     @Override
-    public IFriendsManager getFriendsManager()
+    public FriendsManager getFriendsManager()
     {
         return friendsManager;
     }
 
+    @Override
     public APIPlugin getPlugin()
     {
         return plugin;
     }
 
-    public IProxyDataManager getProxyDataManager()
+    @Override
+    public GameManager getGameManager()
     {
-        return proxyDataManager;
-    }
-
-    public IGameManager getGameManager()
-    {
-        return (gameApi == null) ? (this.gameApi = new GameManagerImpl(this)) : this.gameApi;
+        return (gameManager == null) ? (this.gameManager = new GameManager(this)) : this.gameManager;
     }
 
     @Override
-    public IPartiesManager getPartiesManager()
+    public PartiesManager getPartiesManager()
     {
         return partiesManager;
-    }
-
-    @Override
-    public BarAPI getBarAPI()
-    {
-        return barAPI;
     }
 
     @Override
@@ -186,25 +163,21 @@ public class ApiImplementation extends SamaGamesAPI
     }
 
     @Override
-    public IJoinManager getJoinManager()
+    public JoinManagerImplement getJoinManager()
     {
         return joinManager;
     }
 
-    public IStatsManager getStatsManager(String game)
+    @Override
+    public StatsManager getStatsManager()
     {
-        if (this.statsManagerCache.containsKey(game))
-            return statsManagerCache.get(game);
-
-        StatsManager statsManager = new StatsManager(game, this);
-        statsManagerCache.put(game, statsManager);
         return statsManager;
     }
 
     @Override
-    public AbstractShopsManager getShopsManager(String game)
+    public ShopsManager getShopsManager()
     {
-        return new ShopsManager(game, this);
+        return this.shopsManager;
     }
 
     @Override
@@ -214,13 +187,13 @@ public class ApiImplementation extends SamaGamesAPI
     }
 
     @Override
-    public ISettingsManager getSettingsManager()
+    public SettingsManager getSettingsManager()
     {
         return settingsManager;
     }
 
     @Override
-    public IPlayerDataManager getPlayerManager()
+    public PlayerDataManager getPlayerManager()
     {
         return playerDataManager;
     }
@@ -228,7 +201,7 @@ public class ApiImplementation extends SamaGamesAPI
     @Override
     public IAchievementManager getAchievementManager()
     {
-        return achievementManager;
+        return null;
     }
 
     public IPubSubAPI getPubSub()
@@ -245,6 +218,16 @@ public class ApiImplementation extends SamaGamesAPI
     public Jedis getBungeeResource()
     {
         return plugin.getDatabaseConnector().getBungeeResource();
+    }
+
+    public GameServiceManager getGameServiceManager()
+    {
+        return plugin.getGameServiceManager();
+    }
+
+    public HydroangeasManager getHydroangeasManager()
+    {
+        return plugin.getHydroangeasManager();
     }
 
     @Override

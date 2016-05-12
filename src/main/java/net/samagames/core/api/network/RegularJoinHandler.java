@@ -11,8 +11,8 @@ import java.util.UUID;
 /**
  * This file is a part of the SamaGames project
  * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
+ *
+ * (C) Copyright Elydra Network 2016
  * All rights reserved.
  */
 public class RegularJoinHandler implements IPacketsReceiver
@@ -29,15 +29,15 @@ public class RegularJoinHandler implements IPacketsReceiver
     public void receive(String channel, String packet)
     {
         UUID player = UUID.fromString(packet);
-        JoinResponse response = manager.requestJoin(player);
+        JoinResponse response = manager.requestJoin(player, false);
         if (!response.isAllowed())
         {
             TextComponent component = new TextComponent(response.getReason());
             component.setColor(ChatColor.RED);
-            SamaGamesAPI.get().getProxyDataManager().getProxiedPlayer(player).sendMessage(component);
+            SamaGamesAPI.get().getPlayerManager().sendMessage(player, component);
         } else
         {
-            SamaGamesAPI.get().getProxyDataManager().getProxiedPlayer(player).connect(SamaGamesAPI.get().getServerName());
+            SamaGamesAPI.get().getPlayerManager().connectToServer(player, SamaGamesAPI.get().getServerName());
             SamaGamesAPI.get().getGameManager().refreshArena();
         }
     }

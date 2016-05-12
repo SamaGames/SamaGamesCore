@@ -1,10 +1,11 @@
 package net.samagames.core.api.player;
 
-import net.samagames.api.player.AbstractPlayerData;
+import com.google.gson.Gson;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.player.IPlayerDataManager;
 import net.samagames.core.ApiImplementation;
-import net.samagames.core.rest.RestPlayerData;
-import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.Bukkit;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,24 +13,22 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * This file is a part of the SamaGames project
  * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
+ * Created by Silvanosky
+ * (C) Copyright Elydra Network 2016-2017
  * All rights reserved.
  */
 public class PlayerDataManager implements IPlayerDataManager
 {
 
     private final ApiImplementation api;
-    private final ConcurrentHashMap<UUID, PlayerData> cachedData = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, PlayerData> cache = new ConcurrentHashMap<>();
     private final EconomyManager economyManager;
-    private final BukkitTask discountTask;
+
 
     public PlayerDataManager(ApiImplementation api)
     {
         this.api = api;
         economyManager = new EconomyManager(api);
-        // Run task every 30 minutes
-        discountTask = this.api.getPlugin().getServer().getScheduler().runTaskTimerAsynchronously(this.api.getPlugin(), economyManager::reload, 0L, 36000L);
     }
 
     public EconomyManager getEconomyManager()
@@ -38,49 +37,80 @@ public class PlayerDataManager implements IPlayerDataManager
     }
 
     @Override
-    public AbstractPlayerData getPlayerData(UUID player)
+    public PlayerData getPlayerData(UUID player)
     {
         return getPlayerData(player, false);
     }
 
     @Override
-    public AbstractPlayerData getPlayerData(UUID player, boolean forceRefresh)
+    public PlayerData getPlayerData(UUID player, boolean forceRefresh)
     {
         if (player == null)
             return null;
 
-        PlayerData data = cachedData.get(player);
+        PlayerData data = cache.get(player);
 
-        if (data == null)
-            return new RestPlayerData(player, api, (PlayerDataManager) api.getPlayerManager());
-
-        if (forceRefresh)
+        /*if (forceRefresh)
         {
-            data.updateData();
+            data.refreshData();
             return data;
-        }
+        }*/
 
-        data.refreshIfNeeded();
+        //data.refreshIfNeeded();
         return data;
     }
 
-    public void load(UUID player, PlayerData data, boolean forceLoad)
+    public PlayerData getPlayerDataByName(String name)
     {
-        if (!cachedData.containsKey(player) || forceLoad)
+        for (PlayerData data : cache.values())
         {
-            cachedData.put(player, data);
+            if (data.getEffectiveName().equals(name))
+                return data;
         }
+
+        return null;
+    }
+
+    public void loadPlayer(UUID player)
+    {
+
+        PlayerData playerData = new PlayerData(player, api, this);
+        cache.put(player, playerData);
+    }
+
+    public void unloadPlayer(UUID player)
+    {
+        //Update data before delete
+        if(cache.containsKey(player))
+            cache.get(player).updateData();
+
+        //Schedule that because of nickname needs
+        Bukkit.getScheduler().runTaskLater(api.getPlugin(), () -> cache.remove(player), 2L);
+
+    }
+
+    //TODO nickname
+    @Override
+    public void kickFromNetwork(UUID playerUUID, TextComponent reason)
+    {
+        SamaGamesAPI.get().getPubSub().send("apiexec.kick", playerUUID + " " + new Gson().toJson(reason));
     }
 
     @Override
-    public void unload(UUID player)
+    public void connectToServer(UUID playerUUID, String server)
     {
-        cachedData.remove(player);
+        SamaGamesAPI.get().getPubSub().send("apiexec.connect", playerUUID + " " + server);
+    }
+
+    @Override
+    public void sendMessage(UUID playerUUID, TextComponent component)
+    {
+        SamaGamesAPI.get().getPubSub().send("apiexec.send", playerUUID + " " + new Gson().toJson(component));
     }
 
 
     public void onShutdown()
     {
-        discountTask.cancel();
+        economyManager.onShutdown();
     }
 }

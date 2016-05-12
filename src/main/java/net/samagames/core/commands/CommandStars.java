@@ -30,7 +30,7 @@ public class CommandStars extends AbstractCommand {
 					Player player = (Player) sender;
                     AbstractPlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(player.getUniqueId());
 					if (data != null) {
-						player.sendMessage(ChatColor.GOLD + "Vous avez actuellement " + ChatColor.GREEN + data.getStars() + " Étoiles");
+						player.sendMessage(ChatColor.GOLD + "Vous avez actuellement " + ChatColor.AQUA + data.getStars() + ChatColor.GOLD + " Étoiles");
 					} else {
 						player.sendMessage(ChatColor.RED + "Une erreur inconnue s'est produite.");
 					}

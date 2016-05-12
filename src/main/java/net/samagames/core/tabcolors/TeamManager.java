@@ -1,20 +1,17 @@
 package net.samagames.core.tabcolors;
 
-import net.minecraft.server.v1_8_R3.ScoreboardTeamBase;
+import net.minecraft.server.v1_9_R1.ScoreboardTeamBase;
 import net.samagames.api.SamaGamesAPI;
-import net.samagames.api.permissions.IPermissionsManager;
-import net.samagames.api.permissions.permissions.PermissionGroup;
-import net.samagames.api.permissions.permissions.PermissionUser;
-import net.samagames.api.permissions.restfull.RestfullManager;
 import net.samagames.core.APIPlugin;
+import net.samagames.core.ApiImplementation;
+import net.samagames.core.api.permissions.PermissionEntity;
+import net.samagames.core.api.permissions.PermissionManager;
+import net.samagames.persistanceapi.beans.players.GroupsBean;
 import net.samagames.tools.scoreboards.TeamHandler;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 public class TeamManager
 {
@@ -23,43 +20,41 @@ public class TeamManager
      * The escape sequence for minecraft special chat codes
      */
     public static final char ESCAPE = '\u00A7';
-    private final IPermissionsManager manager;
-    private final List<PermissionGroup> groups = new ArrayList<>();
+    private final PermissionManager manager;
+    private final ApiImplementation api;
     private final TeamHandler teamHandler;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public TeamManager(APIPlugin pl)
     {
         manager = pl.getAPI().getPermissionsManager();
+        api = pl.getAPI();
 
         teamHandler = new TeamHandler();
-        
-        groups.addAll(((RestfullManager) manager.getApi().getManager()).getGroups().stream().collect(Collectors.toList()));
 
-        for (PermissionGroup pg : groups)
+        for (long i = 1; ; i++)
         {
-            if (pg == null)
-                continue;
-
+            GroupsBean groupsBean = manager.getGroupByID(i);
+            if (groupsBean == null)
+                break;
             //String teamName = pg.getProperty("team-name");
-            String teamName = pg.getGroupName();
+            String teamName = groupsBean.getPgroupName();
 
             if (teamHandler.getTeamByName(teamName) != null)
                 continue;
 
             TeamHandler.VTeam vt = teamHandler.createNewTeam(teamName, "");
 
-            vt.setRealName(getTeamName(pg));
-            if (manager.getDisplay(pg) != null)
-                vt.setPrefix(manager.getDisplay(pg));
-            if (manager.getDisplay(pg) != null)
-                vt.setDisplayName(manager.getDisplay(pg));
-            if (manager.getSuffix(pg) != null)
-                vt.setSuffix(manager.getSuffix(pg));
+            vt.setRealName(getTeamName(teamName, groupsBean.getRank()));
+            vt.setPrefix(parseColor(groupsBean.getTag()));
+            vt.setDisplayName(parseColor(groupsBean.getTag()));
+            vt.setSuffix(parseColor(groupsBean.getSuffix()));
 
             teamHandler.addTeam(vt);
-            APIPlugin.log("[TeamRegister] Team " + teamName + " ajoutée  --> " + vt.getPrefix() + " / " + vt);
+            APIPlugin.log("[TeamRegister] Team " + teamName + " ajoutée  --> " + vt.getPrefix() + " / " + vt.getName());
         }
+
+        manager.setFakeGroupBean(manager.getGroupByID(2));
 
         TeamHandler.VTeam npc = teamHandler.createNewTeam("NPC", "");
         npc.setRealName("NPC");
@@ -68,12 +63,12 @@ public class TeamManager
 
     }
 
-    private String getTeamName(PermissionGroup group)
+    private String getTeamName(String name, int rank)
     {
-        String teamName = ((group.getLadder()< 1000)?"0":"") +
-                ((group.getLadder()< 100)?"0":"") +
-                ((group.getLadder()< 10)?"0":"") +
-                group.getLadder() + group.getGroupName();
+        String teamName = ((rank< 1000)?"0":"") +
+                ((rank< 100)?"0":"") +
+                ((rank< 10)?"0":"") +
+                rank + name;
         return teamName.substring(0, Math.min(teamName.length(), 16));
     }
 
@@ -83,28 +78,36 @@ public class TeamManager
 
     public void playerLeave(final Player p)
     {
-        executor.execute(() -> teamHandler.removeReceiver(p));
+        executor.execute(() ->{
+            teamHandler.removeReceiver(p);
+        });
     }
 
     public void playerJoin(final Player p)
     {
         executor.execute(() -> {
             teamHandler.addReceiver(p);
-
             if(SamaGamesAPI.get().getServerOptions().hasRankTabColor())
             {
-                final PermissionUser user = manager.getApi().getUser(p.getUniqueId());
-                final String prefix = user.getParents().last().getGroupName();
-
-                TeamHandler.VTeam vtt = teamHandler.getTeamByName(prefix);
-                if (vtt == null)
+                final PermissionEntity user = manager.getPlayer(p.getUniqueId());
+                //PlayerData playerData = api.getPlayerManager().getPlayerData(p.getUniqueId());
+                TeamHandler.VTeam teamByName = teamHandler.getTeamByName(user.getDisplayGroupName());
+                if (teamByName == null)
                 {
-                    vtt = teamHandler.getTeamByName("joueur");
+                    teamByName = teamHandler.getTeamByName("Joueur");
                 }
-
-                teamHandler.addPlayerToTeam(p, vtt);
+                teamHandler.addPlayerToTeam(p, teamByName);
             }
         });
+    }
+
+    private String parseColor(String value)
+    {
+        if (value == null)
+            return "";
+        value = value.replaceAll("&s", " ");
+        value = org.bukkit.ChatColor.translateAlternateColorCodes('&', value);
+        return value;
     }
 
     public TeamHandler getTeamHandler()
