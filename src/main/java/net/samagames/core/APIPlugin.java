@@ -5,6 +5,7 @@ import com.google.common.io.ByteStreams;
 import net.samagames.core.api.hydroangeas.HydroangeasManager;
 import net.samagames.core.database.DatabaseConnector;
 import net.samagames.core.database.RedisServer;
+import net.samagames.core.legacypvp.LegacyManager;
 import net.samagames.core.listeners.general.*;
 import net.samagames.core.listeners.pluginmessages.PluginMessageListener;
 import net.samagames.core.utils.CommandBlocker;
@@ -53,6 +54,8 @@ public class APIPlugin extends JavaPlugin implements Listener
     private String joinPermission = null;
     private ScheduledExecutorService executor;
     private DebugListener debugListener;
+
+    private LegacyManager legacyManager;
 
     private NicknamePacketListener nicknamePacketListener;
 
@@ -154,6 +157,8 @@ public class APIPlugin extends JavaPlugin implements Listener
         /*
         Loading listeners
 		 */
+
+        this.legacyManager = new LegacyManager(this);
 
         chatHandleListener = new ChatHandleListener(this);
         //Mute
@@ -379,5 +384,9 @@ public class APIPlugin extends JavaPlugin implements Listener
 
     public HydroangeasManager getHydroangeasManager() {
         return hydroangeasManager;
+    }
+
+    public LegacyManager getLegacyManager() {
+        return legacyManager;
     }
 }
