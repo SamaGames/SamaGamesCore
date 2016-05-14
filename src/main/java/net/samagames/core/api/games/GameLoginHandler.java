@@ -39,7 +39,7 @@ class GameLoginHandler implements IJoinHandler
                 AttributeInstance genericAttackSpeedAttribute = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
 
                 if (genericAttackSpeedAttribute != null)
-                    genericAttackSpeedAttribute.setBaseValue(16.0D);
+                    genericAttackSpeedAttribute.setBaseValue(1024.0D);
             }
 
             //player.spigot().setCollidesWithEntities(false);
