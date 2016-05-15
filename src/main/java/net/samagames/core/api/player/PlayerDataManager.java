@@ -81,8 +81,9 @@ public class PlayerDataManager implements IPlayerDataManager
     public void unloadPlayer(UUID player)
     {
         //Update data before delete
-        if(cache.containsKey(player))
-            cache.get(player).updateData();
+        /*if(cache.containsKey(player))
+            cache.get(player).updateData();*/
+        //Continuous update, save here result in data lose for shop
 
         //Schedule that because of nickname needs
         Bukkit.getScheduler().runTaskLater(api.getPlugin(), () -> cache.remove(player), 2L);
