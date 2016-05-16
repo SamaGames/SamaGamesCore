@@ -3,6 +3,7 @@ package net.samagames.core.commands;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.core.APIPlugin;
+import net.samagames.core.api.player.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -28,7 +29,7 @@ public class CommandStars extends AbstractCommand {
 			if (sender instanceof Player) {
 				new Thread(() -> {
 					Player player = (Player) sender;
-                    AbstractPlayerData data = SamaGamesAPI.get().getPlayerManager().getPlayerData(player.getUniqueId());
+                    PlayerData data = plugin.getAPI().getPlayerManager().getPlayerData(player.getUniqueId());
 					if (data != null) {
 						player.sendMessage(ChatColor.GOLD + "Vous avez actuellement " + ChatColor.AQUA + data.getStars() + ChatColor.GOLD + " Étoiles");
 					} else {
