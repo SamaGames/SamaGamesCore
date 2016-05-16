@@ -112,7 +112,7 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
         tmp = tmp.replaceAll("<name>", "" + playerData.getDisplayName());
         tmp = tmp.replaceAll("<suffix>", "" + suffix);
 
-        if (p.hasPermission("bungeefilter.bypass"))
+        if (p.hasPermission("api.chat.bypass"))
         {
             tmp += replaceColors(event.getMessage());
         } else
@@ -163,7 +163,7 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
             }
         }
         PermissionEntity user = api.getPermissionsManager().getPlayer(player.getUniqueId());
-        if (user.hasPermission("chatrestrict.ignore"))
+        if (user.hasPermission("api.chat.bypass"))
             return;
 
         MessageData last = lastMessages.get(player.getUniqueId());

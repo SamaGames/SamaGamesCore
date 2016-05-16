@@ -142,6 +142,5 @@ public class GlobalJoinListener implements Listener {
             api.getStatsManager().getPlayerStats(player).updateStats();
         }catch (Exception ignored){
         }
-
     }
 }
