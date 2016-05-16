@@ -130,10 +130,10 @@ public class GlobalJoinListener implements Listener {
     public void onWillLeave(UUID player, String targetServer)
     {
         //TODO save all data in redis
-        try{
+        /*try{
             api.getPlayerManager().getPlayerData(player).updateData();
         }catch (Exception ignored){
-        }
+        }*/
         try{
             api.getSettingsManager().getSettings(player).update();
         }catch (Exception ignored){
