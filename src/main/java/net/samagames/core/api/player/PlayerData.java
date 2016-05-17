@@ -85,7 +85,7 @@ public class PlayerData extends AbstractPlayerData
                         jedis.hget("mute:" + playerUUID, "reason"),
                         UUID.fromString(jedis.hget("mute:" + playerUUID, "by")),
                         new Timestamp(Long.valueOf(jedis.hget("mute:" + playerUUID, "expireAt"))),
-                        false, null, null);
+                        false);
             }
             if (hasNickname())
             {
