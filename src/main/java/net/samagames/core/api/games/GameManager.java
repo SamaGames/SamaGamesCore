@@ -292,4 +292,15 @@ public class GameManager implements IGameManager
 
         return decoTime == null || System.currentTimeMillis() - decoTime < this.maxReconnectTime * 60;
     }
+
+    @Override
+    public void setKeepPlayerCache(boolean keepIt)
+    {
+        api.setKeepCache(keepIt);
+    }
+
+    @Override
+    public boolean isKeepingPlayerCache() {
+        return api.isKeepCache();
+    }
 }

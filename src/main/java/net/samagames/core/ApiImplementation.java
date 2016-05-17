@@ -56,6 +56,8 @@ public class ApiImplementation extends SamaGamesAPI
 
     private final ServerOptions serverOptions;
 
+    private boolean keepCache = false;
+
     public ApiImplementation(APIPlugin plugin)
     {
         super(plugin);
@@ -236,4 +238,11 @@ public class ApiImplementation extends SamaGamesAPI
         return plugin.getServerName();
     }
 
+    public boolean isKeepCache() {
+        return keepCache;
+    }
+
+    public void setKeepCache(boolean keepCache) {
+        this.keepCache = keepCache;
+    }
 }

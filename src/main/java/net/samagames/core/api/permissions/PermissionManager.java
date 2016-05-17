@@ -4,6 +4,7 @@ import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.permissions.IPermissionsEntity;
 import net.samagames.api.permissions.IPermissionsManager;
 import net.samagames.core.APIPlugin;
+import net.samagames.core.ApiImplementation;
 import net.samagames.persistanceapi.beans.players.GroupsBean;
 import net.samagames.persistanceapi.beans.players.PlayerBean;
 import org.bukkit.Bukkit;
@@ -26,12 +27,14 @@ public class PermissionManager implements IPermissionsManager
     private final boolean isLobby;
     private final HashMap<UUID, PermissionEntity> cache = new HashMap<>();
     private APIPlugin plugin;
+    private ApiImplementation api;
 
     private GroupsBean fakeGroupBean;
 
     public PermissionManager(APIPlugin plugin)
     {
         this.plugin = plugin;
+        this.api = plugin.getAPI();
         this.isLobby = SamaGamesAPI.get().getServerName().startsWith("Hub");
         Bukkit.getLogger().info("Lobby mode was set to : " + isLobby);
     }
@@ -50,7 +53,10 @@ public class PermissionManager implements IPermissionsManager
 
     public void unloadPlayer(Player player)
     {
-        cache.remove(player.getUniqueId());
+        if (!api.isKeepCache())
+        {
+            cache.remove(player.getUniqueId());
+        }
     }
 
     public boolean isLobby()
