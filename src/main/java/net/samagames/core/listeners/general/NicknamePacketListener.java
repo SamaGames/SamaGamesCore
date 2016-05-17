@@ -2,9 +2,9 @@ package net.samagames.core.listeners.general;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
-import net.minecraft.server.v1_9_R1.PacketPlayOutNamedEntitySpawn;
-import net.minecraft.server.v1_9_R1.PacketPlayOutPlayerInfo;
-import net.minecraft.server.v1_9_R1.PacketPlayOutScoreboardTeam;
+import net.minecraft.server.v1_9_R2.PacketPlayOutNamedEntitySpawn;
+import net.minecraft.server.v1_9_R2.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_9_R2.PacketPlayOutScoreboardTeam;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.player.PlayerData;
