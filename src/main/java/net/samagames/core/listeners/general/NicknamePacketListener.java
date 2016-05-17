@@ -8,7 +8,6 @@ import net.minecraft.server.v1_9_R2.PacketPlayOutScoreboardTeam;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.player.PlayerData;
-import net.samagames.tools.Reflection;
 import net.samagames.tools.TinyProtocol;
 import org.bukkit.entity.Player;
 
@@ -62,17 +61,17 @@ public class NicknamePacketListener extends TinyProtocol
                 List list = (List) b.get(p);
                 for(Object data : list)
                 {
-                    PacketPlayOutPlayerInfo.PlayerInfoData data1 = (PacketPlayOutPlayerInfo.PlayerInfoData) data;
-                    GameProfile profile = data1.a();
+                    //PacketPlayOutPlayerInfo.PlayerInfoData data1 = (PacketPlayOutPlayerInfo.PlayerInfoData) data;
+                    GameProfile profile = (GameProfile) a.get(data);
 
                     PlayerData playerData = api.getPlayerManager().getPlayerData(profile.getId());
                     if (playerData != null && playerData.hasNickname() &&
                             !profile.getId().equals(receiver.getUniqueId()) &&
                             !profile.getName().equals(receiver.getName()))
                     {
-                        GameProfile gameProfile = playerData.getFakeProfile();
+                        /*GameProfile gameProfile = playerData.getFakeProfile();
                         Field field = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredField("d");
-                        Reflection.setFinal(data, field, gameProfile);
+                        Reflection.setFinal(data, field, gameProfile);*/
                     }
                 }
 
