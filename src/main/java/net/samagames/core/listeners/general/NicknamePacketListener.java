@@ -71,13 +71,16 @@ public class NicknamePacketListener extends TinyProtocol
 
                 Field b = p.getClass().getDeclaredField("b");
                 b.setAccessible(true);
+                if (true)
+                    return super.onPacketOutAsync(receiver, channel, packet);
                 //TODO when player disconnect, his playerdata are deleted before call the remove
                 //So you need to add a list with all nickname and remove player when disconnect from here
-                List<PacketPlayOutPlayerInfo.PlayerInfoData> list = (List) b.get(p);
-                for(PacketPlayOutPlayerInfo.PlayerInfoData data : list)
+                List list = (List) b.get(p);
+                for(Object data : list)
                 {
                     //PacketPlayOutPlayerInfo.PlayerInfoData data1 = (PacketPlayOutPlayerInfo.PlayerInfoData) data;
-                    GameProfile profile = data.a();
+                   // GameProfile profile = data.a();
+                    GameProfile profile = null;
 
                     PlayerData playerData = api.getPlayerManager().getPlayerData(profile.getId());
                     if (playerData != null && playerData.hasNickname() &&
