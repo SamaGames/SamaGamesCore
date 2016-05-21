@@ -31,6 +31,8 @@ public class NicknamePacketListener extends TinyProtocol
 
     private ApiImplementation api;
 
+    private Class playerInfoData;
+
     /**
      * Construct a new instance of TinyProtocol, and start intercepting packets for all connected clients and future clients.
      * <p>
@@ -43,6 +45,18 @@ public class NicknamePacketListener extends TinyProtocol
         super(plugin);
         this.api = plugin.getAPI();
         this.random = new Random();
+
+        Class<?>[] declaredClasses = PacketPlayOutPlayerInfo.class.getDeclaredClasses();
+
+        for (Class class_ : declaredClasses)
+        {
+            if (class_.getTypeName().contains("PlayerInfoData"))
+            {
+                playerInfoData = class_;
+                System.out.print("Classe: " + class_.getTypeName());
+                break;
+            }
+        }
     }
 
     @Override
@@ -51,6 +65,7 @@ public class NicknamePacketListener extends TinyProtocol
         {
             PacketPlayOutPlayerInfo p = (PacketPlayOutPlayerInfo)packet;
             try {
+
                 Field a = p.getClass().getDeclaredField("a");
                 a.setAccessible(true);
 
@@ -58,18 +73,18 @@ public class NicknamePacketListener extends TinyProtocol
                 b.setAccessible(true);
                 //TODO when player disconnect, his playerdata are deleted before call the remove
                 //So you need to add a list with all nickname and remove player when disconnect from here
-                List list = (List) b.get(p);
-                for(Object data : list)
+                List<PacketPlayOutPlayerInfo.PlayerInfoData> list = (List) b.get(p);
+                for(PacketPlayOutPlayerInfo.PlayerInfoData data : list)
                 {
                     //PacketPlayOutPlayerInfo.PlayerInfoData data1 = (PacketPlayOutPlayerInfo.PlayerInfoData) data;
-                    GameProfile profile = (GameProfile) a.get(data);
+                    GameProfile profile = data.a();
 
                     PlayerData playerData = api.getPlayerManager().getPlayerData(profile.getId());
                     if (playerData != null && playerData.hasNickname() &&
                             !profile.getId().equals(receiver.getUniqueId()) &&
                             !profile.getName().equals(receiver.getName()))
                     {
-                        /*GameProfile gameProfile = playerData.getFakeProfile();
+                       /* GameProfile gameProfile = playerData.getFakeProfile();
                         Field field = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredField("d");
                         Reflection.setFinal(data, field, gameProfile);*/
                     }
