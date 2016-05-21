@@ -8,10 +8,12 @@ import net.minecraft.server.v1_9_R2.PacketPlayOutScoreboardTeam;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.player.PlayerData;
+import net.samagames.core.utils.Reflection;
 import net.samagames.tools.TinyProtocol;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -53,7 +55,6 @@ public class NicknamePacketListener extends TinyProtocol
             if (class_.getTypeName().contains("PlayerInfoData"))
             {
                 playerInfoData = class_;
-                System.out.print("Classe: " + class_.getTypeName());
                 break;
             }
         }
@@ -71,8 +72,9 @@ public class NicknamePacketListener extends TinyProtocol
 
                 Field b = p.getClass().getDeclaredField("b");
                 b.setAccessible(true);
-                if (true)
-                    return super.onPacketOutAsync(receiver, channel, packet);
+
+                Method playerProfile = playerInfoData.getDeclaredMethod("a");
+
                 //TODO when player disconnect, his playerdata are deleted before call the remove
                 //So you need to add a list with all nickname and remove player when disconnect from here
                 List list = (List) b.get(p);
@@ -80,16 +82,16 @@ public class NicknamePacketListener extends TinyProtocol
                 {
                     //PacketPlayOutPlayerInfo.PlayerInfoData data1 = (PacketPlayOutPlayerInfo.PlayerInfoData) data;
                    // GameProfile profile = data.a();
-                    GameProfile profile = null;
+                    GameProfile profile = (GameProfile) playerProfile.invoke(data);
 
                     PlayerData playerData = api.getPlayerManager().getPlayerData(profile.getId());
                     if (playerData != null && playerData.hasNickname() &&
                             !profile.getId().equals(receiver.getUniqueId()) &&
                             !profile.getName().equals(receiver.getName()))
                     {
-                       /* GameProfile gameProfile = playerData.getFakeProfile();
-                        Field field = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredField("d");
-                        Reflection.setFinal(data, field, gameProfile);*/
+                        GameProfile gameProfile = playerData.getFakeProfile();
+                        Field field = playerProfile.getClass().getDeclaredField("d");
+                        Reflection.setFinal(data, field, gameProfile);
                     }
                 }
 
