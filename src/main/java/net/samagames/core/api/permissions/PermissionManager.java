@@ -3,7 +3,6 @@ package net.samagames.core.api.permissions;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.permissions.IPermissionsEntity;
 import net.samagames.api.permissions.IPermissionsManager;
-import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import net.samagames.persistanceapi.beans.players.GroupsBean;
 import net.samagames.persistanceapi.beans.players.PlayerBean;
@@ -26,22 +25,20 @@ public class PermissionManager implements IPermissionsManager
 {
     private final boolean isLobby;
     private final HashMap<UUID, PermissionEntity> cache = new HashMap<>();
-    private APIPlugin plugin;
     private ApiImplementation api;
 
     private GroupsBean fakeGroupBean;
 
-    public PermissionManager(APIPlugin plugin)
+    public PermissionManager(ApiImplementation api)
     {
-        this.plugin = plugin;
-        this.api = plugin.getAPI();
+        this.api = api;
         this.isLobby = SamaGamesAPI.get().getServerName().startsWith("Hub");
         Bukkit.getLogger().info("Lobby mode was set to : " + isLobby);
     }
 
     public void loadPlayer(UUID player)
     {
-        PermissionEntity permissionEntity = new PermissionEntity(player, plugin);
+        PermissionEntity permissionEntity = new PermissionEntity(player, api.getPlugin());
         permissionEntity.refresh();
         cache.put(player, permissionEntity);
     }
@@ -132,7 +129,7 @@ public class PermissionManager implements IPermissionsManager
     {
         PlayerBean group = new PlayerBean(null, null, null, 0, 0, null, null, null, null, id);
         try {
-            return plugin.getAPI().getGameServiceManager().getGroupPlayer(group);
+            return api.getGameServiceManager().getGroupPlayer(group);
         } catch (Exception e) {
             e.printStackTrace();
         }
