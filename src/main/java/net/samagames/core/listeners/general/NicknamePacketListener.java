@@ -8,7 +8,7 @@ import net.minecraft.server.v1_9_R2.PacketPlayOutScoreboardTeam;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.player.PlayerData;
-import net.samagames.core.utils.Reflection;
+import net.samagames.tools.Reflection;
 import net.samagames.tools.TinyProtocol;
 import org.bukkit.entity.Player;
 
