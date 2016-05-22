@@ -44,6 +44,8 @@ public class GlobalJoinListener implements Listener {
 
         api.getFriendsManager().loadPlayer(player);
 
+        api.getPartiesManager().loadPlayer(player);
+
         //Load in game api
         api.getJoinManager().onLogin(event);
         //api.getPlugin().getLogger().info("AsyncPrelogin Time: " + (System.currentTimeMillis() - startTime));
@@ -101,6 +103,9 @@ public class GlobalJoinListener implements Listener {
     {
         //first quit game
         api.getJoinManager().onLogout(p);
+
+        //Unload player party
+        api.getPartiesManager().unloadPlayer(p.getUniqueId());
 
         //Unload friend from cache
         api.getFriendsManager().unloadPlayer(p.getUniqueId());
