@@ -108,6 +108,13 @@ public class PermissionEntity implements IPermissionsEntity {
         }
     }
 
+    public void unloadPlayer(Player player)
+    {
+        permissions.clear();
+        reloadPermissions(player);
+        attachment.remove();
+    }
+
     public GroupsBean getDisplayGroup()
     {
         return (playerData.hasNickname()) ? plugin.getAPI().getPermissionsManager().getFakeGroupBean() : this.groupsBean;

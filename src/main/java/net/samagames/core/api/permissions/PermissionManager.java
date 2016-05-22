@@ -38,9 +38,14 @@ public class PermissionManager implements IPermissionsManager
 
     public void loadPlayer(UUID player)
     {
-        PermissionEntity permissionEntity = new PermissionEntity(player, api.getPlugin());
-        permissionEntity.refresh();
-        cache.put(player, permissionEntity);
+        try{
+            PermissionEntity permissionEntity = new PermissionEntity(player, api.getPlugin());
+            permissionEntity.refresh();
+            cache.put(player, permissionEntity);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public void refreshPlayer(Player p)
@@ -52,6 +57,7 @@ public class PermissionManager implements IPermissionsManager
     {
         if (!api.isKeepCache())
         {
+            cache.get(player.getUniqueId()).unloadPlayer(player);
             cache.remove(player.getUniqueId());
         }
     }

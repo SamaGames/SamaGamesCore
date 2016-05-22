@@ -29,13 +29,18 @@ public class FriendsManager implements IFriendsManager
 
     public void loadPlayer(UUID player)
     {
-        FriendPlayer friendPlayer = new FriendPlayer(player);
-        Jedis jedis = api.getBungeeResource();
-        Set<String> smembers = jedis.smembers(key + player);
-        jedis.close();
-        for (String friend : smembers)
+        try{
+            FriendPlayer friendPlayer = new FriendPlayer(player);
+            Jedis jedis = api.getBungeeResource();
+            Set<String> smembers = jedis.smembers(key + player);
+            jedis.close();
+            for (String friend : smembers)
+            {
+                friendPlayer.addFriend(UUID.fromString(friend));
+            }
+        }catch (Exception e)
         {
-            friendPlayer.addFriend(UUID.fromString(friend));
+            e.printStackTrace();
         }
     }
 

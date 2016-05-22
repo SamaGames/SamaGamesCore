@@ -32,20 +32,26 @@ public class PartiesManager implements IPartiesManager
     public void loadPlayer(UUID player)
     {
         //TODO create partie if not already
-        Party party = getPartyForPlayer(player);
+        try{
+            Party party = getPartyForPlayer(player);
 
-        if (party == null)
-        {
-            Jedis jedis = api.getBungeeResource();
-            if (!jedis.exists("currentparty:" + player))
+            if (party == null)
             {
+                Jedis jedis = api.getBungeeResource();
+                if (!jedis.exists("currentparty:" + player))
+                {
+                    jedis.close();
+                    return;
+                }
+                UUID partieID = UUID.fromString(jedis.get("currentparty:" + player));
+                loadParty(partieID);
                 jedis.close();
-                return;
             }
-            UUID partieID = UUID.fromString(jedis.get("currentparty:" + player));
-            loadParty(partieID);
-            jedis.close();
+        }catch (Exception e)
+        {
+            e.printStackTrace();
         }
+
     }
 
     public void loadParty(UUID party)

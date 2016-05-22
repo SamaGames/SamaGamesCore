@@ -22,10 +22,16 @@ public class SettingsManager implements ISettingsManager
 
     public void loadPlayer(UUID uuid)
     {
-        PlayerData playerData = api.getPlayerManager().getPlayerData(uuid);
-        ImpPlayerSettings playerSettings = new ImpPlayerSettings(playerData);
-        playerSettings.refresh();
-        cache.put(uuid, playerSettings);
+        try{
+            PlayerData playerData = api.getPlayerManager().getPlayerData(uuid);
+            ImpPlayerSettings playerSettings = new ImpPlayerSettings(playerData);
+            playerSettings.refresh();
+            cache.put(uuid, playerSettings);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
     }
 
     public void unloadPlayer(UUID uuid)
@@ -37,7 +43,6 @@ public class SettingsManager implements ISettingsManager
             //Then remove
             cache.remove(uuid);
         }
-
     }
 
     @Override
