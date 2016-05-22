@@ -1,6 +1,6 @@
 package net.samagames.core.tabcolors;
 
-import net.minecraft.server.v1_9_R1.ScoreboardTeamBase;
+import net.minecraft.server.v1_9_R2.ScoreboardTeamBase.EnumNameTagVisibility;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
@@ -58,7 +58,7 @@ public class TeamManager
 
         TeamHandler.VTeam npc = teamHandler.createNewTeam("NPC", "");
         npc.setRealName("NPC");
-        npc.setNameVisible(ScoreboardTeamBase.EnumNameTagVisibility.NEVER);
+        npc.setNameVisible(EnumNameTagVisibility.NEVER);
         APIPlugin.log("[TeamRegister] Team NPC ajoutée  --> " + npc.getPrefix() + " / " + npc);
 
     }
@@ -78,7 +78,7 @@ public class TeamManager
 
     public void playerLeave(final Player p)
     {
-        executor.execute(() ->{
+        executor.execute(() -> {
             teamHandler.removeReceiver(p);
         });
     }

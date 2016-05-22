@@ -49,7 +49,24 @@ public class PluginMessageListener implements org.bukkit.plugin.messaging.Plugin
                 UUID toRemove = UUID.fromString(in.readUTF());
 
                 //Not safe but don't care
-                api.getFriendsManager().getFriendPlayer(receiver).getFriends().remove(toRemove);
+                try{
+                    api.getFriendsManager().getFriendPlayer(receiver).getFriends().remove(toRemove);
+                }catch (Exception ignored)
+                {
+
+                }
+                try
+                {
+                    api.getFriendsManager().getFriendPlayer(toRemove).getFriends().remove(receiver);
+                }catch (Exception ignored)
+                {
+
+                }
+            }else if(subChannel.equals("updateParty"))
+            {
+                UUID party = UUID.fromString(in.readUTF());
+
+                api.getPartiesManager().loadParty(party);
             }
         }
     }

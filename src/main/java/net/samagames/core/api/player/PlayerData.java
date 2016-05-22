@@ -11,7 +11,7 @@ import net.samagames.persistanceapi.beans.players.PlayerBean;
 import net.samagames.persistanceapi.beans.players.SanctionBean;
 import net.samagames.tools.Reflection;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 
@@ -85,7 +85,7 @@ public class PlayerData extends AbstractPlayerData
                         jedis.hget("mute:" + playerUUID, "reason"),
                         UUID.fromString(jedis.hget("mute:" + playerUUID, "by")),
                         new Timestamp(Long.valueOf(jedis.hget("mute:" + playerUUID, "expireAt"))),
-                        false, null, null);
+                        false);
             }
             if (hasNickname())
             {

@@ -86,7 +86,10 @@ public class PlayerDataManager implements IPlayerDataManager
         //Continuous update, save here result in data lose for shop
 
         //Schedule that because of nickname needs
-        Bukkit.getScheduler().runTaskLater(api.getPlugin(), () -> cache.remove(player), 2L);
+        if (!api.isKeepCache())
+        {
+            Bukkit.getScheduler().runTaskLater(api.getPlugin(), () -> cache.remove(player), 2L);
+        }
 
     }
 

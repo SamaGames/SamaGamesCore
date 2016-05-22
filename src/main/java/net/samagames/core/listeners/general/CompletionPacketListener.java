@@ -1,8 +1,8 @@
 package net.samagames.core.listeners.general;
 
 import io.netty.channel.Channel;
-import net.minecraft.server.v1_9_R1.PacketPlayInTabComplete;
-import net.minecraft.server.v1_9_R1.PacketPlayOutTabComplete;
+import net.minecraft.server.v1_9_R2.PacketPlayInTabComplete;
+import net.minecraft.server.v1_9_R2.PacketPlayOutTabComplete;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.APIPlugin;
 import net.samagames.tools.TinyProtocol;

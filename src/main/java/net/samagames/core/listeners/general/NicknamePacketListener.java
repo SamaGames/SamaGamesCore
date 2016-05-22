@@ -2,9 +2,9 @@ package net.samagames.core.listeners.general;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
-import net.minecraft.server.v1_9_R1.PacketPlayOutNamedEntitySpawn;
-import net.minecraft.server.v1_9_R1.PacketPlayOutPlayerInfo;
-import net.minecraft.server.v1_9_R1.PacketPlayOutScoreboardTeam;
+import net.minecraft.server.v1_9_R2.PacketPlayOutNamedEntitySpawn;
+import net.minecraft.server.v1_9_R2.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_9_R2.PacketPlayOutScoreboardTeam;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.player.PlayerData;
@@ -13,6 +13,7 @@ import net.samagames.tools.TinyProtocol;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -32,6 +33,8 @@ public class NicknamePacketListener extends TinyProtocol
 
     private ApiImplementation api;
 
+    private Class playerInfoData;
+
     /**
      * Construct a new instance of TinyProtocol, and start intercepting packets for all connected clients and future clients.
      * <p>
@@ -44,6 +47,17 @@ public class NicknamePacketListener extends TinyProtocol
         super(plugin);
         this.api = plugin.getAPI();
         this.random = new Random();
+
+        Class<?>[] declaredClasses = PacketPlayOutPlayerInfo.class.getDeclaredClasses();
+
+        for (Class class_ : declaredClasses)
+        {
+            if (class_.getTypeName().contains("PlayerInfoData"))
+            {
+                playerInfoData = class_;
+                break;
+            }
+        }
     }
 
     @Override
@@ -52,18 +66,23 @@ public class NicknamePacketListener extends TinyProtocol
         {
             PacketPlayOutPlayerInfo p = (PacketPlayOutPlayerInfo)packet;
             try {
+
                 Field a = p.getClass().getDeclaredField("a");
                 a.setAccessible(true);
 
                 Field b = p.getClass().getDeclaredField("b");
                 b.setAccessible(true);
+
+                Method playerProfile = playerInfoData.getDeclaredMethod("a");
+
                 //TODO when player disconnect, his playerdata are deleted before call the remove
                 //So you need to add a list with all nickname and remove player when disconnect from here
                 List list = (List) b.get(p);
                 for(Object data : list)
                 {
-                    PacketPlayOutPlayerInfo.PlayerInfoData data1 = (PacketPlayOutPlayerInfo.PlayerInfoData) data;
-                    GameProfile profile = data1.a();
+                    //PacketPlayOutPlayerInfo.PlayerInfoData data1 = (PacketPlayOutPlayerInfo.PlayerInfoData) data;
+                   // GameProfile profile = data.a();
+                    GameProfile profile = (GameProfile) playerProfile.invoke(data);
 
                     PlayerData playerData = api.getPlayerManager().getPlayerData(profile.getId());
                     if (playerData != null && playerData.hasNickname() &&
@@ -71,7 +90,7 @@ public class NicknamePacketListener extends TinyProtocol
                             !profile.getName().equals(receiver.getName()))
                     {
                         GameProfile gameProfile = playerData.getFakeProfile();
-                        Field field = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredField("d");
+                        Field field = playerProfile.getClass().getDeclaredField("d");
                         Reflection.setFinal(data, field, gameProfile);
                     }
                 }
