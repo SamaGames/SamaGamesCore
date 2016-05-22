@@ -37,10 +37,15 @@ public class StatsManager implements IStatsManager
 
     public void loadPlayer(UUID player)
     {
-        PlayerData playerData = api.getPlayerManager().getPlayerData(player);
-        PlayerStats playerStats = new PlayerStats(api, playerData, statsToLoad);
-        playerStats.refreshStats();
-        caches.put(player, playerStats);
+        try{
+            PlayerData playerData = api.getPlayerManager().getPlayerData(player);
+            PlayerStats playerStats = new PlayerStats(api, playerData, statsToLoad);
+            playerStats.refreshStats();
+            caches.put(player, playerStats);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public void unloadPlayer(UUID player)

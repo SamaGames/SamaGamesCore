@@ -59,9 +59,14 @@ public class ShopsManager implements IShopsManager
 
     public void loadPlayer(UUID player)
     {
-        PlayerShop playerShop = new PlayerShop(api, shopToLoad, player);
-        playerShop.refresh();
-        cache.put(player, playerShop);
+        try{
+            PlayerShop playerShop = new PlayerShop(api, shopToLoad, player);
+            playerShop.refresh();
+            cache.put(player, playerShop);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public void unloadPlayer(UUID player)

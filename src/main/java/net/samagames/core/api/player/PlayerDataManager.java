@@ -73,9 +73,13 @@ public class PlayerDataManager implements IPlayerDataManager
 
     public void loadPlayer(UUID player)
     {
-
-        PlayerData playerData = new PlayerData(player, api, this);
-        cache.put(player, playerData);
+        try{
+            PlayerData playerData = new PlayerData(player, api, this);
+            cache.put(player, playerData);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public void unloadPlayer(UUID player)
