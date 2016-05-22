@@ -1,7 +1,10 @@
 package net.samagames.core.api.games;
 
 import net.samagames.api.SamaGamesAPI;
-import net.samagames.api.games.*;
+import net.samagames.api.games.Game;
+import net.samagames.api.games.GameGuiManager;
+import net.samagames.api.games.IGameManager;
+import net.samagames.api.games.Status;
 import net.samagames.api.games.themachine.ICoherenceMachine;
 import net.samagames.api.parties.IParty;
 import net.samagames.core.APIPlugin;
@@ -15,7 +18,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import redis.clients.jedis.Jedis;
 
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -69,29 +71,12 @@ public class GameManager implements IGameManager
         game.handlePostRegistration();
 
         //Check for reconnection can be started when we change the mas reconnection time but fuck it
-        checkerThread = new BukkitRunnable()
-        {
+        checkerThread = new BukkitRunnable() {
             @Override
-            public void run()
-            {
-                long currentTimeMillis = System.currentTimeMillis();
-                for (Map.Entry<UUID, Long> data : playerDisconnectedTime.entrySet())
-                {
-                    long delta = currentTimeMillis - data.getValue();
-
-                    if (delta >= maxReconnectTime * 60)
-                    {
-                        OfflinePlayer playerReconnected = Bukkit.getOfflinePlayer(data.getKey());
-
-                        if (!playerReconnected.isOnline())
-                            onPlayerReconnectTimeOut(playerReconnected, false);
-
-                        //Useless because called in onPlayerReconnectTimeOut
-                        //playerDisconnectedTime.remove(data.getKey());
-                    }
-                }
+            public void run() {
+                playerDisconnectedTime.keySet().stream().filter(uuid -> !isReconnectAllowed(uuid)).forEach(uuid -> onPlayerReconnectTimeOut(Bukkit.getOfflinePlayer(uuid), false));
             }
-        }.runTaskTimerAsynchronously(api.getPlugin(), 20, 20);
+        }.runTaskTimerAsynchronously(api.getPlugin(), 20, 20*2);
 
         APIPlugin.log(Level.INFO, "Registered game '" + game.getGameName() + "' successfuly!");
     }
@@ -145,14 +130,8 @@ public class GameManager implements IGameManager
             return;
 
         long currentTime = System.currentTimeMillis();
-        Long decoTime = this.playerDisconnectedTime.get(player.getUniqueId());
 
-        //TODO Louche http://i.imgur.com/qfcakoQ.png
-        if (decoTime != null && currentTime - decoTime >= this.maxReconnectTime * 60 * 2)
-        {
-            this.game.handleReconnectTimeOut(player, true);
-            return;
-        }
+        playerDisconnectedTime.put(player.getUniqueId(), currentTime);
 
         api.getPlugin().getExecutor().execute(() -> {
             Jedis jedis = api.getBungeeResource();
@@ -290,7 +269,7 @@ public class GameManager implements IGameManager
 
         Long decoTime = this.playerDisconnectedTime.get(player);
 
-        return decoTime == null || System.currentTimeMillis() - decoTime < this.maxReconnectTime * 60;
+        return decoTime != null && System.currentTimeMillis() - decoTime < this.maxReconnectTime * 60;
     }
 
     @Override
