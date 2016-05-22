@@ -76,7 +76,7 @@ public class GameManager implements IGameManager
             public void run() {
                 playerDisconnectedTime.keySet().stream().filter(uuid -> !isReconnectAllowed(uuid)).forEach(uuid -> onPlayerReconnectTimeOut(Bukkit.getOfflinePlayer(uuid), false));
             }
-        }.runTaskTimerAsynchronously(api.getPlugin(), 20, 20*2);
+        }.runTaskTimerAsynchronously(api.getPlugin(), 20, 20);
 
         APIPlugin.log(Level.INFO, "Registered game '" + game.getGameName() + "' successfuly!");
     }
@@ -121,24 +121,21 @@ public class GameManager implements IGameManager
     @Override
     public void onPlayerDisconnect(Player player)
     {
+        if (maxReconnectTime > 0 && this.game.getStatus() == Status.IN_GAME)
+        {
+            long currentTime = System.currentTimeMillis();
+
+            playerDisconnectedTime.put(player.getUniqueId(), currentTime);
+
+            api.getPlugin().getExecutor().execute(() -> {
+                Jedis jedis = api.getBungeeResource();
+                jedis.set("rejoin:" + player.getUniqueId(), this.api.getServerName());
+                jedis.expire("rejoin:" + player.getUniqueId(), (this.maxReconnectTime * 60));
+                jedis.close();
+            });
+        }
+
         this.game.handleLogout(player);
-
-        if (!this.isReconnectAllowed(player))
-            return;
-
-        if (this.game.getStatus() != Status.IN_GAME)
-            return;
-
-        long currentTime = System.currentTimeMillis();
-
-        playerDisconnectedTime.put(player.getUniqueId(), currentTime);
-
-        api.getPlugin().getExecutor().execute(() -> {
-            Jedis jedis = api.getBungeeResource();
-            jedis.set("rejoin:" + player.getUniqueId(), this.api.getServerName());
-            jedis.expire("rejoin:" + player.getUniqueId(), (this.maxReconnectTime * 60));
-            jedis.close();
-        });
 
         refreshArena();
     }
