@@ -266,7 +266,7 @@ public class GameManager implements IGameManager
 
         Long decoTime = this.playerDisconnectedTime.get(player);
 
-        return decoTime != null && System.currentTimeMillis() - decoTime < this.maxReconnectTime * 60;
+        return decoTime != null && System.currentTimeMillis() - decoTime < this.maxReconnectTime * 60 * 1000;
     }
 
     @Override
