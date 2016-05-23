@@ -14,10 +14,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import redis.clients.jedis.Jedis;
 
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -71,12 +71,19 @@ public class GameManager implements IGameManager
         game.handlePostRegistration();
 
         //Check for reconnection can be started when we change the mas reconnection time but fuck it
-        checkerThread = new BukkitRunnable() {
-            @Override
-            public void run() {
-                playerDisconnectedTime.keySet().stream().filter(uuid -> !isReconnectAllowed(uuid)).forEach(uuid -> onPlayerReconnectTimeOut(Bukkit.getOfflinePlayer(uuid), false));
-            }
-        }.runTaskTimerAsynchronously(api.getPlugin(), 20, 20);
+        APIPlugin.getInstance().getExecutor().scheduleAtFixedRate(() ->
+        {
+
+                for (Map.Entry<UUID, Long> entry: playerDisconnectedTime.entrySet())
+                {
+                    if (!isReconnectAllowed(entry.getKey()))
+                    {
+                        playerDisconnectedTime.remove(entry.getKey());
+                        onPlayerReconnectTimeOut(Bukkit.getOfflinePlayer(entry.getKey()), false);
+                    }
+                }
+
+        }, 1L, 1L, TimeUnit.SECONDS);
 
         APIPlugin.log(Level.INFO, "Registered game '" + game.getGameName() + "' successfuly!");
     }
@@ -266,7 +273,7 @@ public class GameManager implements IGameManager
 
         Long decoTime = this.playerDisconnectedTime.get(player);
 
-        return decoTime != null && System.currentTimeMillis() - decoTime < this.maxReconnectTime * 60 * 1000;
+        return decoTime != null && System.currentTimeMillis() < this.maxReconnectTime * 60 * 1000 + decoTime;
     }
 
     @Override
