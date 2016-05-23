@@ -193,7 +193,6 @@ public class JoinManagerImplement implements IJoinManager
             handler.finishJoin(player);
     }
 
-    //TODO on logout in general listener
     public void onLogout(Player player)
     {
         if (moderatorsExpected.contains(player.getUniqueId()))

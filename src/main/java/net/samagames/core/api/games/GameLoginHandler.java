@@ -32,9 +32,6 @@ class GameLoginHandler implements IJoinHandler
     {
         if (api.getGame() != null)
         {
-
-            //player.spigot().setCollidesWithEntities(false);
-
             if(api.getGame().isGameStarted())
             {
                 if (api.isReconnectAllowed(player.getUniqueId())
