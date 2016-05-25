@@ -73,17 +73,15 @@ public class GameManager implements IGameManager
         //Check for reconnection can be started when we change the mas reconnection time but fuck it
         APIPlugin.getInstance().getExecutor().scheduleAtFixedRate(() ->
         {
-
                 for (Map.Entry<UUID, Long> entry: playerDisconnectedTime.entrySet())
                 {
                     if (!isReconnectAllowed(entry.getKey()))
                     {
-                        playerDisconnectedTime.remove(entry.getKey());
                         onPlayerReconnectTimeOut(Bukkit.getOfflinePlayer(entry.getKey()), false);
                     }
                 }
 
-        }, 1L, 1L, TimeUnit.SECONDS);
+        }, 1L, 30L, TimeUnit.SECONDS);
 
         APIPlugin.log(Level.INFO, "Registered game '" + game.getGameName() + "' successfuly!");
     }
