@@ -80,7 +80,7 @@ public class MessageManagerImpl implements IMessageManager
     @Override
     public Message writePlayerReconnectTimeOut(OfflinePlayer player)
     {
-        return new Message(ChatColor.RED + this.getName(player.getUniqueId()) + " ne s'est pas reconnecté à temps !").displayToAll();
+        return new Message(ChatColor.RED + this.getName(player.getUniqueId()) + " ne s'est pas reconnecté à temps !", this.machine.getGameTag()).displayToAll();
     }
 
     private String getName(UUID player)
