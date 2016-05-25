@@ -4,8 +4,6 @@ import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.games.themachine.ICoherenceMachine;
 import net.samagames.api.games.themachine.messages.IMessageManager;
 import net.samagames.api.games.themachine.messages.Message;
-import net.samagames.api.permissions.IPermissionsEntity;
-import net.samagames.api.player.AbstractPlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -82,7 +80,7 @@ public class MessageManagerImpl implements IMessageManager
     @Override
     public Message writePlayerReconnectTimeOut(OfflinePlayer player)
     {
-        return new Message(ChatColor.RED + this.getName(player.getUniqueId()) + " ne s'est pas reconnecté à temps !");
+        return new Message(ChatColor.RED + this.getName(player.getUniqueId()) + " ne s'est pas reconnecté à temps !").displayToAll();
     }
 
     private String getName(UUID player)
