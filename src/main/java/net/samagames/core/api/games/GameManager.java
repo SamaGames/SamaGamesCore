@@ -1,10 +1,7 @@
 package net.samagames.core.api.games;
 
 import net.samagames.api.SamaGamesAPI;
-import net.samagames.api.games.Game;
-import net.samagames.api.games.GameGuiManager;
-import net.samagames.api.games.IGameManager;
-import net.samagames.api.games.Status;
+import net.samagames.api.games.*;
 import net.samagames.api.games.themachine.ICoherenceMachine;
 import net.samagames.api.parties.IParty;
 import net.samagames.core.APIPlugin;
@@ -126,7 +123,11 @@ public class GameManager implements IGameManager
     @Override
     public void onPlayerDisconnect(Player player)
     {
-        if (maxReconnectTime > 0 && this.game.getStatus() == Status.IN_GAME)
+        GamePlayer player1 = this.game.getPlayer(player.getUniqueId());
+        if (maxReconnectTime > 0
+                && !player1.isModerator()
+                && !player1.isSpectator()
+                && this.game.getStatus() == Status.IN_GAME)
         {
             long currentTime = System.currentTimeMillis();
 
