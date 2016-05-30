@@ -104,7 +104,7 @@ public class JoinManagerImplement implements IJoinManager
         //On verifie que l'equipe peu rejoindre
         for (IJoinHandler handler : joiners.values())
         {
-            response = handler.requestPartyJoin(leader, joiningPlayer, response);
+            response = handler.requestPartyJoin(party.getParty(), joiningPlayer, response);
 
             if (!response.isAllowed())
                 break;
