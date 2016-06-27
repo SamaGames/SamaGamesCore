@@ -158,7 +158,7 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
                 message = message.substring(1);
                 message = message.trim();
                 event.setCancelled(true);
-                api.getPubSub().send(new PendingMessage("parties.message", party + " " + player.getName() + " " + message));
+                api.getPubSub().send(new PendingMessage("parties.message", party.getParty() + " " + player.getName() + " " + message));
                 return;
             }
         }
