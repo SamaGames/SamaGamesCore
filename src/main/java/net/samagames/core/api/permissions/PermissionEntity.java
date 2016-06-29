@@ -10,7 +10,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
-import redis.clients.jedis.Jedis;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,38 +56,35 @@ public class PermissionEntity implements IPermissionsEntity {
     @Override
     public void refresh()
     {
-        Jedis jedis = plugin.getDatabaseConnector().getBungeeResource();
+        //Jedis jedis = plugin.getDatabaseConnector().getBungeeResource();
         try{
-            if (jedis.exists(key + uuid))
-            {
-                // Reset variable
-                groupsBean = new GroupsBean();
 
-                //Get group (static because easier for generation FUCK YOU if you comment this)
-                //CacheLoader.load(jedis, key + uuid, groupsBean);
 
-                PlayerPermissionBean allPlayerPermission = null;
-                try {
-                    this.groupsBean = plugin.getGameServiceManager().getGroupPlayer(playerData.getPlayerBean());
-                    allPlayerPermission = plugin.getGameServiceManager().getAllPlayerPermission(playerData.getPlayerBean());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            //Get group (static because easier for generation FUCK YOU if you comment this)
+            //CacheLoader.load(jedis, key + uuid, groupsBean);
 
-                //Get perm list
-                //Map<String, String> datas = jedis.hgetAll(key + uuid + subkeyPerms);
-                permissions.clear();
-                if (allPlayerPermission != null)
-                {
-                    for (Map.Entry<String, Boolean> entry : allPlayerPermission.getHashMap().entrySet())
-                    {
-                        //Save cache
-                        permissions.put(entry.getKey(), entry.getValue());
-                    }
-                }
-
-                reloadPermissions(Bukkit.getPlayer(uuid));
+            PlayerPermissionBean allPlayerPermission = null;
+            try {
+                this.groupsBean = plugin.getGameServiceManager().getGroupPlayer(playerData.getPlayerBean());
+                allPlayerPermission = plugin.getGameServiceManager().getAllPlayerPermission(playerData.getPlayerBean());
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+
+            //Get perm list
+            //Map<String, String> datas = jedis.hgetAll(key + uuid + subkeyPerms);
+            permissions.clear();
+            if (allPlayerPermission != null)
+            {
+                for (Map.Entry<String, Boolean> entry : allPlayerPermission.getHashMap().entrySet())
+                {
+                    //Save cache
+                    permissions.put(entry.getKey(), entry.getValue());
+                }
+            }
+
+            reloadPermissions(Bukkit.getPlayer(uuid));
+
         }catch (Exception e)
         {
             e.printStackTrace();
