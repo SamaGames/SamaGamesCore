@@ -3,8 +3,8 @@ package net.samagames.core.api.permissions;
 import net.samagames.api.permissions.IPermissionsEntity;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.api.player.PlayerData;
-import net.samagames.core.utils.CacheLoader;
 import net.samagames.persistanceapi.GameServiceManager;
+import net.samagames.persistanceapi.beans.permissions.PlayerPermissionBean;
 import net.samagames.persistanceapi.beans.players.GroupsBean;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -65,15 +65,26 @@ public class PermissionEntity implements IPermissionsEntity {
                 groupsBean = new GroupsBean();
 
                 //Get group (static because easier for generation FUCK YOU if you comment this)
-                CacheLoader.load(jedis, key + uuid, groupsBean);
+                //CacheLoader.load(jedis, key + uuid, groupsBean);
+
+                PlayerPermissionBean allPlayerPermission = null;
+                try {
+                    this.groupsBean = plugin.getGameServiceManager().getGroupPlayer(playerData.getPlayerBean());
+                    allPlayerPermission = plugin.getGameServiceManager().getAllPlayerPermission(playerData.getPlayerBean());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 //Get perm list
-                Map<String, String> datas = jedis.hgetAll(key + uuid + subkeyPerms);
+                //Map<String, String> datas = jedis.hgetAll(key + uuid + subkeyPerms);
                 permissions.clear();
-                for (Map.Entry<String, String> entry : datas.entrySet())
+                if (allPlayerPermission != null)
                 {
-                    //Save cache
-                    permissions.put(entry.getKey(), Boolean.valueOf(entry.getValue()));
+                    for (Map.Entry<String, Boolean> entry : allPlayerPermission.getHashMap().entrySet())
+                    {
+                        //Save cache
+                        permissions.put(entry.getKey(), entry.getValue());
+                    }
                 }
 
                 reloadPermissions(Bukkit.getPlayer(uuid));
@@ -81,9 +92,9 @@ public class PermissionEntity implements IPermissionsEntity {
         }catch (Exception e)
         {
             e.printStackTrace();
-        }finally {
-            jedis.close();
-        }
+        }/*finally {
+            //jedis.close();
+        }*/
     }
     public void reloadPermissions(Player player)
     {
