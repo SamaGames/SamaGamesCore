@@ -5,11 +5,10 @@ import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.api.player.IFinancialCallback;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
-import net.samagames.core.utils.CacheLoader;
-import net.samagames.tools.gameprofile.ProfileLoader;
 import net.samagames.persistanceapi.beans.players.PlayerBean;
 import net.samagames.persistanceapi.beans.players.SanctionBean;
 import net.samagames.tools.Reflection;
+import net.samagames.tools.gameprofile.ProfileLoader;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -77,7 +76,8 @@ public class PlayerData extends AbstractPlayerData
 
         Jedis jedis = api.getBungeeResource();
         try{
-            CacheLoader.load(jedis, key + playerUUID, playerBean);
+            //CacheLoader.load(jedis, key + playerUUID, playerBean);
+            playerBean = api.getGameServiceManager().getPlayer(playerUUID, playerBean);
             if (jedis.exists("mute:" + playerUUID))
             {
                 muteSanction = new SanctionBean(playerUUID,
@@ -106,11 +106,16 @@ public class PlayerData extends AbstractPlayerData
     {
         if(playerBean != null && loaded)
         {
-            //Save in redis
-            Jedis jedis = api.getBungeeResource();
+            //Save in redisResource
+            //Jedis jedis = api.getBungee();
             //Generated class so FUCK IT i made it static
-            CacheLoader.send(jedis, key + playerUUID, playerBean);
-            jedis.close();
+            //CacheLoader.send(jedis, key + playerUUID, playerBean);
+            try {
+                api.getGameServiceManager().updatePlayer(playerBean);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            //jedis.close();
         }
     }
 
@@ -194,7 +199,7 @@ public class PlayerData extends AbstractPlayerData
 
     @Override
     public long increaseCoins(long incrBy) {
-        refreshIfNeeded();
+        refreshData();
         int result = (int) (playerBean.getCoins() + incrBy);
         playerBean.setCoins(result);
         updateData();
@@ -203,7 +208,7 @@ public class PlayerData extends AbstractPlayerData
 
     @Override
     public long increaseStars(long incrBy) {
-        refreshIfNeeded();
+        refreshData();
         int result = (int) (playerBean.getStars() + incrBy);
         playerBean.setStars(result);
         updateData();
@@ -268,11 +273,10 @@ public class PlayerData extends AbstractPlayerData
      */
     public void refreshIfNeeded()
     {
-        /*if (lastRefresh + 1000 * 60 < System.currentTimeMillis())
-        {*/
-        //I don't want to loose data so refresh every time before change
+        if (lastRefresh + 1000 * 60 < System.currentTimeMillis())
+        {
             refreshData();
-        //}
+        }
     }
 
     public PlayerBean getPlayerBean()
