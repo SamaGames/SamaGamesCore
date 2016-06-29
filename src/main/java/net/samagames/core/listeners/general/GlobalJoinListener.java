@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Silvanosky on 22/03/2016.
@@ -32,19 +33,40 @@ public class GlobalJoinListener implements Listener {
 
         //First load main data
         api.getPlayerManager().loadPlayer(player);
+        AtomicInteger number = new AtomicInteger(0);
 
-        //Load permissions
-        api.getPermissionsManager().loadPlayer(event.getUniqueId());
+        api.getPlugin().getExecutor().execute(() -> {
+            //Load permissions
+            api.getPermissionsManager().loadPlayer(event.getUniqueId());
+            number.incrementAndGet();
+        });
 
-        api.getSettingsManager().loadPlayer(player);
+        api.getPlugin().getExecutor().execute(() -> {
+            api.getSettingsManager().loadPlayer(player);
+            number.incrementAndGet();
+        });
 
-        api.getStatsManager().loadPlayer(player);
+        api.getPlugin().getExecutor().execute(() -> {
+            api.getStatsManager().loadPlayer(player);
+            number.incrementAndGet();
+        });
 
-        api.getShopsManager().loadPlayer(player);
+        api.getPlugin().getExecutor().execute(() -> {
+            api.getShopsManager().loadPlayer(player);
+            number.incrementAndGet();
+        });
 
-        api.getFriendsManager().loadPlayer(player);
+        api.getPlugin().getExecutor().execute(() -> {
+            api.getFriendsManager().loadPlayer(player);
+            number.incrementAndGet();
+        });
 
-        api.getPartiesManager().loadPlayer(player);
+        api.getPlugin().getExecutor().execute(() -> {
+            api.getPartiesManager().loadPlayer(player);
+            number.incrementAndGet();
+        });
+
+        while (number.get() < 6);
 
         //Load in game api
         api.getJoinManager().onLogin(event);
