@@ -63,7 +63,8 @@ public class PlayerData extends AbstractPlayerData
                 null,
                 null,
                 null,
-                0);
+                0,
+                1);
 
         refreshData();
     }
