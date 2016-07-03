@@ -5,6 +5,7 @@ import com.google.common.collect.Table;
 import net.samagames.api.i18n.I18n;
 import net.samagames.api.i18n.ProjectNames;
 import net.samagames.core.ApiImplementation;
+import net.samagames.persistanceapi.beans.internationalization.LanguageBean;
 import net.samagames.persistanceapi.beans.internationalization.SentenceBean;
 import net.samagames.persistanceapi.beans.players.PlayerBean;
 
@@ -15,14 +16,26 @@ import java.util.UUID;
 public class I18nImpl implements I18n
 {
     private final ApiImplementation api;
+    private final Map<Integer, String> languagesNameCache;
     private final Table<Integer, Integer, String> sentences;
     private final Map<UUID, Integer> playerLanguagesCache;
 
     public I18nImpl(ApiImplementation api)
     {
         this.api = api;
+        this.languagesNameCache = new HashMap<>();
         this.sentences = HashBasedTable.create();
         this.playerLanguagesCache = new HashMap<>();
+
+        try
+        {
+            for (LanguageBean languageBean : api.getGameServiceManager().getAllLanguages())
+                this.languagesNameCache.put(languageBean.getLanguageId(), languageBean.setLanguageName());
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public void setLanguagesToLoad(ProjectNames project, boolean value)
@@ -66,5 +79,10 @@ public class I18nImpl implements I18n
     public void unloadPlayer(UUID player)
     {
         this.playerLanguagesCache.remove(player);
+    }
+
+    public Map<Integer, String> getLanguagesNameCache()
+    {
+        return this.languagesNameCache;
     }
 }
