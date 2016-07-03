@@ -58,7 +58,10 @@ public class I18nImpl implements I18n
 
         int playerLanguageId = this.playerLanguagesCache.containsKey(player) ? this.playerLanguagesCache.get(player) : 1;
 
-        return String.format(this.sentences.get(sentenceId, playerLanguageId), params);
+        if (!this.sentences.containsColumn(playerLanguageId))
+            return "<untranslated>";
+
+        return String.format(this.sentences.get(sentenceId, playerLanguageId).replaceAll("\\s", " ").replaceAll("\\n", "\n"), params);
     }
 
     public void loadPlayer(UUID player)
