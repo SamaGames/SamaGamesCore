@@ -79,7 +79,7 @@ public class CommandLanguage extends AbstractCommand
             {
                 String languageName = plugin.getAPI().getI18n().getLanguagesNameCache().get(languageId);
 
-                this.setSlotData(makeLanguageIcon(languageName, playerLanguageId == languageId), (baseSlots[slot] + (lines * 9)), "language_" + languageId);
+                this.setSlotData(makeLanguageIcon(languageName, playerLanguageId == languageId), (baseSlots[slot] + (lines * 9)), "language_" + languageId + "_" + languageName);
 
                 slot++;
 
@@ -111,12 +111,16 @@ public class CommandLanguage extends AbstractCommand
                 playerData.getPlayerBean().setLanguageId(languageId);
                 playerData.updateData();
 
+                this.plugin.getAPI().getI18n().updatePlayer(player.getUniqueId(), languageId);
+
                 JsonObject jedisPacket = new JsonObject();
                 jedisPacket.addProperty("uuid", player.getUniqueId().toString());
                 jedisPacket.addProperty("language", languageId);
 
                 Jedis jedis = this.plugin.getDatabaseConnector().getBungeeResource();
                 jedis.publish("languageupdate", new Gson().toJson(jedisPacket));
+
+                player.sendMessage(ChatColor.GREEN + "Votre langue a été changé pour : " + ChatColor.GOLD + action.split("_")[2]);
             }
             else if(action.equals("back"))
             {
