@@ -268,10 +268,6 @@ public class PlayerData extends AbstractPlayerData
         return new Date(lastRefresh);
     }
 
-    public int getLanguageId() {
-        return playerBean.getLanguageId();
-    }
-
 
     /**
      *  Need to be call before edit data

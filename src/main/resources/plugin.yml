@@ -30,7 +30,3 @@ commands:
    speakup:
      description: Ecrire un message au titre de la modération sur le serveur
      usage: /speakup <message>
-   language:
-     description: Ouvre l'inventaire de sélection de langue
-     aliases: lang
-     usage: /language
