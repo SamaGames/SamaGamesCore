@@ -3,6 +3,7 @@ package net.samagames.core.api.settings;
 import net.samagames.api.settings.ISettingsManager;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.player.PlayerData;
+import net.samagames.persistanceapi.beans.players.PlayerSettingsBean;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,22 +25,24 @@ public class SettingsManager implements ISettingsManager
     {
         try{
             PlayerData playerData = api.getPlayerManager().getPlayerData(uuid);
-            ImpPlayerSettings playerSettings = new ImpPlayerSettings(playerData);
-            playerSettings.refresh();
+            //First load from sql the save
+            PlayerSettingsBean playerSettings1 = api.getGameServiceManager().getPlayerSettings(playerData.getPlayerBean());
+            ImpPlayerSettings playerSettings = new ImpPlayerSettings(api.getGameServiceManager(), playerData, playerSettings1);
+
+            //Don't refresh here, data are recent so it only will spam proxy
             cache.put(uuid, playerSettings);
         }catch (Exception e)
         {
             e.printStackTrace();
         }
-
     }
 
     public void unloadPlayer(UUID uuid)
     {
         if (cache.containsKey(uuid))
         {
-            //Update data to be sure we don't loose data
-            cache.get(uuid).update();
+            //Just remove data because update data when we change it
+            //cache.get(uuid).update();
             //Then remove
             cache.remove(uuid);
         }

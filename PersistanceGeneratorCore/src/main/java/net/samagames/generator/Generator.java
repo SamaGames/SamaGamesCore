@@ -156,7 +156,7 @@ public class Generator {
         //SETTINGS
         String settingPackage = "net.samagames.core.api.settings";
         String settingPackageI = "net.samagames.api.settings";
-        TypeSpec implClass = createImplementationClass(settingPackageI, PlayerSettingsBean.class, "settings:");
+        TypeSpec implClass = createImplementationClass(settingPackageI, PlayerSettingsBean.class, "settings:", false);
         toBuild.add(JavaFile.builder(settingPackage, implClass).build());
         //END SETTINGS
 
@@ -177,7 +177,7 @@ public class Generator {
         for (Field field : playerStatisticFields)
         {
             field.setAccessible(true);
-            TypeSpec implClass = createImplementationClass(packageI_, field.getType(), "statistic:");
+            TypeSpec implClass = createImplementationClass(packageI_, field.getType(), "statistic:", true);
             JavaFile file = JavaFile.builder(package_, implClass).build();
             stats.add(file);
             toBuild.add(file);
@@ -187,7 +187,7 @@ public class Generator {
 
     public static TypeSpec createImplementationClass(String package_, Class type, String serializeKey)
     {
-        return createImplementationClass(package_, type, serializeKey, true);
+        return createImplementationClass(package_, type, serializeKey, false);
     }
 
     public static TypeSpec createImplementationClass(String package_, Class type, String serializeKey, boolean isUpdatable)
@@ -314,9 +314,9 @@ public class Generator {
                     methodName = "incrBy" + methodName.substring(3);
                     String fieldName = method.getName().substring(3) + "Vector";
                     createdFields.add(fieldName);
-                    FieldSpec vector = FieldSpec.builder(type1, fieldName)
+                    /*FieldSpec vector = FieldSpec.builder(type1, fieldName)
                             .addModifiers(Modifier.PRIVATE).initializer("0").build();
-                    object.addField(vector);
+                    object.addField(vector);*/
 
                     MethodSpec.Builder builder = MethodSpec.methodBuilder(methodName);
                     if (method.getParameterCount() > 0)
@@ -328,7 +328,7 @@ public class Generator {
                     }
                     builder.addModifiers(Modifier.PUBLIC);
                     builder.returns(method.getReturnType());
-                    builder.addStatement("$N += arg0", vector);
+                    builder.addStatement(method.getName() + "(get" + method.getName().substring(3) + "() + arg0)");
                     object.addMethod(builder.build());
                 }
             }
@@ -340,7 +340,16 @@ public class Generator {
                 .returns(void.class)
                 .addAnnotation(Override.class);
 
-        update.addStatement("$T jedis = this.api.getBungeeResource()", jedis);
+        if (isUpdatable)
+        {
+            update.addStatement("    try {\n" +
+                    "  this.api.getGameServiceManager().update" + type.getSimpleName().replace("StatisticsBean", "") + "Statistics(playerData.getPlayerBean(), this);\n" +
+                    "} catch (Exception e) {\n" +
+                    "  e.printStackTrace();\n" +
+                    "}");
+        }
+
+        /*update.addStatement("$T jedis = this.api.getBungeeResource()", jedis);
 
         Method[] declaredMethods = type.getDeclaredMethods();
         for (Method getters : declaredMethods)
@@ -372,7 +381,7 @@ public class Generator {
             }
         }
 
-        update.addStatement("jedis.close()");
+        update.addStatement("jedis.close()");*/
         object.addMethod(update.build());
         //UPDATE END
 
@@ -381,8 +390,16 @@ public class Generator {
                 .addModifiers(Modifier.PUBLIC)
                 .returns(void.class)
                 .addAnnotation(Override.class);
+        if (isUpdatable)
+        {
+            refresh.addStatement("    try {\n" +
+                    "  copy(this.api.getGameServiceManager().get" + type.getSimpleName().replace("StatisticsBean", "") + "Statistics(playerData.getPlayerBean()));\n" +
+                    "} catch (Exception e) {\n" +
+                    "  e.printStackTrace();\n" +
+                    "}");
+        }
 
-        refresh.addStatement("$T jedis = this.api.getBungeeResource()", jedis);
+        /*refresh.addStatement("$T jedis = this.api.getBungeeResource()", jedis);
 
         for (Method getters : type.getDeclaredMethods())
         {
@@ -394,9 +411,24 @@ public class Generator {
             }
         }
 
-        refresh.addStatement("jedis.close()");
+        refresh.addStatement("jedis.close()");*/
         object.addMethod(refresh.build());
         //REFRESH END
+
+        //copy START
+        MethodSpec.Builder copy = MethodSpec.methodBuilder("copy")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(void.class)
+                .addParameter(type, "data");
+
+        for (Method setters : type.getDeclaredMethods())
+        {
+            if (setters.getName().startsWith("set"))
+            {
+                copy.addStatement(setters.getName() + "(data." + (setters.getParameters()[0].getType().equals(boolean.class)?"is":"get") + setters.getName().substring(3) + "())");
+            }
+        }
+        object.addMethod(copy.build());
 
         return object.build();
     }
