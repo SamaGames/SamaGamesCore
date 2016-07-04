@@ -90,7 +90,7 @@ public class CommandLanguage extends AbstractCommand
                 }
             }
 
-            this.setSlotData(getBackIcon(), this.inventory.getSize() - 5, "back");
+            this.setSlotData(getBackIcon(), this.inventory.getSize() - 4, "back");
         }
 
         @Override
