@@ -3,14 +3,12 @@ package net.samagames.core;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.achievements.IAchievementManager;
 import net.samagames.api.gui.IGuiManager;
-import net.samagames.api.i18n.I18n;
 import net.samagames.api.names.IUUIDTranslator;
 import net.samagames.api.pubsub.IPubSubAPI;
 import net.samagames.core.api.friends.FriendsManager;
 import net.samagames.core.api.games.GameManager;
 import net.samagames.core.api.gui.GuiManager;
 import net.samagames.core.api.hydroangeas.HydroangeasManager;
-import net.samagames.core.api.i18n.I18nImpl;
 import net.samagames.core.api.names.UUIDTranslator;
 import net.samagames.core.api.network.JoinManagerImplement;
 import net.samagames.core.api.network.ModerationJoinHandler;
@@ -54,7 +52,6 @@ public class ApiImplementation extends SamaGamesAPI
     private final StatsManager statsManager;
     private final ShopsManager shopsManager;
     private final NPCManager npcManager;
-    private final I18nImpl i18nManager;
     private GameManager gameManager;
 
     private final ServerOptions serverOptions;
@@ -107,7 +104,6 @@ public class ApiImplementation extends SamaGamesAPI
         permissionsManager = new PermissionManager(this);
         friendsManager = new FriendsManager(this);
         this.shopsManager = new ShopsManager(this);
-        this.i18nManager = new I18nImpl(this);
     }
 
     public void onShutdown()
@@ -219,12 +215,6 @@ public class ApiImplementation extends SamaGamesAPI
     public IUUIDTranslator getUUIDTranslator()
     {
         return uuidTranslator;
-    }
-
-    @Override
-    public I18nImpl getI18n()
-    {
-        return this.i18nManager;
     }
 
     public Jedis getBungeeResource()
