@@ -51,10 +51,10 @@ public class I18nImpl implements I18n
         }
     }
 
-    public String localize(int sentenceId, UUID player, Object... params)
+    public String localize(int sentenceId, UUID player, Object... params) throws Exception
     {
         if (!this.sentences.containsRow(sentenceId))
-            return "<untranslated>";
+            throw new Exception("Tryied to localize an unknown sentence!");
 
         int playerLanguageId = this.playerLanguagesCache.containsKey(player) ? this.playerLanguagesCache.get(player) : 1;
 
