@@ -314,9 +314,9 @@ public class Generator {
                     methodName = "incrBy" + methodName.substring(3);
                     String fieldName = method.getName().substring(3) + "Vector";
                     createdFields.add(fieldName);
-                    FieldSpec vector = FieldSpec.builder(type1, fieldName)
+                    /*FieldSpec vector = FieldSpec.builder(type1, fieldName)
                             .addModifiers(Modifier.PRIVATE).initializer("0").build();
-                    object.addField(vector);
+                    object.addField(vector);*/
 
                     MethodSpec.Builder builder = MethodSpec.methodBuilder(methodName);
                     if (method.getParameterCount() > 0)
@@ -328,7 +328,7 @@ public class Generator {
                     }
                     builder.addModifiers(Modifier.PUBLIC);
                     builder.returns(method.getReturnType());
-                    builder.addStatement("$N += arg0", vector);
+                    builder.addStatement(method.getName() + "(get" + method.getName().substring(3) + "() + arg0)");
                     object.addMethod(builder.build());
                 }
             }
