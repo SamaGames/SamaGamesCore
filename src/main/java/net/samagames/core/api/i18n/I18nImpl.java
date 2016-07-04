@@ -81,15 +81,6 @@ public class I18nImpl implements I18n
         this.playerLanguagesCache.remove(player);
     }
 
-    public void updatePlayer(UUID player, int languageId)
-    {
-        if (this.playerLanguagesCache.containsKey(player))
-        {
-            this.playerLanguagesCache.remove(player);
-            this.playerLanguagesCache.put(player, languageId);
-        }
-    }
-
     public Map<Integer, String> getLanguagesNameCache()
     {
         return this.languagesNameCache;
