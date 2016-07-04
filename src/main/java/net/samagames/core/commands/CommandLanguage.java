@@ -121,8 +121,6 @@ public class CommandLanguage extends AbstractCommand
                 jedis.publish("languageupdate", new Gson().toJson(jedisPacket));
 
                 player.sendMessage(ChatColor.GREEN + "Votre langue a été changé pour : " + ChatColor.GOLD + action.split("_")[2]);
-
-                this.update(player);
             }
             else if(action.equals("back"))
             {
@@ -132,7 +130,7 @@ public class CommandLanguage extends AbstractCommand
 
         private static ItemStack makeLanguageIcon(String languageName, boolean selected)
         {
-            ItemStack stack = new ItemStack(Material.BOOK_AND_QUILL, 1);
+            ItemStack stack = new ItemStack(Material.WRITTEN_BOOK, 1);
 
             ItemMeta meta = stack.getItemMeta();
             meta.setDisplayName(ChatColor.GOLD + languageName);
