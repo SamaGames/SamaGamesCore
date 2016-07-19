@@ -80,42 +80,41 @@ public class StatsManager implements IStatsManager
         List<LeaderboardBean> list = new ArrayList<>();
         //TODO add annotation in api for simplify method
 
-        /**switch (game)
-        {
-            case DIMENSION:
-                list = gameServiceManager.getDimmensionLeaderBoard(category);
-            case HEROBATTLE:
-                list = gameServiceManager.getHeroBattleLeaderBoard(category);
-                break;
-            case JUKEBOX:
-                list = gameServiceManager.getJukeBoxLeaderBoard(category);
-                break;
-            case QUAKE:
-                list = gameServiceManager.getQuakeLeaderBoard(category);
-                break;
-            case UHCRUN:
-                list = gameServiceManager.getUhcLeaderBoard(category);
-                break;
-            case UPPERVOID:
-                list = gameServiceManager.getUpperVoidLeaderBoard(category);
-                break;
-            default:
-                list = new ArrayList<>();
-                break;
-        }**/
-
-        //TODO fill leaderboard
-
-        /*Object response = RestAPI.getInstance().sendRequest("statistics/leaderboard", new Request().addProperty("category", game).addProperty("key", stat), new TypeToken<List<LeaderboradElement>>() {}.getType(), "POST");
-
-        if (response instanceof List && ((List) response).size() == 3)
-        {
-            List<LeaderboradElement> responseList = (List<LeaderboradElement>) response;
-            return new Leaderboard(new PlayerStats(game, stat).readResponse(responseList.get(0)), new PlayerStats(game, stat).readResponse(responseList.get(1)), new PlayerStats(game, stat).readResponse(responseList.get(2)));
+        try {
+            switch (game) {
+                case DIMENSION:
+                    list = gameServiceManager.getDimmensionLeaderBoard(category);
+                    break;
+                case HEROBATTLE:
+                    list = gameServiceManager.getHeroBattleLeaderBoard(category);
+                    break;
+                case JUKEBOX:
+                    list = gameServiceManager.getJukeBoxLeaderBoard(category);
+                    break;
+                case QUAKE:
+                    list = gameServiceManager.getQuakeLeaderBoard(category);
+                    break;
+                case UHCRUN:
+                    list = gameServiceManager.getUhcLeaderBoard(category);
+                    break;
+                case UPPERVOID:
+                    list = gameServiceManager.getUpperVoidLeaderBoard(category);
+                    break;
+                default:
+                    list = new ArrayList<>();
+                    break;
+            }
         }
-        else if (response instanceof ErrorResponse)
-            logger.warning(String.format("Error during recuperation of leaderboard for category %s and key %s (response: %s)", game, stat, response.toString()));*/
-        return null;
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
+
+        return new Leaderboard(
+                list.size() > 0 ? new Leaderboard.PlayerStatData(list.get(0).getName(), list.get(1).getScore()) : null,
+                list.size() > 1 ? new Leaderboard.PlayerStatData(list.get(0).getName(), list.get(1).getScore()) : null,
+                list.size() > 2 ? new Leaderboard.PlayerStatData(list.get(0).getName(), list.get(1).getScore()) : null
+                );
     }
 
     @Override
