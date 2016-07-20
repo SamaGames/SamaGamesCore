@@ -111,9 +111,9 @@ public class StatsManager implements IStatsManager
         }
 
         return new Leaderboard(
-                list.size() > 0 ? new Leaderboard.PlayerStatData(list.get(0).getName(), list.get(1).getScore()) : null,
-                list.size() > 1 ? new Leaderboard.PlayerStatData(list.get(0).getName(), list.get(1).getScore()) : null,
-                list.size() > 2 ? new Leaderboard.PlayerStatData(list.get(0).getName(), list.get(1).getScore()) : null
+                list.size() > 0 ? new Leaderboard.PlayerStatData(list.get(0).getName(), list.get(0).getScore()) : null,
+                list.size() > 1 ? new Leaderboard.PlayerStatData(list.get(1).getName(), list.get(1).getScore()) : null,
+                list.size() > 2 ? new Leaderboard.PlayerStatData(list.get(2).getName(), list.get(2).getScore()) : null
                 );
     }
 
