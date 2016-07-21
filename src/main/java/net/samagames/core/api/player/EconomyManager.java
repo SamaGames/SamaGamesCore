@@ -78,7 +78,7 @@ public class EconomyManager
     public String getCreditMessage(long amount, int type, String reason, Multiplier multiplier)
     {
         StringBuilder builder = new StringBuilder();
-        builder.append(type == 1 ? ChatColor.GOLD + "+" + amount + " pièces (" + reason + ")" : ChatColor.AQUA + "+" + amount + " étoiles (" + reason + ")");
+        builder.append(type == 1 ? ChatColor.GOLD + "+" + amount + " pièces (" + reason + ChatColor.GOLD + ")" : ChatColor.AQUA + "+" + amount + " étoiles (" + reason + ChatColor.AQUA + ")");
 
         if (multiplier != null)
         {
