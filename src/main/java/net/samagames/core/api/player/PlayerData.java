@@ -80,11 +80,13 @@ public class PlayerData extends AbstractPlayerData
             playerBean = api.getGameServiceManager().getPlayer(playerUUID, playerBean);
             if (jedis.exists("mute:" + playerUUID))
             {
+                String by = jedis.hget("mute:" + playerUUID, "by");
+                String expireAt = jedis.hget("mute:" + playerUUID, "expireAt");
                 muteSanction = new SanctionBean(playerUUID,
                         SanctionBean.MUTE,
                         jedis.hget("mute:" + playerUUID, "reason"),
-                        UUID.fromString(jedis.hget("mute:" + playerUUID, "by")),
-                        new Timestamp(Long.valueOf(jedis.hget("mute:" + playerUUID, "expireAt"))),
+                        (by != null) ? UUID.fromString(by) : null,
+                        (expireAt != null)? new Timestamp(Long.valueOf(expireAt)): null,
                         false);
             }
             if (hasNickname())

@@ -59,7 +59,6 @@ public class PermissionEntity implements IPermissionsEntity {
         //Jedis jedis = plugin.getDatabaseConnector().getBungeeResource();
         try{
 
-
             //Get group (static because easier for generation FUCK YOU if you comment this)
             //CacheLoader.load(jedis, key + uuid, groupsBean);
 
