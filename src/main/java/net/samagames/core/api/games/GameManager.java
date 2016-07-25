@@ -26,6 +26,7 @@ public class GameManager implements IGameManager
 
     private final ConcurrentHashMap<UUID, Long> playerDisconnectedTime;
     private final GameProperties gameProperties;
+    private IGameStatisticsHelper gameStatisticsHelper;
     private Game game;
     private int maxReconnectTime;
     private boolean freeMode;
@@ -46,6 +47,7 @@ public class GameManager implements IGameManager
         this.legacyPvP = false;
 
         this.gameProperties = new GameProperties();
+        this.gameStatisticsHelper = null;
 
     }
 
@@ -238,6 +240,17 @@ public class GameManager implements IGameManager
     public void setLegacyPvP(boolean legacyPvP)
     {
         this.legacyPvP = legacyPvP;
+    }
+
+    @Override
+    public void setGameStatisticsHelper(IGameStatisticsHelper gameStatisticsHelper)
+    {
+        this.gameStatisticsHelper = gameStatisticsHelper;
+    }
+
+    public IGameStatisticsHelper getGameStatisticsHelper()
+    {
+        return this.gameStatisticsHelper;
     }
 
     @Override
