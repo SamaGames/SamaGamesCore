@@ -46,7 +46,9 @@ public class PlayerDataManager implements IPlayerDataManager
     public PlayerData getPlayerData(UUID player, boolean forceRefresh)
     {
         if (player == null)
-            return null;
+        {
+            throw new NullPointerException("Parameter player is null !");
+        }
 
         PlayerData data = cache.get(player);
 
@@ -57,6 +59,10 @@ public class PlayerDataManager implements IPlayerDataManager
         }*/
 
         //data.refreshIfNeeded();
+        if (data == null)
+        {
+            api.getPlugin().getLogger().severe(player + " is not in the cache !");
+        }
         return data;
     }
 
