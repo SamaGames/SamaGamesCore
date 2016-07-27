@@ -74,8 +74,7 @@ public class PlayerData extends AbstractPlayerData
         lastRefresh = System.currentTimeMillis();
         //Load from redis
 
-        Jedis jedis = api.getBungeeResource();
-        try{
+        try(Jedis jedis = api.getBungeeResource()){
             //CacheLoader.load(jedis, key + playerUUID, playerBean);
             playerBean = api.getGameServiceManager().getPlayer(playerUUID, playerBean);
             if (jedis.exists("mute:" + playerUUID))
@@ -98,8 +97,6 @@ public class PlayerData extends AbstractPlayerData
         }catch (Exception e)
         {
             e.printStackTrace();
-        }finally {
-            jedis.close();
         }
         return false;
     }
