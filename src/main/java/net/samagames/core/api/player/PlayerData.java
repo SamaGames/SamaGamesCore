@@ -88,14 +88,12 @@ public class PlayerData extends AbstractPlayerData
                         (expireAt != null)? new Timestamp(Long.valueOf(expireAt)): null,
                         false);
             }
-            if (hasNickname())
-            {
+            if (hasNickname()) {
                 this.fakeProfile = new ProfileLoader(fakeUUID.toString(), playerBean.getNickName(), playerBean.getNickName()).loadProfile();
             }
             loaded = true;
             return true;
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
