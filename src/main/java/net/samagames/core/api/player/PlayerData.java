@@ -74,8 +74,7 @@ public class PlayerData extends AbstractPlayerData
         lastRefresh = System.currentTimeMillis();
         //Load from redis
 
-        Jedis jedis = api.getBungeeResource();
-        try{
+        try(Jedis jedis = api.getBungeeResource()){
             //CacheLoader.load(jedis, key + playerUUID, playerBean);
             playerBean = api.getGameServiceManager().getPlayer(playerUUID, playerBean);
             if (jedis.exists("mute:" + playerUUID))
@@ -89,17 +88,13 @@ public class PlayerData extends AbstractPlayerData
                         (expireAt != null)? new Timestamp(Long.valueOf(expireAt)): null,
                         false);
             }
-            if (hasNickname())
-            {
+            if (hasNickname()) {
                 this.fakeProfile = new ProfileLoader(fakeUUID.toString(), playerBean.getNickName(), playerBean.getNickName()).loadProfile();
             }
             loaded = true;
             return true;
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-            jedis.close();
         }
         return false;
     }

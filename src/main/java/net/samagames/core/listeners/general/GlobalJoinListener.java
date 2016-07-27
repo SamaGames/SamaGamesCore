@@ -28,49 +28,56 @@ public class GlobalJoinListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPreJoin(AsyncPlayerPreLoginEvent event)
     {
-        long startTime = System.currentTimeMillis();
-        UUID player = event.getUniqueId();
+        try{
+            long startTime = System.currentTimeMillis();
+            UUID player = event.getUniqueId();
 
-        //First load main data
-        api.getPlayerManager().loadPlayer(player);
-        AtomicInteger number = new AtomicInteger(0);
+            //First load main data
+            api.getPlayerManager().loadPlayer(player);
+            AtomicInteger number = new AtomicInteger(0);
 
-        api.getPlugin().getExecutor().execute(() -> {
-            //Load permissions
-            api.getPermissionsManager().loadPlayer(event.getUniqueId());
-            number.incrementAndGet();
-        });
+            api.getPlugin().getExecutor().execute(() -> {
+                //Load permissions
+                api.getPermissionsManager().loadPlayer(event.getUniqueId());
+                number.incrementAndGet();
+            });
 
-        api.getPlugin().getExecutor().execute(() -> {
-            api.getSettingsManager().loadPlayer(player);
-            number.incrementAndGet();
-        });
+            api.getPlugin().getExecutor().execute(() -> {
+                api.getSettingsManager().loadPlayer(player);
+                number.incrementAndGet();
+            });
 
-        api.getPlugin().getExecutor().execute(() -> {
-            api.getStatsManager().loadPlayer(player);
-            number.incrementAndGet();
-        });
+            api.getPlugin().getExecutor().execute(() -> {
+                api.getStatsManager().loadPlayer(player);
+                number.incrementAndGet();
+            });
 
-        api.getPlugin().getExecutor().execute(() -> {
-            api.getShopsManager().loadPlayer(player);
-            number.incrementAndGet();
-        });
+            api.getPlugin().getExecutor().execute(() -> {
+                api.getShopsManager().loadPlayer(player);
+                number.incrementAndGet();
+            });
 
-        api.getPlugin().getExecutor().execute(() -> {
-            api.getFriendsManager().loadPlayer(player);
-            number.incrementAndGet();
-        });
+            api.getPlugin().getExecutor().execute(() -> {
+                api.getFriendsManager().loadPlayer(player);
+                number.incrementAndGet();
+            });
 
-        api.getPlugin().getExecutor().execute(() -> {
-            api.getPartiesManager().loadPlayer(player);
-            number.incrementAndGet();
-        });
+            api.getPlugin().getExecutor().execute(() -> {
+                api.getPartiesManager().loadPlayer(player);
+                number.incrementAndGet();
+            });
 
-        while (number.get() < 6);
+            while (number.get() < 6);
 
-        //Load in game api
-        api.getJoinManager().onLogin(event);
-        api.getPlugin().getLogger().info("AsyncPrelogin Time: " + (System.currentTimeMillis() - startTime));
+            //Load in game api
+            api.getJoinManager().onLogin(event);
+            api.getPlugin().getLogger().info("AsyncPrelogin Time: " + (System.currentTimeMillis() - startTime));
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            event.setKickMessage("Erreur lors du chargement de votre profil.");
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
