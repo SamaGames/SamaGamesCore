@@ -94,8 +94,8 @@ public class StatsManager implements IStatsManager
                 case QUAKE:
                     list = gameServiceManager.getQuakeLeaderBoard(category);
                     break;
-                case UHC:
-                    list = gameServiceManager.getUHCLeaderBoard(category);
+                case UHCORIGINAL:
+                    list = gameServiceManager.getUHCOriginalLeaderBoard(category);
                     break;
                 case UHCRUN:
                     list = gameServiceManager.getUHCRunLeaderBoard(category);
