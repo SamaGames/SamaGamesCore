@@ -94,8 +94,23 @@ public class StatsManager implements IStatsManager
                 case QUAKE:
                     list = gameServiceManager.getQuakeLeaderBoard(category);
                     break;
+                case UHC:
+                    list = gameServiceManager.getUHCLeaderBoard(category);
+                    break;
                 case UHCRUN:
-                    list = gameServiceManager.getUhcLeaderBoard(category);
+                    list = gameServiceManager.getUHCRunLeaderBoard(category);
+                    break;
+                case DOUBLERUNNER:
+                    list = gameServiceManager.getDoubleRunnerLeaderBoard(category);
+                    break;
+                case UHCRANDOM:
+                    list = gameServiceManager.getUHCRandomLeaderBoard(category);
+                    break;
+                case RANDOMRUN:
+                    list = gameServiceManager.getRandomRunLeaderBoard(category);
+                    break;
+                case ULTRAFLAGKEEPER:
+                    list = gameServiceManager.getUltraFlagKeeperLeaderBoard(category);
                     break;
                 case UPPERVOID:
                     list = gameServiceManager.getUpperVoidLeaderBoard(category);
