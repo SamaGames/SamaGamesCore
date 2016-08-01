@@ -1,10 +1,7 @@
 package net.samagames.core;
 
 import net.samagames.api.SamaGamesAPI;
-import net.samagames.api.achievements.IAchievementManager;
-import net.samagames.api.gui.IGuiManager;
-import net.samagames.api.names.IUUIDTranslator;
-import net.samagames.api.pubsub.IPubSubAPI;
+import net.samagames.core.api.achievements.AchievementManager;
 import net.samagames.core.api.friends.FriendsManager;
 import net.samagames.core.api.games.GameManager;
 import net.samagames.core.api.gui.GuiManager;
@@ -19,6 +16,7 @@ import net.samagames.core.api.parties.PartiesManager;
 import net.samagames.core.api.permissions.PermissionManager;
 import net.samagames.core.api.player.PlayerDataManager;
 import net.samagames.core.api.pubsub.PubSubAPI;
+import net.samagames.core.api.remoteaccess.RemoteAccessManager;
 import net.samagames.core.api.resourcepacks.ResourcePacksManagerImpl;
 import net.samagames.core.api.settings.SettingsManager;
 import net.samagames.core.api.shops.ShopsManager;
@@ -53,6 +51,8 @@ public class ApiImplementation extends SamaGamesAPI
     private final ShopsManager shopsManager;
     private final NPCManager npcManager;
     private GameManager gameManager;
+
+    private RemoteAccessManager remoteAccessManager;
 
     private final ServerOptions serverOptions;
 
@@ -104,6 +104,8 @@ public class ApiImplementation extends SamaGamesAPI
         permissionsManager = new PermissionManager(this);
         friendsManager = new FriendsManager(this);
         this.shopsManager = new ShopsManager(this);
+
+        this.remoteAccessManager = new RemoteAccessManager();
     }
 
     public void onShutdown()
@@ -183,7 +185,7 @@ public class ApiImplementation extends SamaGamesAPI
     }
 
     @Override
-    public IGuiManager getGuiManager()
+    public GuiManager getGuiManager()
     {
         return guiManager;
     }
@@ -201,18 +203,18 @@ public class ApiImplementation extends SamaGamesAPI
     }
 
     @Override
-    public IAchievementManager getAchievementManager()
+    public AchievementManager getAchievementManager()
     {
         return null;
     }
 
-    public IPubSubAPI getPubSub()
+    public PubSubAPI getPubSub()
     {
         return pubSub;
     }
 
     @Override
-    public IUUIDTranslator getUUIDTranslator()
+    public UUIDTranslator getUUIDTranslator()
     {
         return uuidTranslator;
     }
@@ -244,5 +246,9 @@ public class ApiImplementation extends SamaGamesAPI
 
     public void setKeepCache(boolean keepCache) {
         this.keepCache = keepCache;
+    }
+
+    public RemoteAccessManager getRemoteAccessManager() {
+        return remoteAccessManager;
     }
 }

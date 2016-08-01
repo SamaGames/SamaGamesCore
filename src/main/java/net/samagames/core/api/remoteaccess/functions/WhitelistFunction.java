@@ -50,4 +50,16 @@ public class WhitelistFunction {
         return Bukkit.getWhitelistedPlayers().stream().map(OfflinePlayer::getUniqueId).collect(Collectors.toCollection(ArrayList::new));
     }
 
+    @RemoteMethod(name = "IsWhiteListActived", description = "Know if the whitelist is actived", impact = ModelMBeanOperationInfo.INFO)
+    public boolean isWhiteListActived()
+    {
+        return Bukkit.hasWhitelist();
+    }
+
+    @RemoteMethod(name = "SetWhiteListActived", description = "Set if the whitelist is actived", impact = ModelMBeanOperationInfo.ACTION)
+    public void setWhiteListActived(boolean actived)
+    {
+        Bukkit.setWhitelist(actived);
+    }
+
 }
