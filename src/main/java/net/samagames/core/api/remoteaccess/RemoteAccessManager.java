@@ -74,7 +74,7 @@ public class RemoteAccessManager {
 
         return new ModelMBeanInfoSupport(
                 sClass.getName(),
-                remoteObject.value(),
+                remoteObject.description(),
                 generateAttributesInfos(sClass),
                 null, //We don't need constructor only external call
                 generateOperationsInfos(sClass),

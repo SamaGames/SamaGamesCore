@@ -1,6 +1,14 @@
 package net.samagames.core.api.remoteaccess.functions;
 
+import net.samagames.core.api.remoteaccess.annotations.RemoteMethod;
 import net.samagames.core.api.remoteaccess.annotations.RemoteObject;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+
+import javax.management.modelmbean.ModelMBeanOperationInfo;
+import java.util.ArrayList;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * ╱╲＿＿＿＿＿＿╱╲
@@ -17,11 +25,29 @@ import net.samagames.core.api.remoteaccess.annotations.RemoteObject;
  * ＿＿▔▔＿＿▔▔＿＿
  */
 
-@RemoteObject("Whitelist Management")
+@RemoteObject(description = "Whitelist Management")
 public class WhitelistFunction {
 
-    public void addPlayers()
+    @RemoteMethod(name = "AddPlayer", description = "Add a player to the whitelist", impact = ModelMBeanOperationInfo.ACTION)
+    public void addPlayer(UUID player)
     {
-
+        Bukkit.getWhitelistedPlayers().add(Bukkit.getOfflinePlayer(player));
+        Bukkit.reloadWhitelist();
+        Bukkit.getLogger().info("Added player " + player + " to whitelist");
     }
+
+    @RemoteMethod(name = "RemovePlayer", description = "Remove a player to the whitelist", impact = ModelMBeanOperationInfo.ACTION)
+    public void removePlayer(UUID player)
+    {
+        Bukkit.getWhitelistedPlayers().add(Bukkit.getOfflinePlayer(player));
+        Bukkit.reloadWhitelist();
+        Bukkit.getLogger().info("Added player " + player + " to whiteliste");
+    }
+
+    @RemoteMethod(name = "GetWhitelist", description = "Get the whitelist", impact = ModelMBeanOperationInfo.ACTION)
+    public ArrayList<UUID> getWhiteList()
+    {
+        return Bukkit.getWhitelistedPlayers().stream().map(OfflinePlayer::getUniqueId).collect(Collectors.toCollection(ArrayList::new));
+    }
+
 }
