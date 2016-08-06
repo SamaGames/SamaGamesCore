@@ -127,6 +127,7 @@ public class GameManager implements IGameManager
     {
         GamePlayer player1 = this.game.getPlayer(player.getUniqueId());
         if (maxReconnectTime > 0
+                && player1 != null
                 && !player1.isModerator()
                 && !player1.isSpectator()
                 && this.game.getStatus() == Status.IN_GAME)
