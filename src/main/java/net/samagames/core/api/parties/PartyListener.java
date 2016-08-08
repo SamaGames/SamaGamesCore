@@ -67,6 +67,8 @@ public class PartyListener implements IPacketsReceiver
 
                 UUID party = UUID.fromString(args[0]);
                 partiesManager.loadParty(party);
+                //clear cache if no player
+                partiesManager.unloadParties();
                 break;
             }
         }
