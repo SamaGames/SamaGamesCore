@@ -59,7 +59,7 @@ public class EconomyManager
         {
             if (promotion.getTypePromotion() == 0 || promotion.getTypePromotion() == type) //Check type (global coins or stars)
             {
-                if (promotion.getGame() == game //Check Game number
+                if ((promotion.getGame() == game || promotion.getGame() == -1) //Check Game number
                     && promotion.getStartDate().getTime() < currentTime
                     && promotion.getEndDate().getTime() > currentTime)
                 {
