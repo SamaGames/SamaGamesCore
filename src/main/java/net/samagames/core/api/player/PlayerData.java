@@ -61,6 +61,7 @@ public class PlayerData extends AbstractPlayerData
                 0,
                 null,
                 null,
+                0,
                 null,
                 null,
                 0);

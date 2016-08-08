@@ -133,7 +133,7 @@ public class PermissionManager implements IPermissionsManager
 
     public GroupsBean getGroupByID(long id)
     {
-        PlayerBean group = new PlayerBean(null, null, null, 0, 0, null, null, null, null, id);
+        PlayerBean group = new PlayerBean(null, null, null, 0, 0, null, null, 0, null, null, id);
         try {
             return api.getGameServiceManager().getGroupPlayer(group);
         } catch (Exception e) {
