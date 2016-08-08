@@ -7,6 +7,7 @@ import net.samagames.api.parties.IParty;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.games.themachine.CoherenceMachineImpl;
+import net.samagames.persistanceapi.beans.statistics.HostStatisticsBean;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -31,6 +32,8 @@ public class GameManager implements IGameManager
     private int maxReconnectTime;
     private boolean freeMode;
     private boolean legacyPvP;
+
+    private long startTimeStamp;
 
     //Maybe useful some day
     private BukkitTask checkerThread;
@@ -298,5 +301,29 @@ public class GameManager implements IGameManager
     @Override
     public boolean isKeepingPlayerCache() {
         return api.isKeepCache();
+    }
+
+    @Override
+    public void startTimer() {
+        startTimeStamp = System.currentTimeMillis();
+    }
+
+    @Override
+    public void stopTimer() {
+        api.getPlugin().getExecutor().execute(() -> {
+
+            HostStatisticsBean hostStatisticsBean = new HostStatisticsBean(
+                    gameProperties.getTemplateID(),
+                    api.getServerName(),
+                    Bukkit.getIp(),
+                    new UUID(0,0),
+                    startTimeStamp,
+                    System.currentTimeMillis() - startTimeStamp);
+            try {
+                api.getGameServiceManager().createHostRecord(hostStatisticsBean);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 }
