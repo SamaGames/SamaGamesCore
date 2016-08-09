@@ -42,28 +42,31 @@ public class EconomyManager
         }
     }
 
-    public Multiplier getCurrentMultiplier(UUID player, boolean group, int type, int game)
+    public Multiplier getGroupMultiplier(UUID player)
     {
-        long currentTime = System.currentTimeMillis();
-
         PlayerData user = api.getPlayerManager().getPlayerData(player);
         int groupMultiplier = 1;
-        if (group)
-        {
-            try {
-                groupMultiplier = api.getGameServiceManager().getGroupPlayer(user.getPlayerBean()).getMultiplier();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
+        try {
+            groupMultiplier = api.getGameServiceManager().getGroupPlayer(user.getPlayerBean()).getMultiplier();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        Multiplier result = new Multiplier(groupMultiplier, 0);
+
+        return new Multiplier(groupMultiplier, 0);
+    }
+
+    public Multiplier getPromotionMultiplier( int type, int game)
+    {
+        Multiplier result = new Multiplier(1, 0);
+        long currentTime = System.currentTimeMillis();
         for (PromotionsBean promotion : promotions)
         {
             if (promotion.getTypePromotion() == -1 || promotion.getTypePromotion() == type) //Check type (global coins or stars)
             {
                 if ((promotion.getGame() == game || promotion.getGame() == -1) //Check Game number
-                    && promotion.getStartDate().getTime() < currentTime
-                    && promotion.getEndDate().getTime() > currentTime)
+                        && promotion.getStartDate().getTime() < currentTime
+                        && promotion.getEndDate().getTime() > currentTime)
                 {
                     Multiplier multiplier = new Multiplier(promotion.getMultiplier(),
                             promotion.getEndDate().getTime(),

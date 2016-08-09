@@ -124,16 +124,16 @@ public class PlayerData extends AbstractPlayerData
     @Override
     public void creditCoins(long amount, String reason, boolean applyMultiplier, IFinancialCallback financialCallback)
     {
-        creditEconomy(0, amount, reason, applyMultiplier, financialCallback);
+        creditEconomy(0, amount, reason, applyMultiplier, true, financialCallback);
     }
 
     @Override
     public void creditStars(long amount, String reason, boolean applyMultiplier, IFinancialCallback financialCallback)
     {
-        creditEconomy(1, amount, reason, applyMultiplier, financialCallback);
+        creditEconomy(1, amount, reason, applyMultiplier, false, financialCallback);
     }
 
-    private void creditEconomy(int type, long amountFinal, String reason, boolean applyMultiplier, IFinancialCallback financialCallback)
+    private void creditEconomy(int type, long amountFinal, String reason, boolean applyMultiplier, boolean applyGroup, IFinancialCallback financialCallback)
     {
         int game = 0;
         APIPlugin.getInstance().getExecutor().execute(() -> {
@@ -142,21 +142,18 @@ public class PlayerData extends AbstractPlayerData
                 long amount = amountFinal;
                 String message = null;
 
+                //Todo handle game name to number need the satch enum
+                String name = ApiImplementation.get().getGameManager().getGame().getGameCodeName();
+
+                Multiplier multiplier = manager.getEconomyManager().getPromotionMultiplier(type, game);
                 if (applyMultiplier)
                 {
-                    String name = ApiImplementation.get().getGameManager().getGame().getGameCodeName();
-
-                    //Todo handle game name to number need the satch enum
-                    Multiplier multiplier = manager.getEconomyManager().getCurrentMultiplier(getPlayerID(), true, type, game);
-                    amount *= multiplier.getGlobalAmount();
-
-                    message = manager.getEconomyManager().getCreditMessage(amount, type, reason, multiplier);
-                } else
-                {
-                    Multiplier multiplier = manager.getEconomyManager().getCurrentMultiplier(getPlayerID(), false, type, game);
-                    amount *= multiplier.getGlobalAmount();
-                    message = manager.getEconomyManager().getCreditMessage(amount, type, reason, null);
+                    multiplier.cross(manager.getEconomyManager().getGroupMultiplier(getPlayerID()));
                 }
+
+                amount *= multiplier.getGlobalAmount();
+
+                message = manager.getEconomyManager().getCreditMessage(amount, type, reason, multiplier);
 
                 if (Bukkit.getPlayer(getPlayerID()) != null)
                     Bukkit.getPlayer(getPlayerID()).sendMessage(message);
