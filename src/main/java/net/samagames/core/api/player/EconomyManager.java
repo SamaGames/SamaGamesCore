@@ -42,17 +42,19 @@ public class EconomyManager
         }
     }
 
-    public Multiplier getCurrentMultiplier(UUID player, int type, int game)
+    public Multiplier getCurrentMultiplier(UUID player, boolean group, int type, int game)
     {
         long currentTime = System.currentTimeMillis();
 
-        //TODO cache and get promotions
         PlayerData user = api.getPlayerManager().getPlayerData(player);
-        int groupMultiplier = 0;
-        try {
-            groupMultiplier = api.getGameServiceManager().getGroupPlayer(user.getPlayerBean()).getMultiplier();
-        } catch (Exception e) {
-            e.printStackTrace();
+        int groupMultiplier = 1;
+        if (group)
+        {
+            try {
+                groupMultiplier = api.getGameServiceManager().getGroupPlayer(user.getPlayerBean()).getMultiplier();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         Multiplier result = new Multiplier(groupMultiplier, 0);
         for (PromotionsBean promotion : promotions)

@@ -145,13 +145,16 @@ public class PlayerData extends AbstractPlayerData
                 if (applyMultiplier)
                 {
                     String name = ApiImplementation.get().getGameManager().getGame().getGameCodeName();
+
                     //Todo handle game name to number need the satch enum
-                    Multiplier multiplier = manager.getEconomyManager().getCurrentMultiplier(getPlayerID(), type, game);
+                    Multiplier multiplier = manager.getEconomyManager().getCurrentMultiplier(getPlayerID(), true, type, game);
                     amount *= multiplier.getGlobalAmount();
 
                     message = manager.getEconomyManager().getCreditMessage(amount, type, reason, multiplier);
                 } else
                 {
+                    Multiplier multiplier = manager.getEconomyManager().getCurrentMultiplier(getPlayerID(), false, type, game);
+                    amount *= multiplier.getGlobalAmount();
                     message = manager.getEconomyManager().getCreditMessage(amount, type, reason, null);
                 }
 
@@ -159,7 +162,7 @@ public class PlayerData extends AbstractPlayerData
                     Bukkit.getPlayer(getPlayerID()).sendMessage(message);
 
                 //edit here for more type of coins
-                long result = (type == 2 ) ? increaseStars(amount) : increaseCoins(amount);
+                long result = (type == 0 ) ? increaseCoins(amount) : increaseStars(amount);
 
                 if (financialCallback != null)
                     financialCallback.done(result, amount, null);
