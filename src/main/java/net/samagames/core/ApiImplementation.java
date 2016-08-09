@@ -16,6 +16,7 @@ import net.samagames.core.api.network.PartiesPubSub;
 import net.samagames.core.api.network.RegularJoinHandler;
 import net.samagames.core.api.options.ServerOptions;
 import net.samagames.core.api.parties.PartiesManager;
+import net.samagames.core.api.parties.PartyListener;
 import net.samagames.core.api.permissions.PermissionManager;
 import net.samagames.core.api.player.PlayerDataManager;
 import net.samagames.core.api.pubsub.PubSubAPI;
@@ -104,6 +105,13 @@ public class ApiImplementation extends SamaGamesAPI
         permissionsManager = new PermissionManager(this);
         friendsManager = new FriendsManager(this);
         this.shopsManager = new ShopsManager(this);
+
+        PartyListener partyListener = new PartyListener(plugin, getPartiesManager());
+        this.pubSub.subscribe("parties.disband", partyListener);
+        this.pubSub.subscribe("parties.leave", partyListener);
+        this.pubSub.subscribe("parties.kick", partyListener);
+        this.pubSub.subscribe("parties.join", partyListener);
+        this.pubSub.subscribe("parties.lead", partyListener);
     }
 
     public void onShutdown()

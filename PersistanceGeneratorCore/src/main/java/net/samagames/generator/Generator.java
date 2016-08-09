@@ -178,6 +178,7 @@ public class Generator {
         {
             field.setAccessible(true);
             TypeSpec implClass = createImplementationClass(packageI_, field.getType(), "statistic:", true);
+
             JavaFile file = JavaFile.builder(package_, implClass).build();
             stats.add(file);
             toBuild.add(file);
