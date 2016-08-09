@@ -124,13 +124,13 @@ public class PlayerData extends AbstractPlayerData
     @Override
     public void creditCoins(long amount, String reason, boolean applyMultiplier, IFinancialCallback financialCallback)
     {
-        creditEconomy(1, amount, reason, applyMultiplier, financialCallback);
+        creditEconomy(0, amount, reason, applyMultiplier, financialCallback);
     }
 
     @Override
     public void creditStars(long amount, String reason, boolean applyMultiplier, IFinancialCallback financialCallback)
     {
-        creditEconomy(2, amount, reason, applyMultiplier, financialCallback);
+        creditEconomy(1, amount, reason, applyMultiplier, financialCallback);
     }
 
     private void creditEconomy(int type, long amountFinal, String reason, boolean applyMultiplier, IFinancialCallback financialCallback)

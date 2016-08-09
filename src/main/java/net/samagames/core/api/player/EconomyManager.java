@@ -57,7 +57,7 @@ public class EconomyManager
         Multiplier result = new Multiplier(groupMultiplier, 0);
         for (PromotionsBean promotion : promotions)
         {
-            if (promotion.getTypePromotion() == 0 || promotion.getTypePromotion() == type) //Check type (global coins or stars)
+            if (promotion.getTypePromotion() == -1 || promotion.getTypePromotion() == type) //Check type (global coins or stars)
             {
                 if ((promotion.getGame() == game || promotion.getGame() == -1) //Check Game number
                     && promotion.getStartDate().getTime() < currentTime
@@ -78,7 +78,7 @@ public class EconomyManager
     public String getCreditMessage(long amount, int type, String reason, Multiplier multiplier)
     {
         StringBuilder builder = new StringBuilder();
-        builder.append(type == 1 ? ChatColor.GOLD + "+" + amount + " pièces (" + reason + ChatColor.GOLD + ")" : ChatColor.AQUA + "+" + amount + " étoiles (" + reason + ChatColor.AQUA + ")");
+        builder.append(type == 0 ? ChatColor.GOLD + "+" + amount + " pièces (" + reason + ChatColor.GOLD + ")" : ChatColor.AQUA + "+" + amount + " étoiles (" + reason + ChatColor.AQUA + ")");
 
         if (multiplier != null)
         {
