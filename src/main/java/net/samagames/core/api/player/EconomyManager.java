@@ -89,7 +89,7 @@ public class EconomyManager
         {
             for (String multCause : multiplier.getCombinedData().keySet())
             {
-                if (multiplier.getCombinedData().get(multCause) == 1)
+                if (multCause == null || multiplier.getCombinedData().get(multCause) == 1)
                     continue;
 
                 if(multCause.isEmpty())
