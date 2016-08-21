@@ -1,10 +1,10 @@
 package net.samagames.core;
 
 import net.samagames.api.SamaGamesAPI;
-import net.samagames.api.achievements.IAchievementManager;
 import net.samagames.api.gui.IGuiManager;
 import net.samagames.api.names.IUUIDTranslator;
 import net.samagames.api.pubsub.IPubSubAPI;
+import net.samagames.core.api.achievements.AchievementManager;
 import net.samagames.core.api.friends.FriendsManager;
 import net.samagames.core.api.games.GameManager;
 import net.samagames.core.api.gui.GuiManager;
@@ -53,6 +53,7 @@ public class ApiImplementation extends SamaGamesAPI
     private final StatsManager statsManager;
     private final ShopsManager shopsManager;
     private final NPCManager npcManager;
+    private final AchievementManager achievementManager;
     private GameManager gameManager;
 
     private final ServerOptions serverOptions;
@@ -104,6 +105,7 @@ public class ApiImplementation extends SamaGamesAPI
         partiesManager = new PartiesManager(this);
         permissionsManager = new PermissionManager(this);
         friendsManager = new FriendsManager(this);
+        achievementManager = new AchievementManager(this);
         this.shopsManager = new ShopsManager(this);
 
         PartyListener partyListener = new PartyListener(plugin, getPartiesManager());
@@ -209,9 +211,9 @@ public class ApiImplementation extends SamaGamesAPI
     }
 
     @Override
-    public IAchievementManager getAchievementManager()
+    public AchievementManager getAchievementManager()
     {
-        return null;
+        return achievementManager;
     }
 
     public IPubSubAPI getPubSub()
