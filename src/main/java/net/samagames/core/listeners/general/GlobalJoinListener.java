@@ -67,12 +67,7 @@ public class GlobalJoinListener implements Listener {
                 number.incrementAndGet();
             });
 
-            api.getPlugin().getExecutor().execute(() -> {
-                api.getAchievementManager().loadPlayer(player);
-                number.incrementAndGet();
-            });
-
-            while (number.get() < 7);
+            while (number.get() < 6);
 
             //Load in game api
             api.getJoinManager().onLogin(event);
@@ -155,9 +150,6 @@ public class GlobalJoinListener implements Listener {
 
         //Unload shops
         api.getShopsManager().unloadPlayer(p.getUniqueId());
-
-        //Unload achievements
-        api.getAchievementManager().unloadPlayer(p.getUniqueId());
 
         //Unload permission player cache
         api.getPermissionsManager().unloadPlayer(p);
