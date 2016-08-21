@@ -20,11 +20,11 @@ public class AchievementManager implements IAchievementManager
     public AchievementManager(ApiImplementation api)
     {
         this.api = api;
+        this.achievementsCache = new Achievement[0];
+        this.achievementCategoriesCache = new AchievementCategory[0];
 
         api.getPlugin().getExecutor().scheduleAtFixedRate(() ->
         {
-            this.achievementsCache = new Achievement[0];
-            this.achievementCategoriesCache = new AchievementCategory[0];
             /* TODO Modify persistance
             try
             {
