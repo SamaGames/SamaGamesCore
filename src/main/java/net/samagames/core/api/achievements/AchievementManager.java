@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+//TODO
 public class AchievementManager implements IAchievementManager
 {
     private Achievement[] achievementsCache;
@@ -61,56 +62,13 @@ public class AchievementManager implements IAchievementManager
 
     public void loadPlayer(UUID uuid)
     {
-        /* TODO Modify persistance
-        try
-        {
-            PlayerData playerData = this.api.getPlayerManager().getPlayerData(uuid);
-            List<AchievementProgressBean> list = this.api.getGameServiceManager().getAchievementProgress(playerData.getPlayerBean());
-            list.forEach(bean ->
-            {
-                Achievement achievement = this.getAchievementByID(bean.getAchievementId());
-                if (achievement != null)
-                    achievement.addProgress(uuid, bean.getProgressId(), bean.getProgress(), bean.getStartTime(), bean.getUnlockTime());
-            });
-        }
-        catch (Exception exception)
-        {
-            exception.printStackTrace();
-        }
-        //*/
-    }
 
-    public void unloadPlayer(UUID player)
-    {
-        /* TODO Modify persistance
-        for (Achievement achievement : this.achievementsCache)
-        {
-            AchievementProgress progress = achievement.getProgress(player);
-            if (progress == null)
-                continue ;
-            AchievementProgressBean bean = new AchievementProgressBean(progress.getProgressId(), achievement.getID(), progress.getProgress(), progress.getStartTime(), progress.getUnlockTime(), player);
-            if (progress.getProgressId() == -1)
-                this.api.getGameServiceManager().createAchievementProgress(bean);
-            else
-                this.api.getGameServiceManager().updateAchievementProgress(bean);
-        }*/
     }
 
     @Override
-    public void incrementAchievement(UUID uuid, IncrementationAchievement incrementationAchievement, int amount)
+    public void incrementAchievement(Player player, IncrementationAchievement achievement)
     {
-        incrementationAchievement.increment(uuid, amount);
-    }
 
-    @Override
-    public void incrementAchievement(UUID uuid, int id, int amount)
-    {
-        Achievement achievement = this.getAchievementByID(id);
-        Preconditions.checkNotNull(achievement, "Achievement with id " + id + " not found");
-        if (achievement instanceof IncrementationAchievement)
-            ((IncrementationAchievement)achievement).increment(uuid, amount);
-        else
-            throw new IllegalArgumentException("Achievement is not incrementable");
     }
 
     @Override
@@ -127,44 +85,36 @@ public class AchievementManager implements IAchievementManager
     @Override
     public Achievement getAchievementByID(int id)
     {
-        for (Achievement achievement : this.achievementsCache)
-            if (achievement.getID() == id)
-                return achievement;
         return null;
     }
 
     @Override
-    public AchievementCategory getAchievementCategoryByID(int id)
+    public AchievementCategory getAchievementCategoryByID(String id)
     {
-        for (AchievementCategory achievementCategory : this.achievementCategoriesCache)
-            if (achievementCategory.getID() == id)
-                return achievementCategory;
         return null;
     }
 
     @Override
-    public List<Achievement> getAchievements()
+    public ArrayList<Achievement> getAchievements()
     {
-        return new UnmodifiableArrayList<>(this.achievementsCache, this.achievementsCache.length);
+        return null;
     }
 
     @Override
-    public List<AchievementCategory> getAchievementsCategories()
+    public ArrayList<AchievementCategory> getAchievementsCategories()
     {
-        return new UnmodifiableArrayList<>(this.achievementCategoriesCache, this.achievementCategoriesCache.length);
+        return null;
     }
 
     @Override
-    public boolean isUnlocked(UUID uuid, Achievement achievement)
+    public boolean isUnlocked(Player player, Achievement achievement)
     {
-        return achievement.isUnlocked(uuid);
+        return false;
     }
 
     @Override
-    public boolean isUnlocked(UUID uuid, int id)
+    public boolean isUnlocked(Player player, String achievement)
     {
-        Achievement achievement = this.getAchievementByID(id);
-        Preconditions.checkNotNull(achievement, "Achievement with id " + id + " not found");
-        return achievement.isUnlocked(uuid);
+        return false;
     }
 }
