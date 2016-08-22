@@ -5,6 +5,7 @@ import net.samagames.api.achievements.IAchievementManager;
 import net.samagames.api.gui.IGuiManager;
 import net.samagames.api.names.IUUIDTranslator;
 import net.samagames.api.pubsub.IPubSubAPI;
+import net.samagames.core.api.achievements.AchievementManager;
 import net.samagames.core.api.friends.FriendsManager;
 import net.samagames.core.api.games.GameManager;
 import net.samagames.core.api.gui.GuiManager;
@@ -53,6 +54,7 @@ public class ApiImplementation extends SamaGamesAPI
     private final StatsManager statsManager;
     private final ShopsManager shopsManager;
     private final NPCManager npcManager;
+    private final AchievementManager achievementManager;
     private GameManager gameManager;
 
     private final ServerOptions serverOptions;
@@ -79,6 +81,7 @@ public class ApiImplementation extends SamaGamesAPI
         this.serverOptions = new ServerOptions();
 
         npcManager = new NPCManager(this);
+        achievementManager = new AchievementManager(this);
 
         this.statsManager = new StatsManager(this);
 
@@ -211,7 +214,7 @@ public class ApiImplementation extends SamaGamesAPI
     @Override
     public IAchievementManager getAchievementManager()
     {
-        return null;
+        return achievementManager;
     }
 
     public IPubSubAPI getPubSub()
