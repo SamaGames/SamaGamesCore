@@ -212,7 +212,7 @@ public class ApiImplementation extends SamaGamesAPI
     }
 
     @Override
-    public IAchievementManager getAchievementManager()
+    public AchievementManager getAchievementManager()
     {
         return achievementManager;
     }
