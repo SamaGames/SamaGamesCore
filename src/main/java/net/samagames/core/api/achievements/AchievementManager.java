@@ -4,9 +4,7 @@ import com.google.common.base.Preconditions;
 import com.sun.javafx.UnmodifiableArrayList;
 import net.samagames.api.achievements.*;
 import net.samagames.core.ApiImplementation;
-import net.samagames.core.utils.PersistanceUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -113,6 +111,17 @@ public class AchievementManager implements IAchievementManager
             ((IncrementationAchievement)achievement).increment(uuid, amount);
         else
             throw new IllegalArgumentException("Achievement is not incrementable");
+    }
+
+    @Override
+    public void incrementAchievements(UUID uuid, int[] ids, int amount)
+    {
+        for (int id : ids)
+        {
+            Achievement achievement = this.getAchievementByID(id);
+            if (achievement != null && achievement instanceof IncrementationAchievement)
+                ((IncrementationAchievement)achievement).increment(uuid, amount);
+        }
     }
 
     @Override
