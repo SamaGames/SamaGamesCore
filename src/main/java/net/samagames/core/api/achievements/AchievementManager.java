@@ -11,6 +11,7 @@ import net.samagames.persistanceapi.beans.achievements.AchievementProgressBean;
 import net.samagames.tools.PersistanceUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -160,13 +161,13 @@ public class AchievementManager implements IAchievementManager
     @Override
     public List<Achievement> getAchievements()
     {
-        return new UnmodifiableArrayList<>(this.achievementsCache, this.achievementsCache.length);
+        return Arrays.asList(this.achievementsCache);
     }
 
     @Override
     public List<AchievementCategory> getAchievementsCategories()
     {
-        return new UnmodifiableArrayList<>(this.achievementCategoriesCache, this.achievementCategoriesCache.length);
+        return Arrays.asList(this.achievementCategoriesCache);
     }
 
     @Override
