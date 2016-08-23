@@ -1,7 +1,6 @@
 package net.samagames.core.api.achievements;
 
 import com.google.common.base.Preconditions;
-import com.sun.javafx.UnmodifiableArrayList;
 import net.samagames.api.achievements.*;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.player.PlayerData;
@@ -28,7 +27,7 @@ public class AchievementManager implements IAchievementManager
         this.achievementsCache = new Achievement[0];
         this.achievementCategoriesCache = new AchievementCategory[0];
 
-        api.getPlugin().getExecutor().scheduleAtFixedRate(() ->
+        api.getPlugin().getExecutor().schedule(() ->
         {
             try
             {
@@ -63,7 +62,7 @@ public class AchievementManager implements IAchievementManager
             {
                 e.printStackTrace();
             }
-        }, 0, 5, TimeUnit.MINUTES);
+        }, 0, TimeUnit.MINUTES);
     }
 
     public void loadPlayer(UUID uuid)
