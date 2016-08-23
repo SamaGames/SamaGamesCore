@@ -40,7 +40,7 @@ public class AchievementManager implements IAchievementManager
                 int n = allAchievements.size();
                 int n2 = categoryBeanList.size();
 
-                Achievement[] achievementsCache = new Achievement[Math.max(n, allAchievements.get(n - 1).getAchievementId())];
+                Achievement[] achievementsCache = new Achievement[n == 0 ? 0 : Math.max(n, allAchievements.get(n - 1).getAchievementId())];
 
                 for (AchievementBean bean : allAchievements)
                 {
