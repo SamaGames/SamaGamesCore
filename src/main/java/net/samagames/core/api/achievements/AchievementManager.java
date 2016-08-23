@@ -35,7 +35,7 @@ public class AchievementManager implements IAchievementManager
                 List<AchievementCategoryBean> categoryBeanList = api.getGameServiceManager().getAchievementCategories();
                 List<AchievementCategory> categories = new ArrayList<>();
 
-                categoryBeanList.forEach(achievementCategoryBean -> categories.add(new AchievementCategory(achievementCategoryBean.getCategoryId(), achievementCategoryBean.getCategoryName(), PersistanceUtils.makeStack(this.api.getPlugin(), achievementCategoryBean.getItemMinecraftId(), achievementCategoryBean.getCategoryName(), achievementCategoryBean.getCategoryDescription()), achievementCategoryBean.getCategoryDescription().split("/n"), categories.get(achievementCategoryBean.getParentId()))));
+                categoryBeanList.forEach(achievementCategoryBean -> categories.add(new AchievementCategory(achievementCategoryBean.getCategoryId(), achievementCategoryBean.getCategoryName(), PersistanceUtils.makeStack(this.api.getPlugin(), achievementCategoryBean.getItemMinecraftId(), achievementCategoryBean.getCategoryName(), achievementCategoryBean.getCategoryDescription()), achievementCategoryBean.getCategoryDescription().split("/n"), achievementCategoryBean.getParentId() < categories.size() && achievementCategoryBean.getParentId() >= 0 ? categories.get(achievementCategoryBean.getParentId()) : null)));
 
                 List<AchievementBean> allAchievements = api.getGameServiceManager().getAchievements();
                 int n = allAchievements.size();
