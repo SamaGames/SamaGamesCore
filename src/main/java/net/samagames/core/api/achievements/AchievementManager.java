@@ -53,7 +53,7 @@ public class AchievementManager implements IAchievementManager
                         achievementsCache[bean.getAchievementId()] = new IncrementationAchievement(bean.getAchievementId(), bean.getAchievementName(), category, bean.getAchievementDescription().split("/n"), bean.getProgressTarget());
                 }
 
-                AchievementCategory[] achievementCategoriesCache = new AchievementCategory[Math.max(n2, categories.get(n2 - 1).getID())];
+                AchievementCategory[] achievementCategoriesCache = new AchievementCategory[n2 == 0 ? 0 : Math.max(n2, categories.get(n2 - 1).getID())];
                 categories.forEach(achievementCategory -> achievementCategoriesCache[achievementCategory.getID()] = achievementCategory);
 
                 this.achievementsCache = achievementsCache;//Avoid concurrent errors using temporary arrays
