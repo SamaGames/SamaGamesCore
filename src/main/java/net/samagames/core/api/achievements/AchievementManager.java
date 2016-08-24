@@ -1,7 +1,6 @@
 package net.samagames.core.api.achievements;
 
 import com.google.common.base.Preconditions;
-import com.sun.javafx.UnmodifiableArrayList;
 import net.samagames.api.achievements.*;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.player.PlayerData;
@@ -11,6 +10,7 @@ import net.samagames.persistanceapi.beans.achievements.AchievementProgressBean;
 import net.samagames.tools.PersistanceUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -27,20 +27,20 @@ public class AchievementManager implements IAchievementManager
         this.achievementsCache = new Achievement[0];
         this.achievementCategoriesCache = new AchievementCategory[0];
 
-        api.getPlugin().getExecutor().scheduleAtFixedRate(() ->
+        api.getPlugin().getExecutor().schedule(() ->
         {
             try
             {
                 List<AchievementCategoryBean> categoryBeanList = api.getGameServiceManager().getAchievementCategories();
                 List<AchievementCategory> categories = new ArrayList<>();
 
-                categoryBeanList.forEach(achievementCategoryBean -> categories.add(new AchievementCategory(achievementCategoryBean.getCategoryId(), achievementCategoryBean.getCategoryName(), PersistanceUtils.makeStack(this.api.getPlugin(), achievementCategoryBean.getItemMinecraftId(), achievementCategoryBean.getCategoryName(), achievementCategoryBean.getCategoryDescription()), achievementCategoryBean.getCategoryDescription().split("/n"), categories.get(achievementCategoryBean.getParentId()))));
+                categoryBeanList.forEach(achievementCategoryBean -> categories.add(new AchievementCategory(achievementCategoryBean.getCategoryId(), achievementCategoryBean.getCategoryName(), PersistanceUtils.makeStack(this.api.getPlugin(), achievementCategoryBean.getItemMinecraftId(), achievementCategoryBean.getCategoryName(), achievementCategoryBean.getCategoryDescription()), achievementCategoryBean.getCategoryDescription().split("/n"), achievementCategoryBean.getParentId() < categories.size() && achievementCategoryBean.getParentId() >= 0 ? categories.get(achievementCategoryBean.getParentId()) : null)));
 
                 List<AchievementBean> allAchievements = api.getGameServiceManager().getAchievements();
                 int n = allAchievements.size();
                 int n2 = categoryBeanList.size();
 
-                Achievement[] achievementsCache = new Achievement[Math.max(n, allAchievements.get(n - 1).getAchievementId())];
+                Achievement[] achievementsCache = new Achievement[n == 0 ? 0 : Math.max(n, allAchievements.get(n - 1).getAchievementId())];
 
                 for (AchievementBean bean : allAchievements)
                 {
@@ -52,7 +52,7 @@ public class AchievementManager implements IAchievementManager
                         achievementsCache[bean.getAchievementId()] = new IncrementationAchievement(bean.getAchievementId(), bean.getAchievementName(), category, bean.getAchievementDescription().split("/n"), bean.getProgressTarget());
                 }
 
-                AchievementCategory[] achievementCategoriesCache = new AchievementCategory[Math.max(n2, categories.get(n2 - 1).getID())];
+                AchievementCategory[] achievementCategoriesCache = new AchievementCategory[n2 == 0 ? 0 : Math.max(n2, categories.get(n2 - 1).getID())];
                 categories.forEach(achievementCategory -> achievementCategoriesCache[achievementCategory.getID()] = achievementCategory);
 
                 this.achievementsCache = achievementsCache;//Avoid concurrent errors using temporary arrays
@@ -62,7 +62,7 @@ public class AchievementManager implements IAchievementManager
             {
                 e.printStackTrace();
             }
-        }, 0, 5, TimeUnit.MINUTES);
+        }, 0, TimeUnit.MINUTES);
     }
 
     public void loadPlayer(UUID uuid)
@@ -160,13 +160,13 @@ public class AchievementManager implements IAchievementManager
     @Override
     public List<Achievement> getAchievements()
     {
-        return new UnmodifiableArrayList<>(this.achievementsCache, this.achievementsCache.length);
+        return Arrays.asList(this.achievementsCache);
     }
 
     @Override
     public List<AchievementCategory> getAchievementsCategories()
     {
-        return new UnmodifiableArrayList<>(this.achievementCategoriesCache, this.achievementCategoriesCache.length);
+        return Arrays.asList(this.achievementCategoriesCache);
     }
 
     @Override
