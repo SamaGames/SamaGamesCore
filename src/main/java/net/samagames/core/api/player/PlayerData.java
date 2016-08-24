@@ -5,7 +5,6 @@ import net.samagames.api.player.AbstractPlayerData;
 import net.samagames.api.player.IFinancialCallback;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
-import net.samagames.core.api.names.UUIDTranslator;
 import net.samagames.persistanceapi.beans.players.PlayerBean;
 import net.samagames.persistanceapi.beans.players.SanctionBean;
 import net.samagames.tools.Reflection;
@@ -90,7 +89,7 @@ public class PlayerData extends AbstractPlayerData
                         false);
             }
             if (hasNickname()) {
-                this.fakeProfile = ProfileLoader.loadProfile(fakeUUID, playerBean.getNickName(), this.api.getUUIDTranslator().getUUID(playerBean.getNickName()));
+                this.fakeProfile = new ProfileLoader(fakeUUID.toString(), playerBean.getNickName(), this.api.getUUIDTranslator().getUUID(playerBean.getNickName())).loadProfile();
             }
             loaded = true;
             return true;
