@@ -144,7 +144,11 @@ public class PlayerData extends AbstractPlayerData
                 String message = null;
 
                 //Todo handle game name to number need the satch enum
-                String name = ApiImplementation.get().getGameManager().getGame().getGameCodeName();
+                String name = "hub";
+                if (!api.getPlugin().isHub())
+                {
+                     name = api.getGameManager().getGame().getGameCodeName();
+                }
 
                 Multiplier multiplier = manager.getEconomyManager().getPromotionMultiplier(type, game);
                 if (applyMultiplier)
