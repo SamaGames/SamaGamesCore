@@ -56,7 +56,7 @@ public class TeamManager
 
         manager.setFakeGroupBean(manager.getGroupByID(2));
 
-        TeamHandler.VTeam npc = teamHandler.createNewTeam("NPC", "");
+        TeamHandler.VTeam npc = teamHandler.createNewTeam("NPC", "NPC");
         npc.setRealName("NPC");
         npc.setNameVisible(EnumNameTagVisibility.NEVER);
         APIPlugin.log("[TeamRegister] Team NPC ajoutée  --> " + npc.getPrefix() + " / " + npc);
