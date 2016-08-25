@@ -42,26 +42,31 @@ public class EconomyManager
         }
     }
 
-    public Multiplier getCurrentMultiplier(UUID player, int type, int game)
+    public Multiplier getGroupMultiplier(UUID player)
     {
-        long currentTime = System.currentTimeMillis();
-
-        //TODO cache and get promotions
         PlayerData user = api.getPlayerManager().getPlayerData(player);
-        int groupMultiplier = 0;
+        int groupMultiplier = 1;
+
         try {
             groupMultiplier = api.getGameServiceManager().getGroupPlayer(user.getPlayerBean()).getMultiplier();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Multiplier result = new Multiplier(groupMultiplier, 0);
+
+        return new Multiplier(groupMultiplier, 0);
+    }
+
+    public Multiplier getPromotionMultiplier( int type, int game)
+    {
+        Multiplier result = new Multiplier(1, 0);
+        long currentTime = System.currentTimeMillis();
         for (PromotionsBean promotion : promotions)
         {
-            if (promotion.getTypePromotion() == 0 || promotion.getTypePromotion() == type) //Check type (global coins or stars)
+            if (promotion.getTypePromotion() == -1 || promotion.getTypePromotion() == type) //Check type (global coins or stars)
             {
-                if (promotion.getGame() == game //Check Game number
-                    && promotion.getStartDate().getTime() < currentTime
-                    && promotion.getEndDate().getTime() > currentTime)
+                if ((promotion.getGame() == game || promotion.getGame() == -1) //Check Game number
+                        && promotion.getStartDate().getTime() < currentTime
+                        && promotion.getEndDate().getTime() > currentTime)
                 {
                     Multiplier multiplier = new Multiplier(promotion.getMultiplier(),
                             promotion.getEndDate().getTime(),
@@ -78,13 +83,13 @@ public class EconomyManager
     public String getCreditMessage(long amount, int type, String reason, Multiplier multiplier)
     {
         StringBuilder builder = new StringBuilder();
-        builder.append(type == 1 ? ChatColor.GOLD + "+" + amount + " pièces (" + reason + ChatColor.GOLD + ")" : ChatColor.AQUA + "+" + amount + " étoiles (" + reason + ChatColor.AQUA + ")");
+        builder.append(type == 0 ? ChatColor.GOLD + "+" + amount + " pièces (" + reason + ChatColor.GOLD + ")" : ChatColor.AQUA + "+" + amount + " étoiles (" + reason + ChatColor.AQUA + ")");
 
         if (multiplier != null)
         {
             for (String multCause : multiplier.getCombinedData().keySet())
             {
-                if (multiplier.getCombinedData().get(multCause) == 1)
+                if (multCause == null || multiplier.getCombinedData().get(multCause) == 1)
                     continue;
 
                 if(multCause.isEmpty())

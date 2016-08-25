@@ -90,7 +90,7 @@ public class PlayerData extends AbstractPlayerData
                         false);
             }
             if (hasNickname()) {
-                this.fakeProfile = new ProfileLoader(fakeUUID.toString(), playerBean.getNickName(), playerBean.getNickName()).loadProfile();
+                this.fakeProfile = new ProfileLoader(fakeUUID.toString(), playerBean.getNickName(), this.api.getUUIDTranslator().getUUID(playerBean.getNickName())).loadProfile();
             }
             loaded = true;
             return true;
@@ -125,16 +125,16 @@ public class PlayerData extends AbstractPlayerData
     @Override
     public void creditCoins(long amount, String reason, boolean applyMultiplier, IFinancialCallback financialCallback)
     {
-        creditEconomy(1, amount, reason, applyMultiplier, financialCallback);
+        creditEconomy(0, amount, reason, applyMultiplier, true, financialCallback);
     }
 
     @Override
     public void creditStars(long amount, String reason, boolean applyMultiplier, IFinancialCallback financialCallback)
     {
-        creditEconomy(2, amount, reason, applyMultiplier, financialCallback);
+        creditEconomy(1, amount, reason, applyMultiplier, false, financialCallback);
     }
 
-    private void creditEconomy(int type, long amountFinal, String reason, boolean applyMultiplier, IFinancialCallback financialCallback)
+    private void creditEconomy(int type, long amountFinal, String reason, boolean applyMultiplier, boolean applyGroup, IFinancialCallback financialCallback)
     {
         int game = 0;
         APIPlugin.getInstance().getExecutor().execute(() -> {
@@ -143,24 +143,28 @@ public class PlayerData extends AbstractPlayerData
                 long amount = amountFinal;
                 String message = null;
 
+                //Todo handle game name to number need the satch enum
+                String name = "hub";
+                if (!api.getPlugin().isHub())
+                {
+                     name = api.getGameManager().getGame().getGameCodeName();
+                }
+
+                Multiplier multiplier = manager.getEconomyManager().getPromotionMultiplier(type, game);
                 if (applyMultiplier)
                 {
-                    String name = ApiImplementation.get().getGameManager().getGame().getGameCodeName();
-                    //Todo handle game name to number need the satch enum
-                    Multiplier multiplier = manager.getEconomyManager().getCurrentMultiplier(getPlayerID(), type, game);
-                    amount *= multiplier.getGlobalAmount();
-
-                    message = manager.getEconomyManager().getCreditMessage(amount, type, reason, multiplier);
-                } else
-                {
-                    message = manager.getEconomyManager().getCreditMessage(amount, type, reason, null);
+                    multiplier.cross(manager.getEconomyManager().getGroupMultiplier(getPlayerID()));
                 }
+
+                amount *= multiplier.getGlobalAmount();
+
+                message = manager.getEconomyManager().getCreditMessage(amount, type, reason, multiplier);
 
                 if (Bukkit.getPlayer(getPlayerID()) != null)
                     Bukkit.getPlayer(getPlayerID()).sendMessage(message);
 
                 //edit here for more type of coins
-                long result = (type == 2 ) ? increaseStars(amount) : increaseCoins(amount);
+                long result = (type == 0 ) ? increaseCoins(amount) : increaseStars(amount);
 
                 if (financialCallback != null)
                     financialCallback.done(result, amount, null);

@@ -112,7 +112,7 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
         tmp = tmp.replaceAll("<name>", "" + playerData.getDisplayName());
         tmp = tmp.replaceAll("<suffix>", "" + suffix);
 
-        if (p.hasPermission("api.chat.bypass"))
+        if (p.hasPermission("tracker.famous") || p.hasPermission("network.admin"))
         {
             tmp += replaceColors(event.getMessage());
         } else

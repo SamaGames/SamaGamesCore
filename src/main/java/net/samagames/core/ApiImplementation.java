@@ -1,6 +1,10 @@
 package net.samagames.core;
 
 import net.samagames.api.SamaGamesAPI;
+import net.samagames.api.achievements.IAchievementManager;
+import net.samagames.api.gui.IGuiManager;
+import net.samagames.api.names.IUUIDTranslator;
+import net.samagames.api.pubsub.IPubSubAPI;
 import net.samagames.core.api.achievements.AchievementManager;
 import net.samagames.core.api.friends.FriendsManager;
 import net.samagames.core.api.games.GameManager;
@@ -13,6 +17,7 @@ import net.samagames.core.api.network.PartiesPubSub;
 import net.samagames.core.api.network.RegularJoinHandler;
 import net.samagames.core.api.options.ServerOptions;
 import net.samagames.core.api.parties.PartiesManager;
+import net.samagames.core.api.parties.PartyListener;
 import net.samagames.core.api.permissions.PermissionManager;
 import net.samagames.core.api.player.PlayerDataManager;
 import net.samagames.core.api.pubsub.PubSubAPI;
@@ -51,6 +56,7 @@ public class ApiImplementation extends SamaGamesAPI
     private final StatsManager statsManager;
     private final ShopsManager shopsManager;
     private final NPCManager npcManager;
+    private final AchievementManager achievementManager;
     private GameManager gameManager;
 
     private RemoteAccessManager remoteAccessManager;
@@ -79,6 +85,7 @@ public class ApiImplementation extends SamaGamesAPI
         this.serverOptions = new ServerOptions();
 
         npcManager = new NPCManager(this);
+        achievementManager = new AchievementManager(this);
 
         this.statsManager = new StatsManager(this);
 
@@ -112,6 +119,13 @@ public class ApiImplementation extends SamaGamesAPI
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        PartyListener partyListener = new PartyListener(plugin, getPartiesManager());
+        this.pubSub.subscribe("parties.disband", partyListener);
+        this.pubSub.subscribe("parties.leave", partyListener);
+        this.pubSub.subscribe("parties.kick", partyListener);
+        this.pubSub.subscribe("parties.join", partyListener);
+        this.pubSub.subscribe("parties.lead", partyListener);
     }
 
     public void onShutdown()
@@ -211,7 +225,7 @@ public class ApiImplementation extends SamaGamesAPI
     @Override
     public AchievementManager getAchievementManager()
     {
-        return null;
+        return achievementManager;
     }
 
     public PubSubAPI getPubSub()
