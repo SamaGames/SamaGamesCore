@@ -58,7 +58,7 @@ public class TeamManager
 
         TeamHandler.VTeam npc = teamHandler.createNewTeam("NPC", "NPC");
         npc.setRealName("NPC");
-        npc.setNameVisible(EnumNameTagVisibility.NEVER);
+        npc.setNameVisible(EnumNameTagVisibility.HIDE_FOR_OTHER_TEAMS);
         APIPlugin.log("[TeamRegister] Team NPC ajoutée  --> " + npc.getPrefix() + " / " + npc);
 
     }
