@@ -60,6 +60,7 @@ public class TeamManager
         npc.setRealName("NPC");
         npc.setNameVisible(EnumNameTagVisibility.HIDE_FOR_OTHER_TEAMS);
         APIPlugin.log("[TeamRegister] Team NPC ajoutée  --> " + npc.getPrefix() + " / " + npc);
+        teamHandler.addTeam(npc);
 
     }
 
