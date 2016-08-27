@@ -41,7 +41,7 @@ public class WhitelistFunction {
     {
         Bukkit.getWhitelistedPlayers().add(Bukkit.getOfflinePlayer(player));
         Bukkit.reloadWhitelist();
-        Bukkit.getLogger().info("Added player " + player + " to whiteliste");
+        Bukkit.getLogger().info("Added player " + player + " to whitelist");
     }
 
     @RemoteMethod(description = "Get the whitelist", impact = ModelMBeanOperationInfo.ACTION)
