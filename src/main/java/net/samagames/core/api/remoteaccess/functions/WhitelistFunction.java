@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @RemoteObject(description = "Whitelist Management")
 public class WhitelistFunction {
 
-    @RemoteMethod(name = "AddPlayer", description = "Add a player to the whitelist", impact = ModelMBeanOperationInfo.ACTION)
+    @RemoteMethod(description = "Add a player to the whitelist", impact = ModelMBeanOperationInfo.ACTION)
     public void addPlayer(UUID player)
     {
         Bukkit.getWhitelistedPlayers().add(Bukkit.getOfflinePlayer(player));
@@ -36,7 +36,7 @@ public class WhitelistFunction {
         Bukkit.getLogger().info("Added player " + player + " to whitelist");
     }
 
-    @RemoteMethod(name = "RemovePlayer", description = "Remove a player to the whitelist", impact = ModelMBeanOperationInfo.ACTION)
+    @RemoteMethod(description = "Remove a player to the whitelist", impact = ModelMBeanOperationInfo.ACTION)
     public void removePlayer(UUID player)
     {
         Bukkit.getWhitelistedPlayers().add(Bukkit.getOfflinePlayer(player));
@@ -44,19 +44,19 @@ public class WhitelistFunction {
         Bukkit.getLogger().info("Added player " + player + " to whiteliste");
     }
 
-    @RemoteMethod(name = "GetWhitelist", description = "Get the whitelist", impact = ModelMBeanOperationInfo.ACTION)
+    @RemoteMethod(description = "Get the whitelist", impact = ModelMBeanOperationInfo.ACTION)
     public ArrayList<UUID> getWhiteList()
     {
         return Bukkit.getWhitelistedPlayers().stream().map(OfflinePlayer::getUniqueId).collect(Collectors.toCollection(ArrayList::new));
     }
 
-    @RemoteMethod(name = "IsWhiteListActived", description = "Know if the whitelist is actived", impact = ModelMBeanOperationInfo.INFO)
+    @RemoteMethod(description = "Know if the whitelist is actived", impact = ModelMBeanOperationInfo.INFO)
     public boolean isWhiteListActived()
     {
         return Bukkit.hasWhitelist();
     }
 
-    @RemoteMethod(name = "SetWhiteListActived", description = "Set if the whitelist is actived", impact = ModelMBeanOperationInfo.ACTION)
+    @RemoteMethod(description = "Set if the whitelist is actived", impact = ModelMBeanOperationInfo.ACTION)
     public void setWhiteListActived(boolean actived)
     {
         Bukkit.setWhitelist(actived);

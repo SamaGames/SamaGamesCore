@@ -164,7 +164,7 @@ public class RemoteAccessManager {
                 }
             }
             ModelMBeanOperationInfo operation = new ModelMBeanOperationInfo(
-                    remoteMethod.name(),
+                    method.getName(),
                     remoteMethod.description(),
                     parameterInfos,
                     method.getReturnType().getSimpleName(),

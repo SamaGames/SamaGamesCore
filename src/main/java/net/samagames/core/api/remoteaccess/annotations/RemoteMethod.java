@@ -23,7 +23,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RemoteMethod {
-    String name();
     String description();
     int impact() default ModelMBeanOperationInfo.UNKNOWN;
 }
