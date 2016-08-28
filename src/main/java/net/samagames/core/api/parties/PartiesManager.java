@@ -60,6 +60,9 @@ public class PartiesManager implements IPartiesManager
         String leader = jedis.get("party:" + party + ":lead");
         Map<String, String> data = jedis.hgetAll("party:" + party + ":members");
         jedis.close();
+        if (leader == null)
+            return;
+
         Party partie = new Party(party, UUID.fromString(leader), data.keySet().stream().map(UUID::fromString).collect(Collectors.toList()));
         parties.put(party, partie);
     }
