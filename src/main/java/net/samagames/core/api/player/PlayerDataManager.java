@@ -62,6 +62,7 @@ public class PlayerDataManager implements IPlayerDataManager
         if (data == null)
         {
             api.getPlugin().getLogger().severe(player + " is not in the cache !");
+            Thread.dumpStack();
         }
         return data;
     }
