@@ -1,6 +1,7 @@
 package net.samagames.core.listeners.general;
 
 import net.samagames.core.ApiImplementation;
+import net.samagames.core.api.permissions.PermissionEntity;
 import net.samagames.core.api.permissions.PermissionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -38,7 +39,7 @@ public class GlobalJoinListener implements Listener {
 
             api.getPlugin().getExecutor().execute(() -> {
                 //Load permissions
-                api.getPermissionsManager().loadPlayer(event.getUniqueId());
+                api.getPermissionsManager().loadPlayer(player);
                 number.incrementAndGet();
             });
 
@@ -93,7 +94,13 @@ public class GlobalJoinListener implements Listener {
 
         //Permissions already loaded in async, just apply them
         PermissionManager permissionManager = api.getPermissionsManager();
-        permissionManager.getPlayer(event.getPlayer().getUniqueId()).applyPermissions(event.getPlayer());
+        PermissionEntity permissionEntity = permissionManager.getPlayer(event.getPlayer().getUniqueId());
+        if (permissionEntity == null)
+        {
+            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Erreur lors du chargement de votre profil");
+            return ;
+        }
+        permissionEntity.applyPermissions(event.getPlayer());
 
         api.getPlugin().getLogger().info("Login Time: " + (System.currentTimeMillis() - startTime));
     }
