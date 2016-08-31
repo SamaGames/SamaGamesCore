@@ -10,6 +10,11 @@ import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.player.PlayerData;
 import net.samagames.tools.Reflection;
 import net.samagames.tools.TinyProtocol;
+import net.samagames.tools.npc.nms.CustomNPC;
+import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -84,6 +89,14 @@ public class NicknamePacketListener extends TinyProtocol
                    // GameProfile profile = data.a();
                     GameProfile profile = (GameProfile) playerProfile.invoke(data);
 
+                    Entity entity = null;
+                    for (World world : this.api.getPlugin().getServer().getWorlds())
+                        for (Entity e : world.getEntities())
+                            if (e.getUniqueId().equals(profile.getId()))
+                                entity = e;
+                    if (entity != null && ((CraftEntity)entity).getHandle() instanceof CustomNPC)
+                        break ;
+
                     PlayerData playerData = api.getPlayerManager().getPlayerData(profile.getId());
                     if (playerData != null && playerData.hasNickname() &&
                             !profile.getId().equals(receiver.getUniqueId()) &&
@@ -111,6 +124,15 @@ public class NicknamePacketListener extends TinyProtocol
                 {
                     return super.onPacketOutAsync(receiver, channel, packet);
                 }
+
+                Entity entity = null;
+                for (World world : this.api.getPlugin().getServer().getWorlds())
+                    for (Entity e : world.getEntities())
+                        if (e.getUniqueId().equals(id))
+                            entity = e;
+                if (entity != null && ((CraftEntity)entity).getHandle() instanceof CustomNPC)
+                    return super.onPacketOutAsync(receiver, channel, packet);
+
                 PlayerData playerData = api.getPlayerManager().getPlayerData(id);
                 if (playerData == null || !playerData.hasNickname())
                 {
@@ -168,6 +190,5 @@ public class NicknamePacketListener extends TinyProtocol
 
         return super.onPacketOutAsync(receiver, channel, packet);
     }
-
 
 }
