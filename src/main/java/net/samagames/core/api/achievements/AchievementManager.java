@@ -98,7 +98,7 @@ public class AchievementManager implements IAchievementManager
             try
             {
                 if (progress.getProgressId() == -1)
-                    this.api.getGameServiceManager().createAchievementProgress(this.api.getPlayerManager().getPlayerData(player).getPlayerBean(), bean.getAchievementId());
+                    this.api.getGameServiceManager().createAchievementProgress(this.api.getPlayerManager().getPlayerData(player).getPlayerBean(), bean);
                 else
                     this.api.getGameServiceManager().updateAchievementProgress(bean);
             }
