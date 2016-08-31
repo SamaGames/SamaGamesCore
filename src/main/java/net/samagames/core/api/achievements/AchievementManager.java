@@ -47,9 +47,9 @@ public class AchievementManager implements IAchievementManager
                     AchievementCategory category = categories.stream().filter(achievementCategory -> achievementCategory.getID() == bean.getCategoryId()).findFirst().orElse(null);
 
                     if (bean.getProgressTarget() == 1)
-                        achievementsCache[bean.getAchievementId()] = new Achievement(bean.getAchievementId(), bean.getAchievementName(), category, bean.getAchievementDescription().split("/n"));
+                        achievementsCache[bean.getAchievementId() - 1] = new Achievement(bean.getAchievementId(), bean.getAchievementName(), category, bean.getAchievementDescription().split("/n"));
                     else
-                        achievementsCache[bean.getAchievementId()] = new IncrementationAchievement(bean.getAchievementId(), bean.getAchievementName(), category, bean.getAchievementDescription().split("/n"), bean.getProgressTarget());
+                        achievementsCache[bean.getAchievementId() - 1] = new IncrementationAchievement(bean.getAchievementId(), bean.getAchievementName(), category, bean.getAchievementDescription().split("/n"), bean.getProgressTarget());
                 }
 
                 AchievementCategory[] achievementCategoriesCache = new AchievementCategory[n2 == 0 ? 0 : Math.max(n2, categories.get(n2 - 1).getID())];
