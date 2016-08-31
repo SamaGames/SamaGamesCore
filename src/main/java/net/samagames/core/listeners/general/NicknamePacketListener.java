@@ -95,7 +95,7 @@ public class NicknamePacketListener extends TinyProtocol
                             if (e.getUniqueId().equals(profile.getId()))
                                 entity = e;
                     if (entity != null && ((CraftEntity)entity).getHandle() instanceof CustomNPC)
-                        break ;
+                        continue ;
 
                     PlayerData playerData = api.getPlayerManager().getPlayerData(profile.getId());
                     if (playerData != null && playerData.hasNickname() &&
