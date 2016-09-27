@@ -10,7 +10,7 @@ import net.samagames.persistanceapi.beans.players.SanctionBean;
 import net.samagames.tools.Reflection;
 import net.samagames.tools.gameprofile.ProfileLoader;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 

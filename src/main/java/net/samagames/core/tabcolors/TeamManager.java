@@ -1,6 +1,6 @@
 package net.samagames.core.tabcolors;
 
-import net.minecraft.server.v1_9_R2.ScoreboardTeamBase.EnumNameTagVisibility;
+import net.minecraft.server.v1_10_R1.ScoreboardTeamBase.EnumNameTagVisibility;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;

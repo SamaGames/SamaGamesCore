@@ -1,7 +1,7 @@
 package net.samagames.core.api.resourcepacks;
 
 import io.netty.channel.Channel;
-import net.minecraft.server.v1_9_R2.PacketPlayInResourcePackStatus;
+import net.minecraft.server.v1_10_R1.PacketPlayInResourcePackStatus;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.resourcepacks.IResourceCallback;
 import net.samagames.api.resourcepacks.IResourcePacksManager;
@@ -9,7 +9,7 @@ import net.samagames.core.APIPlugin;
 import net.samagames.tools.TinyProtocol;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.v1_9_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_10_R1.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

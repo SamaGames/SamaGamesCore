@@ -41,7 +41,7 @@ dependencies {
     compile( group: 'net.samagames', name: 'SamaGamesAPI', version: '4.0.0')
     compile( group: 'net.samagames', name: 'PersistanceAPI', version: '1.0.0')
     compile( group: 'redis.clients', name: 'jedis', version:'2.8.0')
-    provided( group: 'org.spigotmc', name: 'spigot', version: '1.9.4-R0.1-SNAPSHOT') {
+    provided( group: 'org.spigotmc', name: 'spigot', version: '1.10.2-R0.1-SNAPSHOT') {
         transitive = false
     }
 }
