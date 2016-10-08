@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -25,6 +26,7 @@ import redis.clients.jedis.Jedis;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
@@ -196,6 +198,12 @@ public class APIPlugin extends JavaPlugin implements Listener
             Bukkit.getLogger().info("Blocked WorldDownloader of " + player.getDisplayName());
             player.sendPluginMessage(this, "WDL|CONTROL", out.toByteArray());
         });
+
+        this.getServer().getScheduler().runTaskTimer(this, () ->
+        {
+            for (Player player : this.getServer().getOnlinePlayers())
+                Arrays.asList(35, 36, 37, 38, 39).forEach(id -> api.getAchievementManager().incrementAchievement(player.getUniqueId(), id, 1));
+        }, 20L * 60, 20L * 60);
 
         PluginMessageListener pluginMessageListener = new PluginMessageListener(api);
 
