@@ -2,6 +2,8 @@ package net.samagames.core.listeners.general;
 
 import io.netty.util.internal.ConcurrentSet;
 import net.md_5.bungee.api.ChatColor;
+import net.samagames.api.SamaGamesAPI;
+import net.samagames.api.games.Status;
 import net.samagames.api.pubsub.IPacketsReceiver;
 import net.samagames.api.pubsub.PendingMessage;
 import net.samagames.core.APIPlugin;
@@ -226,6 +228,9 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
                 message = message.replace(w, buf.toString());
             }
         }
+
+        if (SamaGamesAPI.get().getGameManager().getGame() != null && SamaGamesAPI.get().getGameManager().getGame().getStatus() == Status.FINISHED && event.getMessage().equalsIgnoreCase("gg"))
+            Bukkit.getScheduler().runTask(this.plugin, () -> SamaGamesAPI.get().getAchievementManager().getAchievementByID(21).unlock(player.getUniqueId()));
     }
 
     @Override

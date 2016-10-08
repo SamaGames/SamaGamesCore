@@ -197,8 +197,13 @@ public class APIPlugin extends JavaPlugin implements Listener
             player.sendPluginMessage(this, "WDL|CONTROL", out.toByteArray());
         });
 
+        PluginMessageListener pluginMessageListener = new PluginMessageListener(api);
+
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "Network");
-        this.getServer().getMessenger().registerIncomingPluginChannel(this, "Network", new PluginMessageListener(api));
+        this.getServer().getMessenger().registerIncomingPluginChannel(this, "Network", pluginMessageListener);
+
+        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "Achievement");
+        this.getServer().getMessenger().registerIncomingPluginChannel(this, "Achievement", pluginMessageListener);
 
         /*
         Loading commands
