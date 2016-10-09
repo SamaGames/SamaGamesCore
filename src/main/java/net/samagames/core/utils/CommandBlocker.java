@@ -11,9 +11,11 @@ public class CommandBlocker
 {
     private static final String MINECRAFT_PREFIX = "minecraft";
     private static final String BUKKIT_PREFIX = "bukkit";
+    private static final String SPIGOT_PREFIX = "spigot";
     private static final String PROTOCOLLIB_PREFIX = "protocollib";
     private static final String SONARPET_PREFIX = "sonarpet";
     private static final String LIBSDISGUISES_PREFIX = "libsdisguises";
+    private static final String PROTOCOLSUPPORT_PREFIX = "protocolsupport";
 
     public static void removeCommands()
     {
@@ -32,6 +34,9 @@ public class CommandBlocker
             removeCommand(BUKKIT_PREFIX, "me");
             removeCommand(BUKKIT_PREFIX, "save-all", "save-off", "save-on");
             removeCommand(BUKKIT_PREFIX, "trigger");
+
+            // Spigot
+            removeCommand(SPIGOT_PREFIX, "restart");
 
             // ProtocolLib
             removeCommand(PROTOCOLLIB_PREFIX, "protocol");
@@ -57,6 +62,9 @@ public class CommandBlocker
             removeCommand(LIBSDISGUISES_PREFIX, "undisguiseradius", "undisradius", "undradius");
             removeCommand(LIBSDISGUISES_PREFIX, "disguiseclone", "disguisec", "disc", "disclone", "dclone", "clonedisguise", "clonedis", "cdisguise", "cdis");
             removeCommand(LIBSDISGUISES_PREFIX, "disguiseviewself", "dviewself", "dvs", "disguisevs", "disvs", "vsd", "viewselfdisguise", "viewselfd");
+
+            // ProtocolSupport
+            removeCommand(PROTOCOLLIB_PREFIX, "protocolsupport", "ps");
         }
         catch (NoSuchFieldException | IllegalAccessException e)
         {
