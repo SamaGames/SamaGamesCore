@@ -38,6 +38,7 @@ public class FriendsManager implements IFriendsManager
             {
                 friendPlayer.addFriend(UUID.fromString(friend));
             }
+            cache.put(player, friendPlayer);
         }catch (Exception e)
         {
             e.printStackTrace();
