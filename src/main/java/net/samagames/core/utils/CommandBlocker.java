@@ -28,7 +28,7 @@ public class CommandBlocker
             removeCommand(MINECRAFT_PREFIX, "trigger");
 
             // Bukkit
-            removeCommand(BUKKIT_PREFIX, "about", "version", "ver");
+            removeCommand(BUKKIT_PREFIX, "about", "version", "ver", "icanhasbukkit");
             removeCommand(BUKKIT_PREFIX, "plugins", "pl");
             removeCommand(BUKKIT_PREFIX, "help", "?");
             removeCommand(BUKKIT_PREFIX, "me");
