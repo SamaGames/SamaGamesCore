@@ -90,7 +90,7 @@ public class AchievementManager implements IAchievementManager
         {
             AchievementProgress progress = achievement.getProgress(player);
 
-            if (progress == null)
+            if (progress == null || !progress.isChanged())
                 continue;
 
             AchievementProgressBean bean = new AchievementProgressBean(progress.getProgressId(), achievement.getID(), progress.getProgress(), progress.getStartTime(), progress.getUnlockTime(), player);
