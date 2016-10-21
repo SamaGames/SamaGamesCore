@@ -90,10 +90,7 @@ class PearlManager implements IPearlManager
 
         int playerRankId = (int) this.api.getPlayerManager().getPlayerData(player.getUniqueId()).getPlayerBean().getGroupId();
 
-        double rankMultiplier = 0;
-
-        if (playerRankId > 1)
-            rankMultiplier = Double.parseDouble("1." + (playerRankId < 6 ? 5 : playerRankId - 1));
+        double rankMultiplier = playerRankId > 1 ? Double.parseDouble("1." + (playerRankId < 6 ? 5 : playerRankId - 1)) : 1.0D;
 
         if (gameTime < 10)
             gameTime = 10;

@@ -288,9 +288,9 @@ public class GameManager implements IGameManager
     }
 
     @Override
-    public int getGameTime()
+    public long getGameTime()
     {
-        return (int) (this.endTimestamp - this.startTimestamp);
+        return this.endTimestamp - this.startTimestamp;
     }
 
     @Override
