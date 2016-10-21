@@ -92,6 +92,9 @@ class PearlManager implements IPearlManager
         if (playerRankId > 1)
             rankMultiplier = Integer.parseInt("1." + (playerRankId < 6 ? 5 : playerRankId - 1));
 
+        if (gameTime < 10)
+            gameTime = 10;
+
         int pearlChance = (int) ((gameTime / 2) * rankMultiplier * (win ? 1.2 : 0.8));
         int random = new Random().nextInt(100);
 
