@@ -4,7 +4,6 @@ import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.games.*;
 import net.samagames.api.games.themachine.ICoherenceMachine;
 import net.samagames.api.parties.IParty;
-import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.games.themachine.CoherenceMachineImpl;
 import net.samagames.persistanceapi.beans.statistics.HostStatisticsBean;
@@ -12,7 +11,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 import redis.clients.jedis.Jedis;
 
 import java.util.Map;
@@ -28,15 +26,14 @@ public class GameManager implements IGameManager
     private final ConcurrentHashMap<UUID, Long> playerDisconnectedTime;
     private final GameProperties gameProperties;
     private IGameStatisticsHelper gameStatisticsHelper;
+    private IPearlManager pearlManager;
     private Game game;
     private int maxReconnectTime;
     private boolean freeMode;
     private boolean legacyPvP;
 
-    private long startTimeStamp;
-
-    //Maybe useful some day
-    private BukkitTask checkerThread;
+    private long startTimestamp;
+    private long endTimestamp;
 
     public GameManager(ApiImplementation api)
     {
@@ -51,7 +48,7 @@ public class GameManager implements IGameManager
 
         this.gameProperties = new GameProperties();
         this.gameStatisticsHelper = null;
-
+        this.pearlManager = new PearlManager(api);
     }
 
     @Override
@@ -64,7 +61,7 @@ public class GameManager implements IGameManager
 
         this.api.getJoinManager().registerHandler(new GameLoginHandler(this), 100);
 
-        APIPlugin.getInstance().getExecutor().scheduleAtFixedRate(() ->
+        this.api.getPlugin().getExecutor().scheduleAtFixedRate(() ->
         {
             if (game != null)
                 this.refreshArena();
@@ -73,24 +70,24 @@ public class GameManager implements IGameManager
         game.handlePostRegistration();
 
         //Check for reconnection can be started when we change the mas reconnection time but fuck it
-        APIPlugin.getInstance().getExecutor().scheduleAtFixedRate(() ->
+        this.api.getPlugin().getExecutor().scheduleAtFixedRate(() ->
         {
-                for (Map.Entry<UUID, Long> entry: playerDisconnectedTime.entrySet())
+            for (Map.Entry<UUID, Long> entry : this.playerDisconnectedTime.entrySet())
+            {
+                if (!isReconnectAllowed(entry.getKey()))
                 {
-                    if (!isReconnectAllowed(entry.getKey()))
-                    {
-                        onPlayerReconnectTimeOut(Bukkit.getOfflinePlayer(entry.getKey()), false);
-                    }
+                    onPlayerReconnectTimeOut(Bukkit.getOfflinePlayer(entry.getKey()), false);
                 }
-
+            }
         }, 1L, 30L, TimeUnit.SECONDS);
 
-        APIPlugin.log(Level.INFO, "Registered game '" + game.getGameName() + "' successfuly!");
+        this.api.getPlugin().log(Level.INFO, "Registered game '" + game.getGameName() + "' successfuly!");
     }
 
     public void rejoinTemplateQueue(Player p)
     {
-        api.getPlugin().getServer().getScheduler().runTaskAsynchronously(api.getPlugin(), () -> {
+        this.api.getPlugin().getServer().getScheduler().runTaskAsynchronously(this.api.getPlugin(), () ->
+        {
             IParty party = SamaGamesAPI.get().getPartiesManager().getPartyForPlayer(p.getUniqueId());
 
             if(party == null)
@@ -122,14 +119,15 @@ public class GameManager implements IGameManager
         if (!p.isOnline())
             return;
 
-        api.getPlayerManager().connectToServer(p.getUniqueId(), "lobby");
+        this.api.getPlayerManager().connectToServer(p.getUniqueId(), "lobby");
     }
 
     @Override
     public void onPlayerDisconnect(Player player)
     {
         GamePlayer player1 = this.game.getPlayer(player.getUniqueId());
-        if (maxReconnectTime > 0
+
+        if (this.maxReconnectTime > 0
                 && player1 != null
                 && !player1.isModerator()
                 && !player1.isSpectator()
@@ -137,12 +135,12 @@ public class GameManager implements IGameManager
         {
             long currentTime = System.currentTimeMillis();
 
-            playerDisconnectedTime.put(player.getUniqueId(), currentTime);
+            this.playerDisconnectedTime.put(player.getUniqueId(), currentTime);
 
-            api.getPlugin().getExecutor().execute(() -> {
+            this.api.getPlugin().getExecutor().execute(() -> {
                 Jedis jedis = api.getBungeeResource();
                 jedis.set("rejoin:" + player.getUniqueId(), this.api.getServerName());
-                jedis.expire("rejoin:" + player.getUniqueId(), (this.maxReconnectTime * 60));
+                jedis.expire("rejoin:" + player.getUniqueId(), this.maxReconnectTime * 60);
                 jedis.close();
             });
         }
@@ -183,49 +181,35 @@ public class GameManager implements IGameManager
     }
 
     @Override
-    public Game getGame()
+    public void startTimer()
     {
-        return this.game;
+        this.startTimestamp = System.currentTimeMillis();
     }
 
     @Override
-    public Status getGameStatus()
+    public void stopTimer()
     {
-        if (game == null)
-            return null;
+        this.endTimestamp = System.currentTimeMillis();
 
-        return this.game.getStatus();
-    }
+        this.api.getPlugin().getExecutor().execute(() ->
+        {
+            HostStatisticsBean hostStatisticsBean = new HostStatisticsBean(
+                    this.gameProperties.getTemplateID(),
+                    this.api.getServerName(),
+                    Bukkit.getIp(),
+                    new UUID(0,0),
+                    this.startTimestamp,
+                    System.currentTimeMillis() - this.startTimestamp);
 
-    @Override
-    public ICoherenceMachine getCoherenceMachine()
-    {
-        if (this.game == null)
-            throw new NullPointerException("Can't get CoherenceMachine because game is null!");
-
-        if (this.game.getCoherenceMachine() == null)
-            return new CoherenceMachineImpl(this.game, this.gameProperties);
-
-        return this.game.getCoherenceMachine();
-    }
-
-    @Override
-    public GameProperties getGameProperties()
-    {
-        return this.gameProperties;
-    }
-
-    @Override
-    public GameGuiManager getGameGuiManager()
-    {
-        //TODO gui manager ?
-        return new GameGuiManager();
-    }
-
-    @Override
-    public int getMaxReconnectTime()
-    {
-        return this.maxReconnectTime;
+            try
+            {
+                this.api.getGameServiceManager().createHostRecord(hostStatisticsBean);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override
@@ -252,9 +236,73 @@ public class GameManager implements IGameManager
         this.gameStatisticsHelper = gameStatisticsHelper;
     }
 
+    @Override
+    public void setKeepPlayerCache(boolean keepIt)
+    {
+        this.api.setKeepCache(keepIt);
+    }
+
+    @Override
+    public Game getGame()
+    {
+        return this.game;
+    }
+
+    @Override
+    public Status getGameStatus()
+    {
+        if (this.game == null)
+            return null;
+
+        return this.game.getStatus();
+    }
+
+    @Override
+    public ICoherenceMachine getCoherenceMachine()
+    {
+        if (this.game == null)
+            throw new NullPointerException("Can't get CoherenceMachine because game is null!");
+
+        if (this.game.getCoherenceMachine() == null)
+            return new CoherenceMachineImpl(this.game, this.gameProperties);
+
+        return this.game.getCoherenceMachine();
+    }
+
+    @Override
+    public GameProperties getGameProperties()
+    {
+        return this.gameProperties;
+    }
+
+    @Override
+    public GameGuiManager getGameGuiManager()
+    {
+        return new GameGuiManager();
+    }
+
+    @Override
+    public int getMaxReconnectTime()
+    {
+        return this.maxReconnectTime;
+    }
+
+    @Override
+    public int getGameTime()
+    {
+        return (int) (this.endTimestamp - this.startTimestamp);
+    }
+
+    @Override
     public IGameStatisticsHelper getGameStatisticsHelper()
     {
         return this.gameStatisticsHelper;
+    }
+
+    @Override
+    public IPearlManager getPearlManager()
+    {
+        return this.pearlManager;
     }
 
     @Override
@@ -293,37 +341,8 @@ public class GameManager implements IGameManager
     }
 
     @Override
-    public void setKeepPlayerCache(boolean keepIt)
+    public boolean isKeepingPlayerCache()
     {
-        api.setKeepCache(keepIt);
-    }
-
-    @Override
-    public boolean isKeepingPlayerCache() {
-        return api.isKeepCache();
-    }
-
-    @Override
-    public void startTimer() {
-        startTimeStamp = System.currentTimeMillis();
-    }
-
-    @Override
-    public void stopTimer() {
-        api.getPlugin().getExecutor().execute(() -> {
-
-            HostStatisticsBean hostStatisticsBean = new HostStatisticsBean(
-                    gameProperties.getTemplateID(),
-                    api.getServerName(),
-                    Bukkit.getIp(),
-                    new UUID(0,0),
-                    startTimeStamp,
-                    System.currentTimeMillis() - startTimeStamp);
-            try {
-                api.getGameServiceManager().createHostRecord(hostStatisticsBean);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        return this.api.isKeepCache();
     }
 }
