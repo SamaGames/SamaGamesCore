@@ -5,6 +5,7 @@ import net.samagames.api.games.*;
 import net.samagames.api.games.themachine.ICoherenceMachine;
 import net.samagames.api.parties.IParty;
 import net.samagames.core.ApiImplementation;
+import net.samagames.core.api.games.pearls.PearlManager;
 import net.samagames.core.api.games.themachine.CoherenceMachineImpl;
 import net.samagames.persistanceapi.beans.statistics.HostStatisticsBean;
 import org.bukkit.Bukkit;

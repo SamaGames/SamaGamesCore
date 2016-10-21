@@ -1,7 +1,9 @@
-package net.samagames.core.api.games;
+package net.samagames.core.api.games.pearls;
 
+import com.google.gson.Gson;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.games.IPearlManager;
+import net.samagames.api.games.pearls.Pearl;
 import net.samagames.core.ApiImplementation;
 import net.samagames.tools.chat.ChatUtils;
 import org.bukkit.Bukkit;
@@ -9,7 +11,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 
+import java.util.Calendar;
 import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  *                )\._.,--....,'``.
@@ -104,8 +109,14 @@ class PearlManager implements IPearlManager
         {
             int stars = RankChances.getByRankId(playerRankId).getRandomizedStars();
 
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.MONTH, 1);
+
+            Pearl pearl = new Pearl(UUID.randomUUID(), stars, calendar.getTime().getTime());
+
             Jedis jedis = this.api.getBungeeResource();
-            jedis.lpush("pearls:" + player.getUniqueId().toString(), String.valueOf(stars));
+            jedis.set("pearls:" + player.getUniqueId().toString() + ":" + pearl.getUUID().toString(), new Gson().toJson(pearl));
+            jedis.expire("pearls:" + player.getUniqueId().toString() + ":" + pearl.getUUID().toString(), (int) TimeUnit.MILLISECONDS.toSeconds(pearl.getExpiration()));
             jedis.close();
 
             player.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
