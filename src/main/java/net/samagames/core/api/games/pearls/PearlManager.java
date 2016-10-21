@@ -121,7 +121,7 @@ class PearlManager implements IPearlManager
 
             player.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
             player.sendMessage(ChatUtils.getCenteredText(ChatColor.GREEN + "\u25C9"));
-            player.sendMessage(ChatUtils.getCenteredText(ChatColor.WHITE + "Vous avez trouvé une " + ChatColor.GREEN + "perle de niveau " + stars + ChatColor.WHITE " !"));
+            player.sendMessage(ChatUtils.getCenteredText(ChatColor.WHITE + "Vous avez trouvé une " + ChatColor.GREEN + "perle de niveau " + stars + ChatColor.WHITE + " !"));
             player.sendMessage(ChatUtils.getCenteredText(ChatColor.WHITE + "Echangez-la auprès de " + ChatColor.GOLD + "Graou" + ChatColor.WHITE + " dans le Hub !"));
             player.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
         }
