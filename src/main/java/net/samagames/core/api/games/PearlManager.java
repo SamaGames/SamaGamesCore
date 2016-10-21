@@ -4,6 +4,7 @@ import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.games.IPearlManager;
 import net.samagames.core.ApiImplementation;
 import net.samagames.tools.chat.ChatUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
@@ -97,6 +98,8 @@ class PearlManager implements IPearlManager
 
         int pearlChance = (int) ((gameTime / 2) * rankMultiplier * (win ? 1.2 : 0.8));
         int random = new Random().nextInt(100);
+
+        Bukkit.broadcastMessage("Player " + player.getName() + ": " + pearlChance + "% -> " + random);
 
         if (random <= pearlChance)
         {
