@@ -3,6 +3,7 @@ package net.samagames.core.api.games;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.games.*;
 import net.samagames.api.games.themachine.ICoherenceMachine;
+import net.samagames.api.games.pearls.IPearlManager;
 import net.samagames.api.parties.IParty;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.games.pearls.PearlManager;
