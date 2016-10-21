@@ -3,6 +3,8 @@ package net.samagames.core.api.games;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.games.IPearlManager;
 import net.samagames.core.ApiImplementation;
+import net.samagames.tools.chat.ChatUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 
@@ -100,6 +102,11 @@ class PearlManager implements IPearlManager
             Jedis jedis = this.api.getBungeeResource();
             jedis.lpush("pearls:" + player.getUniqueId().toString(), String.valueOf(stars));
             jedis.close();
+
+            player.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+            player.sendMessage(ChatUtils.getCenteredText(ChatColor.GREEN + "Vous avez trouvé une perle de niveau " + stars));
+            player.sendMessage(ChatUtils.getCenteredText(ChatColor.GREEN + "Echangez-la auprès de Graou dans le Hub !"));
+            player.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
         }
     }
 }
