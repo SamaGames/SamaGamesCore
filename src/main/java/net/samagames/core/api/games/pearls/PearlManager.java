@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  *
  * Created by Jérémy L. (BlueSlime) on 21/10/2016
  */
-class PearlManager implements IPearlManager
+public class PearlManager implements IPearlManager
 {
     private enum RankChances
     {
