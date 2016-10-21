@@ -1,8 +1,7 @@
 package net.samagames.core.api.games.pearls;
 
 import com.google.gson.Gson;
-import net.samagames.api.SamaGamesAPI;
-import net.samagames.api.games.IPearlManager;
+import net.samagames.api.games.pearls.IPearlManager;
 import net.samagames.api.games.pearls.Pearl;
 import net.samagames.core.ApiImplementation;
 import net.samagames.tools.chat.ChatUtils;
@@ -83,7 +82,7 @@ public class PearlManager implements IPearlManager
 
     private final ApiImplementation api;
 
-    PearlManager(ApiImplementation api)
+    public PearlManager(ApiImplementation api)
     {
         this.api = api;
     }
