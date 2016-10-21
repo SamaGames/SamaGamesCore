@@ -105,7 +105,7 @@ class PearlManager implements IPearlManager
 
         Bukkit.broadcastMessage("Player " + player.getName() + ": " + pearlChance + "% -> " + random);
 
-        if (random <= pearlChance)
+        if (/**random <= pearlChance**/ true) // TEST
         {
             int stars = RankChances.getByRankId(playerRankId).getRandomizedStars();
 
