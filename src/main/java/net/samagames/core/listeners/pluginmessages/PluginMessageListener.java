@@ -78,16 +78,30 @@ public class PluginMessageListener implements org.bukkit.plugin.messaging.Plugin
 
             UUID playerForUnlock = UUID.fromString(in.readUTF());
             int achievementId = in.readInt();
+            boolean forTheOthers = in.readBoolean();
             boolean isIncrementType = in.readBoolean();
 
             Bukkit.getScheduler().runTask(this.api.getPlugin(), () ->
             {
                 Achievement achievement = this.api.getAchievementManager().getAchievementByID(achievementId);
 
-                if (isIncrementType)
-                    ((IncrementationAchievement) achievement).increment(playerForUnlock, in.readInt());
+                if (forTheOthers)
+                {
+                    Bukkit.getOnlinePlayers().stream().filter(p -> p.getUniqueId() != playerForUnlock).forEach(p ->
+                    {
+                        if (isIncrementType)
+                            ((IncrementationAchievement) achievement).increment(p.getUniqueId(), in.readInt());
+                        else
+                            achievement.unlock(p.getUniqueId());
+                    });
+                }
                 else
-                    achievement.unlock(playerForUnlock);
+                {
+                    if (isIncrementType)
+                        ((IncrementationAchievement) achievement).increment(playerForUnlock, in.readInt());
+                    else
+                        achievement.unlock(playerForUnlock);
+                }
             });
         }
     }
