@@ -86,6 +86,8 @@ class PearlManager implements IPearlManager
     @Override
     public void runGiveAlgorythm(Player player, int gameTime, boolean win)
     {
+        Bukkit.broadcastMessage("Running algorithm for the player: " + player.getName());
+
         int playerRankId = (int) this.api.getPlayerManager().getPlayerData(player.getUniqueId()).getPlayerBean().getGroupId();
 
         int rankMultiplier = 0;
