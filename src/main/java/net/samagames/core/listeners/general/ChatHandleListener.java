@@ -1,6 +1,5 @@
 package net.samagames.core.listeners.general;
 
-import io.netty.util.internal.ConcurrentSet;
 import net.md_5.bungee.api.ChatColor;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.games.Status;
@@ -25,34 +24,31 @@ import redis.clients.jedis.Jedis;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Created by Silva on 25/10/2015.
  */
 public class ChatHandleListener extends APIListener implements IPacketsReceiver {
 
-    private Set<String> words;
-    protected ConcurrentHashMap<UUID, MessageData> lastMessages = new ConcurrentHashMap<>();
-    protected ConcurrentHashMap<UUID, Date> mutedPlayers = new ConcurrentHashMap<>();
-    protected ConcurrentHashMap<UUID, String> muteReasons = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, String> blacklist = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<UUID, MessageData> lastMessages = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<UUID, Date> mutedPlayers = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<UUID, String> muteReasons = new ConcurrentHashMap<>();
 
-    public ChatHandleListener(APIPlugin plugin) {
+    public ChatHandleListener(APIPlugin plugin)
+    {
         super(plugin);
 
         Jedis jedis = api.getBungeeResource();
-        words = jedis.smembers("chat:blacklist");
-        if (words == null)
-            words = new ConcurrentSet<>();
-        jedis.close();
-    }
 
-    public void reload()
-    {
-        Jedis jedis = api.getBungeeResource();
-        words = jedis.smembers("chat:blacklist");
-        if (words == null)
-            words = new ConcurrentSet<>();
+        for (String blacklisted : jedis.smembers("chat:blacklist"))
+        {
+            if (blacklisted.contains("="))
+                blacklist.put(blacklisted.split("=")[0], blacklisted.split("=")[1]);
+            else
+                blacklist.put(blacklisted, null);
+        }
+
         jedis.close();
     }
 
@@ -222,18 +218,25 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
 
         String checkBlacklisted = message.toLowerCase();
 
-        for (String w : words)
+        for (String blacklistedWord : blacklist.keySet())
         {
-            if (checkBlacklisted.startsWith(w + " ") || checkBlacklisted.endsWith(" " + w) || checkBlacklisted.contains(" " + w + " "))
+            if (checkBlacklisted.startsWith(blacklistedWord + " ") || checkBlacklisted.endsWith(" " + blacklistedWord) || checkBlacklisted.contains(" " + blacklistedWord + " "))
             {
-                char[] replacment = {'#', '!', '@', '?', '$'};
-                Random random = new Random();
-                StringBuffer buf = new StringBuffer();
+                if (blacklist.get(blacklistedWord) == null)
+                {
+                    char[] replaceChars = {'#', '!', '@', '?', '$'};
+                    Random random = new Random();
+                    StringBuilder builder = new StringBuilder();
 
-                for (int i = 0; i < w.length(); i++)
-                    buf.append(replacment[random.nextInt(replacment.length)]);
+                    for (int i = 0; i < blacklistedWord.length(); i++)
+                        builder.append(replaceChars[random.nextInt(replaceChars.length)]);
 
-                message = message.replace(w, buf.toString());
+                    message = message.replace(blacklistedWord, builder.toString());
+                }
+                else
+                {
+                    message = message.replace(blacklistedWord, blacklist.get(blacklistedWord));
+                }
             }
         }
 
