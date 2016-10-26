@@ -33,7 +33,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class ChatHandleListener extends APIListener implements IPacketsReceiver {
 
     private Set<String> words;
-    protected CopyOnWriteArraySet<String> blacklist = new CopyOnWriteArraySet<>();
     protected ConcurrentHashMap<UUID, MessageData> lastMessages = new ConcurrentHashMap<>();
     protected ConcurrentHashMap<UUID, Date> mutedPlayers = new ConcurrentHashMap<>();
     protected ConcurrentHashMap<UUID, String> muteReasons = new ConcurrentHashMap<>();
@@ -202,21 +201,23 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
         {
             player.sendMessage(ChatColor.RED + "Pas d'adresse ip dans le chat !");
             event.setCancelled(true);
-        } else if (Misc.getURLPattern().matcher(message).find())
+        }
+        else if (Misc.getURLPattern().matcher(message).find())
         {
             player.sendMessage(ChatColor.RED + "Pas de lien dans le chat !");
             event.setCancelled(true);
-        } else if (message.matches("[A-Z]{4,}"))
+        }
+        else if (message.matches("[A-Z]{4,}"))
         {
             player.sendMessage(ChatColor.RED + "Pas de messages en majuscules !");
             event.setCancelled(true);
         }
 
-        String check = message.toLowerCase();
+        String checkBlacklisted = message.toLowerCase();
 
         for (String w : words)
         {
-            if (check.startsWith(w + "") || check.endsWith(" " + w) || check.contains(" " + w + " "))
+            if (checkBlacklisted.startsWith(w + " ") || checkBlacklisted.endsWith(" " + w) || checkBlacklisted.contains(" " + w + " "))
             {
                 char[] replacment = {'#', '!', '@', '?', '$'};
                 Random random = new Random();
@@ -228,6 +229,8 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
                 message = message.replace(w, buf.toString());
             }
         }
+
+        event.setMessage(message.replaceAll("<3", "\u2764"));
 
         if (SamaGamesAPI.get().getGameManager().getGame() != null && SamaGamesAPI.get().getGameManager().getGame().getStatus() == Status.FINISHED && event.getMessage().equalsIgnoreCase("gg"))
             Bukkit.getScheduler().runTask(this.plugin, () -> SamaGamesAPI.get().getAchievementManager().getAchievementByID(21).unlock(player.getUniqueId()));
