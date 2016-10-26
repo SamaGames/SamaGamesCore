@@ -232,7 +232,7 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
                 }
             }
 
-            if (checkBlacklisted.equals(blacklistedWord) || checkBlacklisted.startsWith(blacklistedWord + " ") || checkBlacklisted.endsWith(" " + blacklistedWord) || checkBlacklisted.contains(" " + blacklistedWord + " ") || containsWithSpecial)
+            if (StringUtils.equalsIgnoreCase(checkBlacklisted, blacklistedWord) || checkBlacklisted.startsWith(blacklistedWord + " ") || checkBlacklisted.endsWith(" " + blacklistedWord) || checkBlacklisted.contains(" " + blacklistedWord + " ") || containsWithSpecial)
             {
                 if (blacklist.get(blacklistedWord) == null)
                 {
