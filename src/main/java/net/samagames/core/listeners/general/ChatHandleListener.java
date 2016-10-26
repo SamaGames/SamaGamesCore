@@ -217,10 +217,22 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
         }
 
         String checkBlacklisted = message.toLowerCase();
+        char[] endings = {'.', ',', ';', ':', '?', '!'};
 
         for (String blacklistedWord : blacklist.keySet())
         {
-            if (checkBlacklisted.startsWith(blacklistedWord + " ") || checkBlacklisted.endsWith(" " + blacklistedWord) || checkBlacklisted.contains(" " + blacklistedWord + " "))
+            boolean containsWithSpecial = false;
+
+            for (char ending : endings)
+            {
+                if (checkBlacklisted.contains(blacklistedWord + ending))
+                {
+                    containsWithSpecial = true;
+                    break;
+                }
+            }
+
+            if (checkBlacklisted.equals(blacklistedWord) || checkBlacklisted.startsWith(blacklistedWord + " ") || checkBlacklisted.endsWith(" " + blacklistedWord) || checkBlacklisted.contains(" " + blacklistedWord + " ") || containsWithSpecial)
             {
                 if (blacklist.get(blacklistedWord) == null)
                 {
