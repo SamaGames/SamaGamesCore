@@ -163,26 +163,33 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
                 return;
             }
         }
+
+        message = message.replaceAll("<3", "\u2764");
+
+        event.setMessage(message);
+
+        if (SamaGamesAPI.get().getGameManager().getGame() != null && SamaGamesAPI.get().getGameManager().getGame().getStatus() == Status.FINISHED && event.getMessage().equalsIgnoreCase("gg"))
+            Bukkit.getScheduler().runTask(this.plugin, () -> SamaGamesAPI.get().getAchievementManager().getAchievementByID(21).unlock(player.getUniqueId()));
+
         PermissionEntity user = api.getPermissionsManager().getPlayer(player.getUniqueId());
+
         if (user.hasPermission("api.chat.bypass"))
             return;
 
         MessageData last = lastMessages.get(player.getUniqueId());
         if (last != null)
         {
-            if (!user.hasPermission("api.chat.bypass"))
+            if (last.isTooEarly(time))
             {
-                if (last.isTooEarly(time))
-                {
-                    player.sendMessage(ChatColor.RED + "Merci de ne pas envoyer de messages trop souvent.");
-                    event.setCancelled(true);
-                    return;
-                } else if (last.isSame(message, time))
-                {
-                    player.sendMessage(ChatColor.RED + "Merci de ne pas envoyer plusieurs fois le même message.");
-                    event.setCancelled(true);
-                    return;
-                }
+                player.sendMessage(ChatColor.RED + "Merci de ne pas envoyer de messages trop souvent.");
+                event.setCancelled(true);
+                return;
+            }
+            else if (last.isSame(message, time))
+            {
+                player.sendMessage(ChatColor.RED + "Merci de ne pas envoyer plusieurs fois le même message.");
+                event.setCancelled(true);
+                return;
             }
         }
 
@@ -230,10 +237,7 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
             }
         }
 
-        event.setMessage(message.replaceAll("<3", "\u2764"));
-
-        if (SamaGamesAPI.get().getGameManager().getGame() != null && SamaGamesAPI.get().getGameManager().getGame().getStatus() == Status.FINISHED && event.getMessage().equalsIgnoreCase("gg"))
-            Bukkit.getScheduler().runTask(this.plugin, () -> SamaGamesAPI.get().getAchievementManager().getAchievementByID(21).unlock(player.getUniqueId()));
+        event.setMessage(message);
     }
 
     @Override
