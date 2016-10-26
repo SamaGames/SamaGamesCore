@@ -12,6 +12,7 @@ import net.samagames.core.api.player.PlayerData;
 import net.samagames.persistanceapi.beans.players.SanctionBean;
 import net.samagames.tools.Misc;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -232,7 +233,7 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
                 }
             }
 
-            if (StringUtils.equalsIgnoreCase(checkBlacklisted, blacklistedWord) || checkBlacklisted.startsWith(blacklistedWord + " ") || checkBlacklisted.endsWith(" " + blacklistedWord) || checkBlacklisted.contains(" " + blacklistedWord + " ") || containsWithSpecial)
+            if (checkBlacklisted.equals(blacklistedWord) || checkBlacklisted.startsWith(blacklistedWord + " ") || checkBlacklisted.endsWith(" " + blacklistedWord) || checkBlacklisted.contains(" " + blacklistedWord + " ") || containsWithSpecial)
             {
                 if (blacklist.get(blacklistedWord) == null)
                 {
@@ -247,7 +248,10 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
                 }
                 else
                 {
-                    message = message.replace(blacklistedWord, blacklist.get(blacklistedWord));
+                    if (message.equals(WordUtils.capitalize(blacklistedWord)))
+                        message = message.replace(WordUtils.capitalize(blacklistedWord), blacklist.get(blacklistedWord));
+                    else
+                        message = message.replace(blacklistedWord, blacklist.get(blacklistedWord));
                 }
             }
         }
