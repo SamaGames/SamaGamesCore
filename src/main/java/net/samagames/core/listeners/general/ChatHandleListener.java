@@ -244,14 +244,11 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
                     for (int i = 0; i < blacklistedWord.length(); i++)
                         builder.append(replaceChars[random.nextInt(replaceChars.length)]);
 
-                    message = message.replace(blacklistedWord, builder.toString());
+                    message = message.replaceAll("(?i)" + blacklistedWord, builder.toString());
                 }
                 else
                 {
-                    if (message.equals(WordUtils.capitalize(blacklistedWord)))
-                        message = message.replace(WordUtils.capitalize(blacklistedWord), blacklist.get(blacklistedWord));
-                    else
-                        message = message.replace(blacklistedWord, blacklist.get(blacklistedWord));
+                    message = message.replaceAll("(?i)" + blacklistedWord, blacklist.get(blacklistedWord));
                 }
             }
         }
