@@ -59,6 +59,7 @@ public class PlayerData extends AbstractPlayerData
                 null,
                 500,
                 0,
+                0,
                 null,
                 null,
                 null,
@@ -124,16 +125,23 @@ public class PlayerData extends AbstractPlayerData
     @Override
     public void creditCoins(long amount, String reason, boolean applyMultiplier, IFinancialCallback financialCallback)
     {
-        creditEconomy(0, amount, reason, applyMultiplier, true, financialCallback);
+        creditEconomy(0, amount, reason, applyMultiplier, financialCallback);
     }
 
     @Override
     public void creditStars(long amount, String reason, boolean applyMultiplier, IFinancialCallback financialCallback)
     {
-        creditEconomy(1, amount, reason, applyMultiplier, false, financialCallback);
+        this.validateDeprecatedSecurity();
+        creditEconomy(1, amount, reason, applyMultiplier, financialCallback);
     }
 
-    private void creditEconomy(int type, long amountFinal, String reason, boolean applyMultiplier, boolean applyGroup, IFinancialCallback financialCallback)
+    @Override
+    public void creditPowders(long amount, IFinancialCallback financialCallback)
+    {
+        creditEconomy(2, amount, null, false, financialCallback);
+    }
+
+    private void creditEconomy(int type, long amountFinal, String reason, boolean applyMultiplier, IFinancialCallback financialCallback)
     {
         int game = 0;
         APIPlugin.getInstance().getExecutor().execute(() -> {
@@ -141,13 +149,6 @@ public class PlayerData extends AbstractPlayerData
             {
                 long amount = amountFinal;
                 String message = null;
-
-                //Todo handle game name to number need the satch enum
-                String name = "hub";
-                if (!api.getPlugin().isHub())
-                {
-                     name = api.getGameManager().getGame().getGameCodeName();
-                }
 
                 Multiplier multiplier = manager.getEconomyManager().getPromotionMultiplier(type, game);
                 if (applyMultiplier)
@@ -157,13 +158,16 @@ public class PlayerData extends AbstractPlayerData
 
                 amount *= multiplier.getGlobalAmount();
 
-                message = manager.getEconomyManager().getCreditMessage(amount, type, reason, multiplier);
+                if (reason != null)
+                {
+                    message = manager.getEconomyManager().getCreditMessage(amount, type, reason, multiplier);
 
-                if (Bukkit.getPlayer(getPlayerID()) != null)
-                    Bukkit.getPlayer(getPlayerID()).sendMessage(message);
+                    if (Bukkit.getPlayer(getPlayerID()) != null)
+                        Bukkit.getPlayer(getPlayerID()).sendMessage(message);
+                }
 
                 //edit here for more type of coins
-                long result = (type == 0 ) ? increaseCoins(amount) : increaseStars(amount);
+                long result = (type == 0) ? increaseCoins(amount) : (type == 1) ? increaseStars(amount) : increasePowders(amount);
 
                 if (financialCallback != null)
                     financialCallback.done(result, amount, null);
@@ -189,8 +193,22 @@ public class PlayerData extends AbstractPlayerData
     @Override
     public void withdrawStars(long amount, IFinancialCallback financialCallback)
     {
+        this.validateDeprecatedSecurity();
+
         APIPlugin.getInstance().getExecutor().execute(() -> {
             long result = decreaseStars(amount);
+
+            if (financialCallback != null)
+                financialCallback.done(result, -amount, null);
+
+        });
+    }
+
+    @Override
+    public void withdrawPowders(long amount, IFinancialCallback financialCallback)
+    {
+        APIPlugin.getInstance().getExecutor().execute(() -> {
+            long result = decreasePowders(amount);
 
             if (financialCallback != null)
                 financialCallback.done(result, -amount, null);
@@ -209,9 +227,20 @@ public class PlayerData extends AbstractPlayerData
 
     @Override
     public long increaseStars(long incrBy) {
+        this.validateDeprecatedSecurity();
+
         refreshData();
         int result = (int) (playerBean.getStars() + incrBy);
         playerBean.setStars(result);
+        updateData();
+        return result;
+    }
+
+    @Override
+    public long increasePowders(long incrBy) {
+        refreshData();
+        int result = (int) (playerBean.getPowders() + incrBy);
+        playerBean.setPowders(result);
         updateData();
         return result;
     }
@@ -225,7 +254,13 @@ public class PlayerData extends AbstractPlayerData
     @Override
     public long decreaseStars(long decrBy)
     {
+        this.validateDeprecatedSecurity();
         return increaseStars(-decrBy);
+    }
+
+    @Override
+    public long decreasePowders(long decrBy) {
+        return increasePowders(-decrBy);
     }
 
     @Override
@@ -239,6 +274,12 @@ public class PlayerData extends AbstractPlayerData
     public long getStars() {
         refreshIfNeeded();
         return playerBean.getStars();
+    }
+
+    @Override
+    public long getPowders() {
+        refreshIfNeeded();
+        return playerBean.getPowders();
     }
 
     @Override
@@ -306,6 +347,26 @@ public class PlayerData extends AbstractPlayerData
             Reflection.setFinal(profile, name, getDisplayName());
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void validateDeprecatedSecurity()
+    {
+        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+        boolean isHub = false;
+
+        for (StackTraceElement stackTraceElement : stackTraceElements)
+        {
+            if (stackTraceElement.getClassName().contains("hub"))
+            {
+                isHub = true;
+                break;
+            }
+        }
+
+        if (!isHub)
+        {
+            throw new UnsupportedOperationException("You don't have the permission to use this method! Maybe it's now deprecated or for private use only.");
         }
     }
 }
