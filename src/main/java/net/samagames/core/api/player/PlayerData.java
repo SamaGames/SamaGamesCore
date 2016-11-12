@@ -131,13 +131,14 @@ public class PlayerData extends AbstractPlayerData
     @Override
     public void creditStars(long amount, String reason, boolean applyMultiplier, IFinancialCallback financialCallback)
     {
-        this.validateDeprecatedSecurity();
+        this.assertHub();
         creditEconomy(1, amount, reason, applyMultiplier, financialCallback);
     }
 
     @Override
     public void creditPowders(long amount, IFinancialCallback financialCallback)
     {
+        this.assertHub();
         creditEconomy(2, amount, null, false, financialCallback);
     }
 
@@ -193,7 +194,7 @@ public class PlayerData extends AbstractPlayerData
     @Override
     public void withdrawStars(long amount, IFinancialCallback financialCallback)
     {
-        this.validateDeprecatedSecurity();
+        this.assertHub();
 
         APIPlugin.getInstance().getExecutor().execute(() -> {
             long result = decreaseStars(amount);
@@ -207,6 +208,8 @@ public class PlayerData extends AbstractPlayerData
     @Override
     public void withdrawPowders(long amount, IFinancialCallback financialCallback)
     {
+        this.assertHub();
+
         APIPlugin.getInstance().getExecutor().execute(() -> {
             long result = decreasePowders(amount);
 
@@ -227,7 +230,7 @@ public class PlayerData extends AbstractPlayerData
 
     @Override
     public long increaseStars(long incrBy) {
-        this.validateDeprecatedSecurity();
+        this.assertHub();
 
         refreshData();
         int result = (int) (playerBean.getStars() + incrBy);
@@ -238,6 +241,8 @@ public class PlayerData extends AbstractPlayerData
 
     @Override
     public long increasePowders(long incrBy) {
+        this.assertHub();
+
         refreshData();
         int result = (int) (playerBean.getPowders() + incrBy);
         playerBean.setPowders(result);
@@ -254,12 +259,14 @@ public class PlayerData extends AbstractPlayerData
     @Override
     public long decreaseStars(long decrBy)
     {
-        this.validateDeprecatedSecurity();
+        this.assertHub();
         return increaseStars(-decrBy);
     }
 
     @Override
-    public long decreasePowders(long decrBy) {
+    public long decreasePowders(long decrBy)
+    {
+        this.assertHub();
         return increasePowders(-decrBy);
     }
 
@@ -350,7 +357,7 @@ public class PlayerData extends AbstractPlayerData
         }
     }
 
-    private void validateDeprecatedSecurity()
+    private void assertHub()
     {
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         boolean isHub = false;
