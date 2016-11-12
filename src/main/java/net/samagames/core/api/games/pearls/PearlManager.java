@@ -111,7 +111,7 @@ public class PearlManager implements IPearlManager
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.MONTH, 1);
 
-            Pearl pearl = new Pearl(UUID.randomUUID(), stars, calendar.getTime().getTime(), System.currentTimeMillis());
+            Pearl pearl = new Pearl(UUID.randomUUID(), stars, calendar.getTime().getTime());
 
             Jedis jedis = this.api.getBungeeResource();
             jedis.set("pearls:" + player.getUniqueId().toString() + ":" + pearl.getUUID().toString(), new Gson().toJson(pearl));
