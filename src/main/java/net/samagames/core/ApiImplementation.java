@@ -22,6 +22,7 @@ import net.samagames.core.api.permissions.PermissionManager;
 import net.samagames.core.api.player.PlayerDataManager;
 import net.samagames.core.api.pubsub.PubSubAPI;
 import net.samagames.core.api.remoteaccess.RemoteAccessManager;
+import net.samagames.core.api.remoteaccess.functions.ServerFunction;
 import net.samagames.core.api.remoteaccess.functions.StopFunction;
 import net.samagames.core.api.remoteaccess.functions.WhitelistFunction;
 import net.samagames.core.api.resourcepacks.ResourcePacksManagerImpl;
@@ -118,6 +119,7 @@ public class ApiImplementation extends SamaGamesAPI
         try {
             remoteAccessManager.registerMBean(new WhitelistFunction());
             remoteAccessManager.registerMBean(new StopFunction());
+            remoteAccessManager.registerMBean(new ServerFunction());
         } catch (Exception e) {
             e.printStackTrace();
         }
