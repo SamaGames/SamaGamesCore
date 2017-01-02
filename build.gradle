@@ -4,7 +4,7 @@ apply plugin: 'maven'
 
 group = 'net.samagames'
 version = '4.1.0'
-archivesBaseName = 'SamaGamesCore'
+archivesBaseName = 'SamaGamesAPI'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
