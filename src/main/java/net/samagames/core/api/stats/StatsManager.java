@@ -115,6 +115,9 @@ public class StatsManager implements IStatsManager
                 case UPPERVOID:
                     list = gameServiceManager.getUpperVoidLeaderBoard(category);
                     break;
+                case CHUNKWARS:
+                    list = gameServiceManager.getChunkWarsLeaderBoard(category);
+                    break;
                 default:
                     list = new ArrayList<>();
                     break;
