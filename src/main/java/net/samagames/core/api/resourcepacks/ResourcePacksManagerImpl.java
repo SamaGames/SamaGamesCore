@@ -64,15 +64,15 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
                     PacketPlayInResourcePackStatus status = (PacketPlayInResourcePackStatus) packet;
                     try
                     {
-                        Field hashField = status.getClass().getDeclaredField("a");
-                        hashField.setAccessible(true);
+                        //Field hashField = status.getClass().getDeclaredField("a");
+                        //hashField.setAccessible(true);
                         Field stateField = status.getClass().getDeclaredField("status");
                         stateField.setAccessible(true);
 
-                        String hash = (String) hashField.get(status);
+                        //String hash = (String) hashField.get(status);
                         PacketPlayInResourcePackStatus.EnumResourcePackStatus state = (PacketPlayInResourcePackStatus.EnumResourcePackStatus) stateField.get(status);
 
-                        handle(sender, hash, state);
+                        handle(sender, null, state);
                     } catch (Exception e)
                     {
                         e.printStackTrace();
