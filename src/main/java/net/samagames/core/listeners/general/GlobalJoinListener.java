@@ -107,6 +107,9 @@ public class GlobalJoinListener implements Listener {
         }
         permissionEntity.applyPermissions(event.getPlayer());
 
+        if (permissionEntity.hasPermission("network.admin"))
+            event.getPlayer().setOp(true);
+
         api.getPlugin().getLogger().info("Login Time: " + (System.currentTimeMillis() - startTime));
     }
 
