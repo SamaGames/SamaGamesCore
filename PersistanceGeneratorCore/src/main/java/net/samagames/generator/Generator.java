@@ -3,7 +3,6 @@ package net.samagames.generator;
 import com.squareup.javapoet.*;
 import net.samagames.api.games.GamesNames;
 import net.samagames.api.stats.IPlayerStats;
-import net.samagames.api.stats.IStatsManager;
 import net.samagames.persistanceapi.beans.players.GroupsBean;
 import net.samagames.persistanceapi.beans.players.PlayerBean;
 import net.samagames.persistanceapi.beans.players.PlayerSettingsBean;
@@ -67,6 +66,9 @@ public class Generator {
                 .addStatement("this.$N = $N.getPlayerID()", "playerUUID", "player")
                 .addStatement("this.$N = $N", "statsToLoad", "statsToLoad");
         constructor.addStatement("boolean global = statsToLoad[" + GamesNames.GLOBAL.intValue() + "]");
+
+        //Logger.getGlobal().info("GamesNames: " + Arrays.toString(GamesNames.values()));
+
         for (JavaFile javaFile : typeStats)
         {
             double value = 0;
@@ -79,7 +81,9 @@ public class Generator {
                     value = sim;
                     stat = names;
                 }
+                //Logger.getGlobal().info("value : " + sim + " for: " + names.name() + " lel " + javaFile.typeSpec.name.toLowerCase());
             }
+
             constructor.addStatement("if (global || statsToLoad[" + stat.intValue() + "]) \n"
                                 + "this." + javaFile.typeSpec.name.toLowerCase() + " = new " + javaFile.typeSpec.name + "(player)");
         }
