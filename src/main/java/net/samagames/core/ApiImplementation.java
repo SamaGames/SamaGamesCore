@@ -1,10 +1,6 @@
 package net.samagames.core;
 
 import net.samagames.api.SamaGamesAPI;
-import net.samagames.api.achievements.IAchievementManager;
-import net.samagames.api.gui.IGuiManager;
-import net.samagames.api.names.IUUIDTranslator;
-import net.samagames.api.pubsub.IPubSubAPI;
 import net.samagames.core.api.achievements.AchievementManager;
 import net.samagames.core.api.friends.FriendsManager;
 import net.samagames.core.api.games.GameManager;
@@ -29,6 +25,7 @@ import net.samagames.core.api.resourcepacks.ResourcePacksManagerImpl;
 import net.samagames.core.api.settings.SettingsManager;
 import net.samagames.core.api.shops.ShopsManager;
 import net.samagames.core.api.stats.StatsManager;
+import net.samagames.core.api.storage.StorageManager;
 import net.samagames.core.listeners.pubsub.GlobalUpdateListener;
 import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.tools.SkyFactory;
@@ -61,6 +58,8 @@ public class ApiImplementation extends SamaGamesAPI
     private final AchievementManager achievementManager;
     private GameManager gameManager;
 
+    private StorageManager storageManager;
+
     private RemoteAccessManager remoteAccessManager;
 
     private final ServerOptions serverOptions;
@@ -85,6 +84,8 @@ public class ApiImplementation extends SamaGamesAPI
         this.pubSub.subscribe("commands.servers.all", new RemoteCommandsHandler(plugin));
 
         this.serverOptions = new ServerOptions();
+
+        storageManager = new StorageManager(plugin);
 
         npcManager = new NPCManager(this);
         achievementManager = new AchievementManager(this);
@@ -274,5 +275,9 @@ public class ApiImplementation extends SamaGamesAPI
 
     public RemoteAccessManager getRemoteAccessManager() {
         return remoteAccessManager;
+    }
+
+    public StorageManager getStorageManager() {
+        return storageManager;
     }
 }
