@@ -41,12 +41,9 @@ public class StorageManager {
     public void saveFile(File file, String folder)
     {
         String charset = "UTF-8";
-
+        String target = plugin.getDataUrl() + "/storage/index.php?path=" + folder;
         try {
-            MultipartUtility multipart = new MultipartUtility(plugin.getDataUrl() + "/storage/index.php", charset);
-
-            multipart.addFormField("Path" , folder);
-            multipart.addFormField("Filename", file.getName());
+            MultipartUtility multipart = new MultipartUtility(target, charset);
 
             multipart.addFilePart("fileUpload", file);
 
