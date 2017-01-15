@@ -57,6 +57,8 @@ public class APIPlugin extends JavaPlugin implements Listener
     private ScheduledExecutorService executor;
     private DebugListener debugListener;
 
+    private String dataUrl;
+
     private LegacyManager legacyManager;
 
     private NicknamePacketListener nicknamePacketListener;
@@ -146,6 +148,7 @@ public class APIPlugin extends JavaPlugin implements Listener
             String sqlPassword = dataYML.getString("sql-pass", "passw0rd");
             int sqlMinPoolSize = dataYML.getInt("sql-minpoolsize", 1);
             int sqlMaxPoolSize = dataYML.getInt("sql-maxpoolsize", 10);
+            dataUrl = dataYML.getString("data-url", "http://127.0.0.1/");
 
             gameServiceManager = new GameServiceManager(sqlUrl, sqlUsername, sqlPassword, sqlMinPoolSize, sqlMaxPoolSize);
 
@@ -401,5 +404,9 @@ public class APIPlugin extends JavaPlugin implements Listener
 
     public LegacyManager getLegacyManager() {
         return legacyManager;
+    }
+
+    public String getDataUrl() {
+        return dataUrl;
     }
 }
