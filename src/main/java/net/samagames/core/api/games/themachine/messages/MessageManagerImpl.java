@@ -30,9 +30,9 @@ public class MessageManagerImpl implements IMessageManager
     }
 
     @Override
-    public Message writePlayerJoinToAll(Player player)
+    public Message writePlayerJoinToAll(Player player, boolean playerCount)
     {
-        return new Message(String.valueOf(ChatColor.YELLOW) + this.getName(player.getUniqueId()) + " a rejoint la partie ! " + ChatColor.DARK_GRAY + "[" + ChatColor.RED + this.machine.getGame().getConnectedPlayers() + ChatColor.DARK_GRAY + "/" + ChatColor.RED + this.machine.getGameProperties().getMaxSlots() + ChatColor.DARK_GRAY + "]", this.machine.getGameTag()).displayToAll();
+        return new Message(String.valueOf(ChatColor.YELLOW) + this.getName(player.getUniqueId()) + " a rejoint la partie !" + (playerCount ? " " + ChatColor.DARK_GRAY + "[" + ChatColor.RED + this.machine.getGame().getConnectedPlayers() + ChatColor.DARK_GRAY + "/" + ChatColor.RED + this.machine.getGameProperties().getMaxSlots() + ChatColor.DARK_GRAY + "]" : ""), this.machine.getGameTag()).displayToAll();
     }
 
     @Override
