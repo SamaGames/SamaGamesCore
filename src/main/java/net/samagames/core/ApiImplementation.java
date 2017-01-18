@@ -29,6 +29,7 @@ import net.samagames.core.api.storage.StorageManager;
 import net.samagames.core.listeners.pubsub.GlobalUpdateListener;
 import net.samagames.persistanceapi.GameServiceManager;
 import net.samagames.tools.SkyFactory;
+import net.samagames.tools.cameras.CameraManager;
 import net.samagames.tools.npc.NPCManager;
 import redis.clients.jedis.Jedis;
 
@@ -55,6 +56,7 @@ public class ApiImplementation extends SamaGamesAPI
     private final StatsManager statsManager;
     private final ShopsManager shopsManager;
     private final NPCManager npcManager;
+    private final CameraManager cameraManager;
     private final AchievementManager achievementManager;
     private GameManager gameManager;
 
@@ -96,6 +98,7 @@ public class ApiImplementation extends SamaGamesAPI
         this.joinManager = implement;
 
         skyFactory = new SkyFactory(plugin);
+        cameraManager = new CameraManager(this);
 
         guiManager = new GuiManager(plugin);
 
@@ -189,6 +192,12 @@ public class ApiImplementation extends SamaGamesAPI
     public SkyFactory getSkyFactory()
     {
         return skyFactory;
+    }
+
+    @Override
+    public CameraManager getCameraManager()
+    {
+        return cameraManager;
     }
 
     @Override
