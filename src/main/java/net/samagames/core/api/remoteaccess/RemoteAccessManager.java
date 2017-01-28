@@ -76,7 +76,7 @@ public class RemoteAccessManager {
                 sClass.getName(),
                 remoteObject.description(),
                 generateAttributesInfos(sClass),
-                null, //We don't need constructor only external call
+                null, //We don't need constructor only casino call
                 generateOperationsInfos(sClass),
                 null);
     }

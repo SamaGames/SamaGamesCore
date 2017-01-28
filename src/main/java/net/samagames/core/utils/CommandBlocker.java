@@ -2,6 +2,7 @@ package net.samagames.core.utils;
 
 import net.samagames.tools.Reflection;
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.craftbukkit.v1_10_R1.CraftServer;
 
@@ -16,6 +17,7 @@ public class CommandBlocker
     private static final String SONARPET_PREFIX = "sonarpet";
     private static final String LIBSDISGUISES_PREFIX = "libsdisguises";
     private static final String PROTOCOLSUPPORT_PREFIX = "protocolsupport";
+    private static final String WORLDEDIT_PREFIX = "worldedit";
 
     public static void removeCommands()
     {
@@ -64,7 +66,19 @@ public class CommandBlocker
             removeCommand(LIBSDISGUISES_PREFIX, "disguiseviewself", "dviewself", "dvs", "disguisevs", "disvs", "vsd", "viewselfdisguise", "viewselfd");
 
             // ProtocolSupport
-            removeCommand(PROTOCOLLIB_PREFIX, "protocolsupport", "ps");
+            removeCommand(PROTOCOLSUPPORT_PREFIX, "protocolsupport", "ps");
+
+            // WorldEdit
+            for (Command command : ((CraftServer) Bukkit.getServer()).getCommandMap().getCommands())
+            {
+                if (command.getClass().getPackage().getName().startsWith("com.sk89q.worldedit"))
+                {
+                    removeCommand(WORLDEDIT_PREFIX, command.getName());
+
+                    for (String alias : command.getAliases())
+                        removeCommand(WORLDEDIT_PREFIX, alias);
+                }
+            }
         }
         catch (NoSuchFieldException | IllegalAccessException e)
         {
