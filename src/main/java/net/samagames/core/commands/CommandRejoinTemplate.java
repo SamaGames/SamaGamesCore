@@ -25,7 +25,8 @@ public class CommandRejoinTemplate extends AbstractCommand {
     }
 
     @Override
-    protected boolean onCommand(CommandSender sender, String label, String[] arguments) {
+    protected boolean onCommand(CommandSender sender, String label, String[] arguments)
+    {
         if (arguments == null || arguments.length < 2)
             return true;
 

@@ -6,12 +6,6 @@ website: http://samagames.net/
 load: STARTUP
 
 commands:
-   coins:
-     description: Commandes relatives aux coins
-     usage: /coins [get <joueur> |credit <joueur> <montant>|withdraw <joueur> <montant>]
-   stars:
-     description: Commandes relatives aux étoiles
-     usage: /stars [get <joueur> |credit <joueur> <montant>|withdraw <joueur> <montant>]
    start:
      description: Démarre le jeu
      usage: /start

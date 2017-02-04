@@ -29,7 +29,7 @@ public class CommandSpeakup extends AbstractCommand
         if(arguments.length == 0)
             return true;
 
-        Bukkit.broadcastMessage(ChatColor.RED + "" + ChatColor.BOLD + "[Modération] " + ChatColor.RESET + ChatColor.GOLD + ChatColor.BOLD + sender.getName() + ChatColor.RESET + ChatColor.RED + ": " + StringUtils.join(arguments, " "));
+        Bukkit.broadcastMessage(ChatColor.BLUE + "" + ChatColor.BOLD + "[Modération] " + sender.getName() + ChatColor.RESET + ChatColor.BLUE + ": " + StringUtils.join(arguments, " "));
 
         return true;
     }
