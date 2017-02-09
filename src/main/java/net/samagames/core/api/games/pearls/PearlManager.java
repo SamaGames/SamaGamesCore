@@ -105,7 +105,7 @@ public class PearlManager implements IPearlManager
             int stars = RankChances.getByRankId(playerRankId).getRandomizedStars();
 
             Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.MONTH, 1);
+            calendar.add(Calendar.DAY_OF_MONTH, 7);
 
             Pearl pearl = new Pearl(UUID.randomUUID(), stars, calendar.getTime().getTime());
 
