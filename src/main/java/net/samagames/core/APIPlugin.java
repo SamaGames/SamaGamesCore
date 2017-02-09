@@ -228,7 +228,8 @@ public class APIPlugin extends JavaPlugin implements Listener
                 Constructor<APIPlugin> ctor = clazz.getConstructor(APIPlugin.class);
                 getCommand(command).setExecutor(ctor.newInstance(this));
                 log("Loaded command " + command + " successfully. ");
-            } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e)
+            }
+            catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e)
             {
                 e.printStackTrace();
             }

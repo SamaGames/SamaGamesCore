@@ -24,3 +24,6 @@ commands:
    speakup:
      description: Ecrire un message au titre de la modération sur le serveur
      usage: /speakup <message>
+   anticheatreport:
+     description: Commande de signalement de joueurs par NoCheatPlus
+     usage: /anticheatreport <cheat> <pseudo>
