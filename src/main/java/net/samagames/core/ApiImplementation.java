@@ -1,5 +1,6 @@
 package net.samagames.core;
 
+import in.ashwanthkumar.slack.webhook.Slack;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.api.achievements.AchievementManager;
 import net.samagames.core.api.friends.FriendsManager;
@@ -41,6 +42,8 @@ import redis.clients.jedis.Jedis;
  */
 public class ApiImplementation extends SamaGamesAPI
 {
+    private static final String SLACK_LOGS_WEBHOOK_URL = "https://hooks.slack.com/services/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";
+
     private final APIPlugin plugin;
     private final GuiManager guiManager;
     private final SettingsManager settingsManager;
@@ -201,6 +204,12 @@ public class ApiImplementation extends SamaGamesAPI
     }
 
     @Override
+    public Slack getSlackLogsPublisher()
+    {
+        return getSlackPublisher(SLACK_LOGS_WEBHOOK_URL, "_developpement-logs");
+    }
+
+    @Override
     public JoinManagerImplement getJoinManager()
     {
         return joinManager;
@@ -288,5 +297,10 @@ public class ApiImplementation extends SamaGamesAPI
 
     public StorageManager getStorageManager() {
         return storageManager;
+    }
+
+    private static Slack getSlackPublisher(String webhookUrl, String targetChannel)
+    {
+        return new Slack(webhookUrl).icon(":smiley_cat:").sendToChannel(targetChannel).displayName("Meow");
     }
 }
