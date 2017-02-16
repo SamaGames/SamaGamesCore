@@ -1,10 +1,12 @@
 package net.samagames.core.commands;
 
+import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.APIPlugin;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
  * This file is a part of the SamaGames project
@@ -29,7 +31,16 @@ public class CommandSpeakup extends AbstractCommand
         if(arguments.length == 0)
             return true;
 
-        Bukkit.broadcastMessage(ChatColor.BLUE + "" + ChatColor.BOLD + "[Modération] " + sender.getName() + ": " + StringUtils.join(arguments, " "));
+        ChatColor color = ChatColor.BLUE;
+        String tag = "Modération";
+
+        if (SamaGamesAPI.get().getPermissionsManager().getPlayer(((Player) sender).getUniqueId()).getGroupId() == 8)
+        {
+            color = ChatColor.DARK_PURPLE;
+            tag = "Animation";
+        }
+
+        Bukkit.broadcastMessage(color + "" + ChatColor.BOLD + "[" + tag + "] " + sender.getName() + ": " + StringUtils.join(arguments, " "));
 
         return true;
     }
