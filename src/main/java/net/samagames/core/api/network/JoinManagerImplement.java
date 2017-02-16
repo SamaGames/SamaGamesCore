@@ -182,9 +182,7 @@ public class JoinManagerImplement implements IJoinManager
         if (moderatorsExpected.contains(player.getUniqueId()))
         {
             for (IJoinHandler handler : joiners.values())
-            {
                 handler.onModerationJoin(player);
-            }
 
             return;
         }

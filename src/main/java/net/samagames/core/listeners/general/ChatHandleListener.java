@@ -2,6 +2,7 @@ package net.samagames.core.listeners.general;
 
 import net.md_5.bungee.api.ChatColor;
 import net.samagames.api.SamaGamesAPI;
+import net.samagames.api.games.GamePlayer;
 import net.samagames.api.games.Status;
 import net.samagames.api.pubsub.IPacketsReceiver;
 import net.samagames.api.pubsub.PendingMessage;
@@ -254,6 +255,31 @@ public class ChatHandleListener extends APIListener implements IPacketsReceiver 
         }
 
         event.setMessage(message);
+    }
+
+    /**
+     * Spectator's chat
+     *
+     * @param event Event
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerChat(AsyncPlayerChatEvent event)
+    {
+        if (SamaGamesAPI.get().getGameManager().getGame() == null)
+            return;
+        else if (!SamaGamesAPI.get().getGameManager().getGame().getStatus().equals(Status.IN_GAME))
+            return;
+        else if (!SamaGamesAPI.get().getGameManager().getGame().isSpectator(event.getPlayer()))
+            return;
+        else if (SamaGamesAPI.get().getGameManager().getGame().isModerator(event.getPlayer()))
+            return;
+
+        event.setCancelled(true);
+
+        String finalMessage = ChatColor.GRAY + "[Spectateur] " + event.getPlayer().getName() + ": " + event.getMessage();
+
+        SamaGamesAPI.get().getGameManager().getGame().getSpectatorPlayers().values().stream().filter(spectator -> ((GamePlayer) spectator).getPlayerIfOnline() != null).forEach(spectator -> ((GamePlayer) spectator).getPlayerIfOnline().sendMessage(finalMessage));
+        Bukkit.getOnlinePlayers().stream().filter(player -> !SamaGamesAPI.get().getGameManager().getGame().hasPlayer(player)).forEach(player -> player.sendMessage(finalMessage));
     }
 
     @Override

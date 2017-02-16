@@ -34,10 +34,11 @@ class GameLoginHandler implements IJoinHandler
         {
             if(api.getGame().isGameStarted())
             {
-                if (api.isReconnectAllowed(player.getUniqueId())
-                        && api.isWaited(player.getUniqueId()))
+                if (api.isReconnectAllowed(player.getUniqueId()) && api.isWaited(player.getUniqueId()))
                     api.onPlayerReconnect(player);
-            }else{
+            }
+            else
+            {
                 api.getGame().handleLogin(player);
             }
 
@@ -57,7 +58,8 @@ class GameLoginHandler implements IJoinHandler
             if (gameResponse.getKey())
             {
                 response.allow();
-            } else
+            }
+            else
             {
                 response.disallow(gameResponse.getValue());
                 return response;
