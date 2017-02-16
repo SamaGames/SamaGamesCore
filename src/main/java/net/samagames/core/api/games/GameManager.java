@@ -127,12 +127,12 @@ public class GameManager implements IGameManager
     @Override
     public void onPlayerDisconnect(Player player)
     {
-        GamePlayer player1 = this.game.getPlayer(player.getUniqueId());
+        GamePlayer gamePlayer = this.game.getPlayer(player.getUniqueId());
 
         if (this.maxReconnectTime > 0
-                && player1 != null
-                && !player1.isModerator()
-                && !player1.isSpectator()
+                && gamePlayer != null
+                && !this.game.isModerator(gamePlayer.getPlayerIfOnline())
+                && !gamePlayer.isSpectator()
                 && this.game.getStatus() == Status.IN_GAME)
         {
             long currentTime = System.currentTimeMillis();
@@ -160,9 +160,7 @@ public class GameManager implements IGameManager
         Long decoTime = this.playerDisconnectedTime.get(player.getUniqueId());
 
         if (decoTime != null)
-        {
             this.playerDisconnectedTime.remove(player.getUniqueId());
-        }
 
         refreshArena();
     }
