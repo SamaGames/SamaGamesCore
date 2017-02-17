@@ -79,14 +79,17 @@ public class DatabaseConnector
         config.setMaxTotal(-1);
         config.setJmxEnabled(false);
 
-        this.cachePool = new JedisPool(config, this.bungee.getIp(), this.bungee.getPort(), 0, this.bungee.getPassword());
         try
         {
+            this.cachePool = new JedisPool(config, this.bungee.getIp(), this.bungee.getPort(), 0, this.bungee.getPassword());
             this.cachePool.getResource().close();
+
             this.plugin.log(Level.INFO, "Connected to database.");
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             plugin.getLogger().log(Level.SEVERE, "Can't connect to the database!", e);
+            Bukkit.shutdown();
         }
     }
 
