@@ -4,7 +4,7 @@ import net.samagames.api.permissions.IPermissionsEntity;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.api.player.PlayerData;
 import net.samagames.persistanceapi.GameServiceManager;
-import net.samagames.persistanceapi.beans.permissions.PlayerPermissionBean;
+import net.samagames.persistanceapi.beans.permissions.PlayerPermissionsBean;
 import net.samagames.persistanceapi.beans.players.GroupsBean;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -62,10 +62,10 @@ public class PermissionEntity implements IPermissionsEntity {
             //Get group (static because easier for generation FUCK YOU if you comment this)
             //CacheLoader.load(jedis, key + uuid, groupsBean);
 
-            PlayerPermissionBean allPlayerPermission = null;
+            PlayerPermissionsBean allPlayerPermission = null;
             try {
-                this.groupsBean = plugin.getGameServiceManager().getGroupPlayer(playerData.getPlayerBean());
-                allPlayerPermission = plugin.getGameServiceManager().getAllPlayerPermission(playerData.getPlayerBean());
+                this.groupsBean = plugin.getGameServiceManager().getPlayerGroup(playerData.getPlayerBean());
+                allPlayerPermission = plugin.getGameServiceManager().getAllPlayerPermissions(playerData.getPlayerBean());
             } catch (Exception e) {
                 e.printStackTrace();
             }

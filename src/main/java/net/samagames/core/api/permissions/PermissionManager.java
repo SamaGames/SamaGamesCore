@@ -135,7 +135,7 @@ public class PermissionManager implements IPermissionsManager
     {
         PlayerBean group = new PlayerBean(null, null, null, 0, 0, 0, null, null, null, null, id);
         try {
-            return api.getGameServiceManager().getGroupPlayer(group);
+            return api.getGameServiceManager().getPlayerGroup(group);
         } catch (Exception e) {
             e.printStackTrace();
         }

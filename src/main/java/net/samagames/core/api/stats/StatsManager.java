@@ -83,10 +83,7 @@ public class StatsManager implements IStatsManager
         try {
             switch (game) {
                 case DIMENSION:
-                    list = gameServiceManager.getDimmensionLeaderBoard(category);
-                    break;
-                case HEROBATTLE:
-                    list = gameServiceManager.getHeroBattleLeaderBoard(category);
+                    list = gameServiceManager.getDimensionsLeaderBoard(category);
                     break;
                 case JUKEBOX:
                     list = gameServiceManager.getJukeBoxLeaderBoard(category);
@@ -113,7 +110,7 @@ public class StatsManager implements IStatsManager
                     list = gameServiceManager.getUltraFlagKeeperLeaderBoard(category);
                     break;
                 case UPPERVOID:
-                    list = gameServiceManager.getUpperVoidLeaderBoard(category);
+                    list = gameServiceManager.getUppervoidLeaderBoard(category);
                     break;
                 case CHUNKWARS:
                     list = gameServiceManager.getChunkWarsLeaderBoard(category);

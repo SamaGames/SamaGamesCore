@@ -48,7 +48,7 @@ public class EconomyManager
         int groupMultiplier = 1;
 
         try {
-            groupMultiplier = api.getGameServiceManager().getGroupPlayer(user.getPlayerBean()).getMultiplier();
+            groupMultiplier = api.getGameServiceManager().getPlayerGroup(user.getPlayerBean()).getMultiplier();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -62,7 +62,7 @@ public class EconomyManager
         long currentTime = System.currentTimeMillis();
         for (PromotionsBean promotion : promotions)
         {
-            if (promotion.getTypePromotion() == -1 || promotion.getTypePromotion() == type) //Check type (global coins or stars)
+            if (promotion.getPromotionType() == -1 || promotion.getPromotionType() == type) //Check type (global coins or stars)
             {
                 if ((promotion.getGame() == game || promotion.getGame() == -1) //Check Game number
                         && promotion.getStartDate().getTime() < currentTime
