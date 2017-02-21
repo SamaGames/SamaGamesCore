@@ -84,7 +84,7 @@ public class NicknamePacketListener extends TinyProtocol
                 {
                     //PacketPlayOutPlayerInfo.PlayerInfoData data1 = (PacketPlayOutPlayerInfo.PlayerInfoData) data;
                    // GameProfile profile = data.a();
-                    Field d = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredField("d");
+                    Field d = playerInfoData.getDeclaredField("d");
                     d.setAccessible(true);
 
                     GameProfile profile = (GameProfile) d.get(data);
