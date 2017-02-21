@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 /**
  * This file is a part of the SamaGames Project CodeBase
@@ -88,6 +89,7 @@ public class NicknamePacketListener extends TinyProtocol
                     d.setAccessible(true);
 
                     GameProfile profile = (GameProfile) d.get(data);
+                    Logger.getGlobal().info("SHOW PLAYER : "+ profile.getId());
 
                     /*Entity entity = null;
                     for (World world : this.api.getPlugin().getServer().getWorlds())
@@ -103,7 +105,7 @@ public class NicknamePacketListener extends TinyProtocol
                             !profile.getName().equals(receiver.getName()))
                     {
                         GameProfile gameProfile = playerData.getFakeProfile();
-                        Reflection.setFinal(data, d, gameProfile);
+                        Reflection.setFinal(data, playerInfoData.getDeclaredField("d"), gameProfile);
                     }
                 }
 
