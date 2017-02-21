@@ -91,7 +91,7 @@ public class NicknamePacketListener extends TinyProtocol
 
                     Entity entity = null;
                     for (World world : this.api.getPlugin().getServer().getWorlds())
-                        for (Entity e : world.getEntities())
+                        for (Entity e : new ArrayList<>(world.getEntities()))
                             if (e.getUniqueId().equals(profile.getId()))
                                 entity = e;
                     if (entity != null && ((CraftEntity)entity).getHandle() instanceof CustomNPC)
