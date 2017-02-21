@@ -89,13 +89,13 @@ public class NicknamePacketListener extends TinyProtocol
 
                     GameProfile profile = (GameProfile) d.get(data);
 
-                    Entity entity = null;
+                    /*Entity entity = null;
                     for (World world : this.api.getPlugin().getServer().getWorlds())
                         for (Entity e : new ArrayList<>(world.getEntities()))
                             if (e.getUniqueId().equals(profile.getId()))
                                 entity = e;
                     if (entity != null && ((CraftEntity)entity).getHandle() instanceof CustomNPC)
-                        continue ;
+                        continue ;*/
 
                     PlayerData playerData = api.getPlayerManager().getPlayerData(profile.getId());
                     if (playerData != null && playerData.hasNickname() &&
