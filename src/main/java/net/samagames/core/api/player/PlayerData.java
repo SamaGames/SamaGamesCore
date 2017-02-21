@@ -18,6 +18,7 @@ import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 /**
  * This file is a part of the SamaGames project
@@ -91,6 +92,7 @@ public class PlayerData extends AbstractPlayerData
             }
             if (hasNickname()) {
                 this.fakeProfile = new ProfileLoader(fakeUUID.toString(), playerBean.getNickName(), this.api.getUUIDTranslator().getUUID(playerBean.getNickName(), true)).loadProfile();
+                Logger.getGlobal().info(fakeProfile.getProperties().toString());
             }
             loaded = true;
             return true;
