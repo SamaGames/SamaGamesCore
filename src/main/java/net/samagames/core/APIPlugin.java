@@ -104,7 +104,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         log("# carefully all outputs coming from it.        #");
         log("#==============================================#");
 
-        executor = Executors.newScheduledThreadPool(16);
+        executor = Executors.newScheduledThreadPool(32);
 
         log("Loading main configuration...");
         this.saveDefaultConfig();

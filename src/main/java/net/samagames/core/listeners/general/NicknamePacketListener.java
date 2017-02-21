@@ -13,12 +13,10 @@ import net.samagames.tools.TinyProtocol;
 import net.samagames.tools.npc.nms.CustomNPC;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_10_R1.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -78,7 +76,6 @@ public class NicknamePacketListener extends TinyProtocol
                 Field b = p.getClass().getDeclaredField("b");
                 b.setAccessible(true);
 
-                Method playerProfile = playerInfoData.getDeclaredMethod("a");
 
                 //TODO when player disconnect, his playerdata are deleted before call the remove
                 //So you need to add a list with all nickname and remove player when disconnect from here
@@ -87,7 +84,10 @@ public class NicknamePacketListener extends TinyProtocol
                 {
                     //PacketPlayOutPlayerInfo.PlayerInfoData data1 = (PacketPlayOutPlayerInfo.PlayerInfoData) data;
                    // GameProfile profile = data.a();
-                    GameProfile profile = (GameProfile) playerProfile.invoke(data);
+                    Field d = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredField("d");
+                    d.setAccessible(true);
+
+                    GameProfile profile = (GameProfile) d.get(data);
 
                     Entity entity = null;
                     for (World world : this.api.getPlugin().getServer().getWorlds())
@@ -103,8 +103,7 @@ public class NicknamePacketListener extends TinyProtocol
                             !profile.getName().equals(receiver.getName()))
                     {
                         GameProfile gameProfile = playerData.getFakeProfile();
-                        Field field = playerProfile.getClass().getDeclaredField("d");
-                        Reflection.setFinal(data, field, gameProfile);
+                        Reflection.setFinal(data, d, gameProfile);
                     }
                 }
 
