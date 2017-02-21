@@ -104,6 +104,7 @@ public class NicknamePacketListener extends TinyProtocol
                             !profile.getId().equals(receiver.getUniqueId()) &&
                             !profile.getName().equals(receiver.getName()))
                     {
+                        Logger.getGlobal().info("HIDDING : "+ profile.getId());
                         GameProfile gameProfile = playerData.getFakeProfile();
                         Reflection.setFinal(data, playerInfoData.getDeclaredField("d"), gameProfile);
                     }
