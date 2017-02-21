@@ -90,7 +90,8 @@ public class PlayerData extends AbstractPlayerData
                         false);
             }
             if (hasNickname()) {
-                this.fakeProfile = new ProfileLoader(fakeUUID.toString(), playerBean.getNickName(), this.api.getUUIDTranslator().getUUID(playerBean.getNickName(), true)).loadProfile();
+                UUID uuid = this.api.getUUIDTranslator().getUUID(playerBean.getNickName(), true);
+                this.fakeProfile = new ProfileLoader(uuid.toString(), playerBean.getNickName(), uuid.toString()).loadProfile();
             }
             loaded = true;
             return true;
