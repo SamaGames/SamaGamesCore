@@ -51,7 +51,7 @@ public class PlayerData extends AbstractPlayerData
         this.playerUUID = playerID;
         this.api = api;
         this.manager = manager;
-        this.fakeUUID = UUID.randomUUID();
+        //this.fakeUUID = UUID.randomUUID();
         // this.fakeUUID = playerID;
 
         playerBean = new PlayerBean(playerUUID,
@@ -90,8 +90,8 @@ public class PlayerData extends AbstractPlayerData
                         false);
             }
             if (hasNickname()) {
-                UUID uuid = this.api.getUUIDTranslator().getUUID(playerBean.getNickName(), true);
-                this.fakeProfile = new ProfileLoader(uuid.toString(), playerBean.getNickName(), uuid.toString()).loadProfile();
+                this.fakeUUID = this.api.getUUIDTranslator().getUUID(playerBean.getNickName(), true);
+                this.fakeProfile = new ProfileLoader(fakeUUID.toString(), playerBean.getNickName(), fakeUUID.toString()).loadProfile();
             }
             loaded = true;
             return true;
