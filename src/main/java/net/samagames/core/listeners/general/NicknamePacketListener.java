@@ -90,13 +90,13 @@ public class NicknamePacketListener extends TinyProtocol
                     GameProfile profile = (GameProfile) d.get(data);
                     Logger.getGlobal().info("SHOW PLAYER : "+ profile.getId());
 
-                    /*Entity entity = null;
+                    Entity entity = null;
                     for (World world : this.api.getPlugin().getServer().getWorlds())
-                        for (Entity e : new ArrayList<>(world.getEntities()))
+                        for (Entity e : world.getEntities())
                             if (e.getUniqueId().equals(profile.getId()))
                                 entity = e;
                     if (entity != null && ((CraftEntity)entity).getHandle() instanceof CustomNPC)
-                        continue ;*/
+                        continue ;
 
                     PlayerData playerData = api.getPlayerManager().getPlayerData(profile.getId());
                     if (playerData != null && playerData.hasNickname() &&
@@ -106,11 +106,9 @@ public class NicknamePacketListener extends TinyProtocol
                         Logger.getGlobal().info("HIDDING : "+ profile.getId());
                         GameProfile gameProfile = playerData.getFakeProfile();
                         Reflection.setFinal(data, playerInfoData.getDeclaredField("d"), gameProfile);
-                        newList.add(data);
-                    }else
-                    {
-                        newList.add(data);
                     }
+                    newList.add(data);
+
 
                 }
                 list.clear();
