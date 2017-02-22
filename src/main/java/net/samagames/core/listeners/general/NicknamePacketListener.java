@@ -14,7 +14,6 @@ import org.bukkit.craftbukkit.v1_10_R1.entity.CraftEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -107,12 +106,7 @@ public class NicknamePacketListener extends TinyProtocol
                         Logger.getGlobal().info("HIDDING : "+ profile.getId());
                         GameProfile gameProfile = playerData.getFakeProfile();
                         Reflection.setFinal(data, playerInfoData.getDeclaredField("d"), gameProfile);
-                        Constructor constructor = playerInfoData.getConstructor(GameProfile.class, int.class, EnumGamemode.class, IChatBaseComponent.class);
-                        Object o = constructor.newInstance(gameProfile,
-                                playerInfoData.getDeclaredMethod("b").invoke(data),
-                                playerInfoData.getDeclaredMethod("c").invoke(data),
-                                playerInfoData.getDeclaredMethod("d").invoke(data));
-                        newList.add(o);
+                        newList.add(data);
                     }else
                     {
                         newList.add(data);
