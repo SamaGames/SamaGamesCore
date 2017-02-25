@@ -115,6 +115,9 @@ public class StatsManager implements IStatsManager
                 case CHUNKWARS:
                     list = gameServiceManager.getChunkWarsLeaderBoard(category);
                     break;
+                case THEDROPPER:
+                    list = gameServiceManager.getTheDropperLeaderBoard(category);
+                    break;
                 default:
                     list = new ArrayList<>();
                     break;
