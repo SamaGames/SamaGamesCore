@@ -118,9 +118,6 @@ public class StatsManager implements IStatsManager
                 case THEDROPPER:
                     list = gameServiceManager.getTheDropperLeaderBoard(category);
                     break;
-                case THEDROPPERMAPS:
-                    list = gameServiceManager.getTheDropperMapLeaderBoard(category);
-                    break;
                 default:
                     list = new ArrayList<>();
                     break;
