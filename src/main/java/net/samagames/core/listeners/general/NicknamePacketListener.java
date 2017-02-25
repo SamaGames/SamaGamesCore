@@ -2,9 +2,7 @@ package net.samagames.core.listeners.general;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
-import net.minecraft.server.v1_10_R1.PacketPlayOutNamedEntitySpawn;
-import net.minecraft.server.v1_10_R1.PacketPlayOutPlayerInfo;
-import net.minecraft.server.v1_10_R1.PacketPlayOutScoreboardTeam;
+import net.minecraft.server.v1_10_R1.*;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
 import net.samagames.core.api.player.PlayerData;
@@ -13,16 +11,15 @@ import net.samagames.tools.TinyProtocol;
 import net.samagames.tools.npc.nms.CustomNPC;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_10_R1.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 /**
  * This file is a part of the SamaGames Project CodeBase
@@ -78,16 +75,20 @@ public class NicknamePacketListener extends TinyProtocol
                 Field b = p.getClass().getDeclaredField("b");
                 b.setAccessible(true);
 
-                Method playerProfile = playerInfoData.getDeclaredMethod("a");
 
                 //TODO when player disconnect, his playerdata are deleted before call the remove
                 //So you need to add a list with all nickname and remove player when disconnect from here
-                List list = (List) b.get(p);
-                for(Object data : list)
+                List<Object> list = (List<Object>) b.get(p);
+                ArrayList<Object> newList = new ArrayList<>();
+                for(int i = 0; i < list.size(); i++)
                 {
-                    //PacketPlayOutPlayerInfo.PlayerInfoData data1 = (PacketPlayOutPlayerInfo.PlayerInfoData) data;
-                   // GameProfile profile = data.a();
-                    GameProfile profile = (GameProfile) playerProfile.invoke(data);
+                    Object data = list.get(i);
+
+                    Field d = playerInfoData.getDeclaredField("d");
+                    d.setAccessible(true);
+
+                    GameProfile profile = (GameProfile) d.get(data);
+                    Logger.getGlobal().info("SHOW PLAYER : "+ profile.getId());
 
                     Entity entity = null;
                     for (World world : this.api.getPlugin().getServer().getWorlds())
@@ -102,11 +103,16 @@ public class NicknamePacketListener extends TinyProtocol
                             !profile.getId().equals(receiver.getUniqueId()) &&
                             !profile.getName().equals(receiver.getName()))
                     {
+                        Logger.getGlobal().info("HIDDING : "+ profile.getId());
                         GameProfile gameProfile = playerData.getFakeProfile();
-                        Field field = playerProfile.getClass().getDeclaredField("d");
-                        Reflection.setFinal(data, field, gameProfile);
+                        Reflection.setFinal(data, playerInfoData.getDeclaredField("d"), gameProfile);
                     }
+                    newList.add(data);
+
+
                 }
+                list.clear();
+                list.addAll(newList);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -143,14 +149,13 @@ public class NicknamePacketListener extends TinyProtocol
 
                 uuid.setAccessible(false);
 
-               /* net.samagames.core.utils.reflection.minecraft.DataWatcher
                 Field dataWatcher = p.getClass().getDeclaredField("i");
                 dataWatcher.setAccessible(true);
                 DataWatcher dWtacher = (DataWatcher) dataWatcher.get(p);
 
-                dWtacher.set(DataWatcher.a(), "");
+                dWtacher.set(DataWatcher.a(EntityHuman.class, DataWatcherRegistry.d), "");
                 dataWatcher.set(p, dWtacher);
-                dataWatcher.setAccessible(false);*/
+                dataWatcher.setAccessible(false);
 
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 e.printStackTrace();
