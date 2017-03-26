@@ -271,7 +271,7 @@ public class APIPlugin extends JavaPlugin implements Listener
         rb_jedis.hdel("servers", bungeename);
         rb_jedis.close();
         api.getPubSub().send("servers", "stop " + bungeename);
-        nicknamePacketListener.close();
+        //nicknamePacketListener.close();
         completionPacketListener.close();
         executor.shutdown();
         try {
