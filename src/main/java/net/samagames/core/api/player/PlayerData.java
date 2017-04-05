@@ -8,13 +8,12 @@ import net.samagames.core.ApiImplementation;
 import net.samagames.persistanceapi.beans.players.PlayerBean;
 import net.samagames.persistanceapi.beans.players.SanctionBean;
 import net.samagames.tools.Reflection;
-import net.samagames.tools.gameprofile.ProfileLoader;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.UUID;
@@ -351,7 +350,10 @@ public class PlayerData extends AbstractPlayerData
     public void applyNickname(Player player)
     {
         try {
-            GameProfile profile = ((CraftPlayer) player).getHandle().getProfile();
+            Object craftPlayer = Reflection.getHandle(player);
+            Method getProfileMethod = craftPlayer.getClass().getMethod("getProfile");
+
+            GameProfile profile = (GameProfile) getProfileMethod.invoke(craftPlayer);
             Field name = GameProfile.class.getDeclaredField("name");
             Reflection.setFinal(profile, name, getDisplayName());
         } catch (ReflectiveOperationException e) {

@@ -14,6 +14,9 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 /**
  * ╱╲＿＿＿＿＿＿╱╲
  * ▏╭━━╮╭━━╮▕
@@ -28,70 +31,76 @@ import org.bukkit.inventory.ItemStack;
  * ＿＿╱▕▔▔▏╲＿＿
  * ＿＿▔▔＿＿▔▔＿＿
  */
-public class CooldownModule implements Listener{
+public class CooldownModule implements Listener
+{
+    private static Method getAttributeMethod;
+    private static Method getItemInMainHandMethod;
+
     private ApiImplementation api;
 
     private int[] data = new int[Material.values().length];
 
-    public CooldownModule(ApiImplementation api) {
+    public CooldownModule(ApiImplementation api)
+    {
         this.api = api;
 
         data[Material.WOOD_AXE.ordinal()] = 1;
-
         data[Material.GOLD_AXE.ordinal()] = 2;
-
         data[Material.WOOD_SWORD.ordinal()] = 3;
-
         data[Material.GOLD_SWORD.ordinal()] = 4;
-
         data[Material.STONE_AXE.ordinal()] = 5;
-
         data[Material.STONE_SWORD.ordinal()] = 6;
-
         data[Material.IRON_AXE.ordinal()] = 7;
-
         data[Material.IRON_SWORD.ordinal()] = 8;
-
         data[Material.DIAMOND_AXE.ordinal()] = 9;
-
         data[Material.DIAMOND_SWORD.ordinal()] = 10;
-
     }
 
-    @EventHandler(
-            priority = EventPriority.MONITOR
-    )
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event)
     {
-        Player player = event.getPlayer();
-        if (api.getGameManager().isLegacyPvP())
+        try
         {
-            AttributeInstance genericAttackSpeedAttribute = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
+            Player player = event.getPlayer();
 
-            if (genericAttackSpeedAttribute != null)
-                genericAttackSpeedAttribute.setBaseValue(1024.0D);
+            if (api.getGameManager().isLegacyPvP())
+            {
+                AttributeInstance genericAttackSpeedAttribute = (AttributeInstance) getAttributeMethod.invoke(player, Attribute.GENERIC_ATTACK_SPEED);
+
+                if (genericAttackSpeedAttribute != null)
+                    genericAttackSpeedAttribute.setBaseValue(1024.0D);
+            }
+        }
+        catch (IllegalAccessException | InvocationTargetException e)
+        {
+            e.printStackTrace();
         }
     }
 
-    @EventHandler(
-            priority = EventPriority.LOWEST
-    )
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (api.getGameManager().isLegacyPvP()) {
-            Entity attacker = event.getDamager();
-            if (attacker instanceof Player) {
-                Player player = (Player) attacker;
-                ItemStack inHand = player.getInventory().getItemInMainHand();
-                if (inHand != null) {
-                    double baseDamage = event.getDamage(EntityDamageEvent.DamageModifier.BASE);
-                    double currentDamage = this.getCurrentDamage(inHand.getType());
-                    if (currentDamage != 0.0D) {
-                        double damageFactor = baseDamage / currentDamage;
-                        double legacyDamage = this.getLegacyDamage(inHand.getType()) * damageFactor;
-                        event.setDamage(EntityDamageEvent.DamageModifier.BASE, legacyDamage);
+        try
+        {
+            if (api.getGameManager().isLegacyPvP()) {
+                Entity attacker = event.getDamager();
+                if (attacker instanceof Player) {
+                    Player player = (Player) attacker;
+                    ItemStack inHand = (ItemStack) getItemInMainHandMethod.invoke(player);
+                    if (inHand != null) {
+                        double baseDamage = event.getDamage(EntityDamageEvent.DamageModifier.BASE);
+                        double currentDamage = this.getCurrentDamage(inHand.getType());
+                        if (currentDamage != 0.0D) {
+                            double damageFactor = baseDamage / currentDamage;
+                            double legacyDamage = this.getLegacyDamage(inHand.getType()) * damageFactor;
+                            event.setDamage(EntityDamageEvent.DamageModifier.BASE, legacyDamage);
+                        }
                     }
                 }
             }
+        }
+        catch (IllegalAccessException | InvocationTargetException e)
+        {
+            e.printStackTrace();
         }
     }
 
@@ -136,6 +145,19 @@ public class CooldownModule implements Listener{
                 return 6.0D;
             default:
                 return 0.0D;
+        }
+    }
+
+    static
+    {
+        try
+        {
+            getAttributeMethod = Player.class.getMethod("getAttribute", Attribute.class);
+            getItemInMainHandMethod = Player.class.getMethod("getInventory").getReturnType().getMethod("getItemInMainHand");
+        }
+        catch (NoSuchMethodException e)
+        {
+            e.printStackTrace();
         }
     }
 }

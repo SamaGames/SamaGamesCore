@@ -2,10 +2,11 @@ package net.samagames.core.api.remoteaccess.functions;
 
 import net.samagames.core.api.remoteaccess.annotations.RemoteMethod;
 import net.samagames.core.api.remoteaccess.annotations.RemoteObject;
+import net.samagames.tools.Reflection;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_10_R1.CraftServer;
 
 import javax.management.modelmbean.ModelMBeanOperationInfo;
+import java.lang.reflect.Field;
 
 /**
  * ╱╲＿＿＿＿＿＿╱╲
@@ -22,17 +23,42 @@ import javax.management.modelmbean.ModelMBeanOperationInfo;
  * ＿＿▔▔＿＿▔▔＿＿
  */
 @RemoteObject(description = "Internal server Management")
-public class ServerFunction {
+public class ServerFunction
+{
+    private static Class<?> craftServerClass;
+    private static Field recentTpsField;
 
     @RemoteMethod(description = "Get current server tps", impact = ModelMBeanOperationInfo.ACTION)
     public double tps()
     {
-        double result = 0;
-        double[] recentTps = ((CraftServer) Bukkit.getServer()).getServer().recentTps;
-        for(double one : recentTps)
-            result += one;
+        try
+        {
+            double result = 0;
+            double[] recentTps = (double[]) recentTpsField.get(craftServerClass.cast(Bukkit.getServer()));
 
-        return result / recentTps.length;
+            for(double one : recentTps)
+                result += one;
+
+            return result / recentTps.length;
+        }
+        catch (IllegalAccessException e)
+        {
+            e.printStackTrace();
+        }
+
+        return 0;
     }
 
+    static
+    {
+        try
+        {
+            craftServerClass = Reflection.getOBCClass("CraftServer");
+            recentTpsField = craftServerClass.getField("recentTps");
+        }
+        catch (NoSuchFieldException e)
+        {
+            e.printStackTrace();
+        }
+    }
 }

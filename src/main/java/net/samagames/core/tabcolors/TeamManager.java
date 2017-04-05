@@ -1,6 +1,5 @@
 package net.samagames.core.tabcolors;
 
-import net.minecraft.server.v1_10_R1.ScoreboardTeamBase.EnumNameTagVisibility;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
@@ -15,7 +14,6 @@ import java.util.concurrent.Executors;
 
 public class TeamManager
 {
-
     /**
      * The escape sequence for minecraft special chat codes
      */
@@ -58,7 +56,7 @@ public class TeamManager
 
         TeamHandler.VTeam npc = teamHandler.createNewTeam("NPC", "NPC");
         npc.setRealName("NPC");
-        npc.setNameVisible(EnumNameTagVisibility.HIDE_FOR_OTHER_TEAMS);
+        npc.setHideToOtherTeams(true);
         APIPlugin.log("[TeamRegister] Team NPC ajoutée  --> " + npc.getPrefix() + " / " + npc);
         teamHandler.addTeam(npc);
 

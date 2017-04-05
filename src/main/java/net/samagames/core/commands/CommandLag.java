@@ -1,13 +1,14 @@
 package net.samagames.core.commands;
 
-import net.minecraft.server.v1_10_R1.MinecraftServer;
 import net.samagames.core.APIPlugin;
+import net.samagames.tools.Reflection;
 import net.samagames.tools.chat.ChatUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -21,6 +22,11 @@ import java.util.Locale;
  */
 public class CommandLag extends AbstractCommand
 {
+	private static Class<?> craftServerClass;
+	private static Class<?> craftPlayerClass;
+	private static Field recentTpsField;
+	private static Field pingField;
+
     private final SimpleDateFormat dateFormat;
 
 	public CommandLag(APIPlugin plugin)
@@ -37,29 +43,39 @@ public class CommandLag extends AbstractCommand
 			return true;
 
 		Player player = (Player) sender;
-		int latency = ((CraftPlayer) player).getHandle().ping;
 
-		StringBuilder tps = new StringBuilder();
-		double[] tab;
-		int length = (tab = MinecraftServer.getServer().recentTps).length;
+		try
+		{
+			int latency = (int) pingField.get(craftPlayerClass.cast((Player) sender));
 
-		for(int var7 = 0; var7 < length; ++var7)
-        {
-			tps.append(this.format(tab[var7]));
+			StringBuilder tps = new StringBuilder();
+			double[] recentTps = (double[]) recentTpsField.get(craftServerClass.cast(Bukkit.getServer()));
+			int length = recentTps.length;
 
-			if (var7 + 1 < length)
-				tps.append(", ");
+			for(int var7 = 0; var7 < length; ++var7)
+			{
+				tps.append(this.format(recentTps[var7]));
+
+				if (var7 + 1 < length)
+					tps.append(", ");
+			}
+
+			player.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+			player.sendMessage(ChatUtils.getCenteredText(ChatColor.WHITE + "•" + ChatColor.BOLD + " Informations de lag " + ChatColor.RESET + ChatColor.WHITE + "•"));
+			player.sendMessage("");
+			player.sendMessage(ChatColor.YELLOW + "Date : " + ChatColor.GRAY + this.dateFormat.format(new Date()));
+			player.sendMessage(ChatColor.YELLOW + "Serveur : " + ChatColor.GRAY + APIPlugin.getInstance().getServerName().replace("_", " "));
+			player.sendMessage("");
+			player.sendMessage(ChatColor.YELLOW + "Latence : " + (latency < 0 ? ChatColor.RED + "Erreur" : this.formatLag(latency) + ChatColor.GRAY + "ms"));
+			player.sendMessage(ChatColor.YELLOW + "Charge serveur : " + ChatColor.GRAY + tps.toString());
+			player.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+
 		}
-
-		player.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
-		player.sendMessage(ChatUtils.getCenteredText(ChatColor.WHITE + "•" + ChatColor.BOLD + " Informations de lag " + ChatColor.RESET + ChatColor.WHITE + "•"));
-        player.sendMessage("");
-        player.sendMessage(ChatColor.YELLOW + "Date : " + ChatColor.GRAY + this.dateFormat.format(new Date()));
-        player.sendMessage(ChatColor.YELLOW + "Serveur : " + ChatColor.GRAY + APIPlugin.getInstance().getServerName().replace("_", " "));
-		player.sendMessage("");
-		player.sendMessage(ChatColor.YELLOW + "Latence : " + (latency < 0 ? ChatColor.RED + "Erreur" : this.formatLag(latency) + ChatColor.GRAY + "ms"));
-		player.sendMessage(ChatColor.YELLOW + "Charge serveur : " + ChatColor.GRAY + tps.toString());
-        player.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+		catch (IllegalAccessException e)
+		{
+			e.printStackTrace();
+			player.sendMessage(ChatColor.RED + "Une erreur s'est produite.");
+		}
 
 		return true;
 	}
@@ -73,5 +89,21 @@ public class CommandLag extends AbstractCommand
 	private String formatLag(double lag)
     {
 		return "" + (lag > 200.0 ? org.bukkit.ChatColor.RED : (lag > 120D? org.bukkit.ChatColor.GOLD: (lag > 70D? org.bukkit.ChatColor.YELLOW: org.bukkit.ChatColor.GREEN))).toString() + (int) Math.round(lag * 100.0D) / 100.0D;
+	}
+
+	static
+	{
+		try
+		{
+			craftServerClass = Reflection.getOBCClass("CraftServer");
+			craftPlayerClass = Reflection.getOBCClass("entity.CraftPlayer");
+
+			recentTpsField = craftServerClass.getField("recentTps");
+			pingField = craftPlayerClass.getField("ping");
+		}
+		catch (NoSuchFieldException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

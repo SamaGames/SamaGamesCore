@@ -61,7 +61,7 @@ public class APIPlugin extends JavaPlugin implements Listener
 
     private LegacyManager legacyManager;
 
-    private NicknamePacketListener nicknamePacketListener;
+    //private NicknamePacketListener nicknamePacketListener;
 
     private CompletionPacketListener completionPacketListener;
 

@@ -1,6 +1,6 @@
 package net.samagames.core.api.permissions;
 
-import net.samagames.core.utils.Reflection;
+import net.samagames.tools.Reflection;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.Permission;
@@ -8,6 +8,7 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -29,7 +30,6 @@ import java.util.Set;
  */
 public class Permissible extends PermissibleBase
 {
-
     private CommandSender sender;
     private PermissionEntity entity;
     private Map<String, PermissionAttachmentInfo> permissions;
@@ -54,7 +54,15 @@ public class Permissible extends PermissibleBase
             }
         };
 
-        Reflection.setField(PermissibleBase.class, this, permissions, "permissions");
+        try
+        {
+            Field permissionsField = PermissibleBase.class.getField("permissions");
+            Reflection.setField(permissionsField, this, permissions);
+        }
+        catch (NoSuchFieldException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public org.bukkit.permissions.Permissible getOldPermissible()

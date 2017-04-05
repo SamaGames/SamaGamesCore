@@ -4,8 +4,9 @@ import net.samagames.tools.Reflection;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.v1_10_R1.CraftServer;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 public class CommandBlocker
@@ -69,7 +70,7 @@ public class CommandBlocker
             removeCommand(PROTOCOLSUPPORT_PREFIX, "protocolsupport", "ps");
 
             // WorldEdit
-            for (Command command : ((CraftServer) Bukkit.getServer()).getCommandMap().getCommands())
+            for (Command command : getCommandMap().getCommands())
             {
                 if (command.getClass().getPackage().getName().startsWith("com.sk89q.worldedit"))
                 {
@@ -80,15 +81,15 @@ public class CommandBlocker
                 }
             }
         }
-        catch (NoSuchFieldException | IllegalAccessException e)
+        catch (NoSuchFieldException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e)
         {
             e.printStackTrace();
         }
     }
 
-    private static void removeCommand(String prefix, String... str) throws NoSuchFieldException, IllegalAccessException
+    private static void removeCommand(String prefix, String... str) throws NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException
     {
-        SimpleCommandMap scm = ((CraftServer) Bukkit.getServer()).getCommandMap();
+        SimpleCommandMap scm = getCommandMap();
         Map knownCommands = (Map) Reflection.getValue(scm, true, "knownCommands");
 
         for (String cmd : str)
@@ -99,5 +100,13 @@ public class CommandBlocker
             if (knownCommands.containsKey(prefix + ":" + cmd))
                 knownCommands.remove(prefix + ":" + cmd);
         }
+    }
+
+    private static SimpleCommandMap getCommandMap() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException
+    {
+        Class<?> craftServerClass = Reflection.getOBCClass("CraftServer");
+        Method getCommandMapMethod = craftServerClass.getMethod("getCommandMap");
+
+        return (SimpleCommandMap) getCommandMapMethod.invoke(craftServerClass.cast(Bukkit.getServer()));
     }
 }

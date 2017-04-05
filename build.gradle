@@ -3,17 +3,19 @@ apply plugin: 'idea'
 apply plugin: 'maven'
 
 group = 'net.samagames'
-version = '4.1.0'
+version = '5.0.0'
 archivesBaseName = 'SamaGamesAPI'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 compileJava.options.encoding = 'UTF-8'
+
 configurations {
     provided
     compile.extendsFrom provided
-
+    compat18
+    compat19
 }
 
 configurations.all {
@@ -44,12 +46,16 @@ repositories {
 }
 
 dependencies {
-    compile(group: 'net.samagames', name: 'SamaGamesAPI', version: '4.1.0', changing: true)
+    compile(group: 'net.samagames', name: 'SamaGamesAPI', version: '5.0.0', changing: true)
     compile(group: 'net.samagames', name: 'PersistanceAPI', version: '1.1.0', changing: true)
     compile(group: 'redis.clients', name: 'jedis', version: '2.9.0')
     compile(group: 'in.ashwanthkumar', name: 'slack-java-webhook', version: '0.0.7')
 
-    provided(group: 'org.spigotmc', name: 'spigot', version: '1.10.2-R0.1-SNAPSHOT') {
+    compat18(group: 'org.spigotmc', name: 'spigot', version: '1.8.8-R0.1-SNAPSHOT', changing: true) {
+        transitive = false
+    }
+
+    compat19(group: 'org.spigotmc', name: 'spigot', version: '1.9.4-R0.1-SNAPSHOT', changing: true) {
         transitive = false
     }
 }
@@ -59,6 +65,8 @@ sourceSets {
         java {
             srcDir 'PersistanceGeneratorCore/Generation'
             //compileClasspath += configurations.runtime
+            compileClasspath += configurations.compat18
+            compileClasspath += configurations.compat19
         }
     }
 }
@@ -66,7 +74,7 @@ sourceSets {
 jar {
     dependsOn configurations.runtime
     from{
-        (configurations.runtime - configurations.provided).collect {
+        (configurations.runtime - configurations.provided - configurations.compat18 - configurations.compat19).collect {
             it.isDirectory() ? it : zipTree(it)
         }
     }
