@@ -7,6 +7,8 @@ import org.bukkit.Bukkit;
 
 import javax.management.modelmbean.ModelMBeanOperationInfo;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * ╱╲＿＿＿＿＿＿╱╲
@@ -25,7 +27,7 @@ import java.lang.reflect.Field;
 @RemoteObject(description = "Internal server Management")
 public class ServerFunction
 {
-    private static Class<?> craftServerClass;
+    private static Method getServerMethod;
     private static Field recentTpsField;
 
     @RemoteMethod(description = "Get current server tps", impact = ModelMBeanOperationInfo.ACTION)
@@ -34,14 +36,14 @@ public class ServerFunction
         try
         {
             double result = 0;
-            double[] recentTps = (double[]) recentTpsField.get(craftServerClass.cast(Bukkit.getServer()));
+            double[] recentTps = (double[]) recentTpsField.get(getServerMethod.invoke(null));
 
             for(double one : recentTps)
                 result += one;
 
             return result / recentTps.length;
         }
-        catch (IllegalAccessException e)
+        catch (IllegalAccessException | InvocationTargetException e)
         {
             e.printStackTrace();
         }
@@ -53,10 +55,11 @@ public class ServerFunction
     {
         try
         {
-            craftServerClass = Reflection.getOBCClass("CraftServer");
-            recentTpsField = craftServerClass.getField("recentTps");
+            Class<?> minecraftServerClass = Reflection.getNMSClass("MinecraftServer");
+            getServerMethod = minecraftServerClass.getMethod("getServer");
+            recentTpsField = minecraftServerClass.getField("recentTps");
         }
-        catch (NoSuchFieldException e)
+        catch (NoSuchFieldException | NoSuchMethodException e)
         {
             e.printStackTrace();
         }

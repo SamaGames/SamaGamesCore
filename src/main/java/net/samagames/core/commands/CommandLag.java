@@ -9,6 +9,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -22,8 +24,8 @@ import java.util.Locale;
  */
 public class CommandLag extends AbstractCommand
 {
-	private static Class<?> craftServerClass;
 	private static Class<?> craftPlayerClass;
+	private static Method getServerMethod;
 	private static Field recentTpsField;
 	private static Field pingField;
 
@@ -49,7 +51,7 @@ public class CommandLag extends AbstractCommand
 			int latency = (int) pingField.get(craftPlayerClass.cast((Player) sender));
 
 			StringBuilder tps = new StringBuilder();
-			double[] recentTps = (double[]) recentTpsField.get(craftServerClass.cast(Bukkit.getServer()));
+			double[] recentTps = (double[]) recentTpsField.get(getServerMethod.invoke(null));
 			int length = recentTps.length;
 
 			for(int var7 = 0; var7 < length; ++var7)
@@ -71,10 +73,9 @@ public class CommandLag extends AbstractCommand
 			player.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
 
 		}
-		catch (IllegalAccessException e)
+		catch (IllegalAccessException | InvocationTargetException e)
 		{
 			e.printStackTrace();
-			player.sendMessage(ChatColor.RED + "Une erreur s'est produite.");
 		}
 
 		return true;
@@ -95,15 +96,16 @@ public class CommandLag extends AbstractCommand
 	{
 		try
 		{
-			craftServerClass = Reflection.getOBCClass("CraftServer");
 			craftPlayerClass = Reflection.getOBCClass("entity.CraftPlayer");
+            Class<?> minecraftServerClass = Reflection.getNMSClass("MinecraftServer");
 
-			recentTpsField = craftServerClass.getField("recentTps");
+            getServerMethod = minecraftServerClass.getMethod("getServer");
+            recentTpsField = minecraftServerClass.getField("recentTps");
 			pingField = craftPlayerClass.getField("ping");
 		}
-		catch (NoSuchFieldException e)
+		catch (NoSuchFieldException | NoSuchMethodException e)
 		{
 			e.printStackTrace();
 		}
-	}
+    }
 }
