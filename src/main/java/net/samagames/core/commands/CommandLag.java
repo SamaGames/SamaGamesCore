@@ -24,7 +24,6 @@ import java.util.Locale;
  */
 public class CommandLag extends AbstractCommand
 {
-	private static Class<?> craftPlayerClass;
 	private static Method getServerMethod;
 	private static Field recentTpsField;
 	private static Field pingField;
@@ -48,7 +47,7 @@ public class CommandLag extends AbstractCommand
 
 		try
 		{
-			int latency = (int) pingField.get(craftPlayerClass.cast((Player) sender));
+			int latency = (int) pingField.get(Reflection.getHandle(player));
 
 			StringBuilder tps = new StringBuilder();
 			double[] recentTps = (double[]) recentTpsField.get(getServerMethod.invoke(null));
@@ -96,12 +95,12 @@ public class CommandLag extends AbstractCommand
 	{
 		try
 		{
-			craftPlayerClass = Reflection.getOBCClass("entity.CraftPlayer");
             Class<?> minecraftServerClass = Reflection.getNMSClass("MinecraftServer");
-
+            Class<?> entityPlayerClass = Reflection.getNMSClass("EntityPlayer");
+            
             getServerMethod = minecraftServerClass.getMethod("getServer");
             recentTpsField = minecraftServerClass.getField("recentTps");
-			pingField = craftPlayerClass.getField("ping");
+			pingField = entityPlayerClass.getField("ping");
 		}
 		catch (NoSuchFieldException | NoSuchMethodException e)
 		{
