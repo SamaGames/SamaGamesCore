@@ -97,7 +97,7 @@ public class CommandLag extends AbstractCommand
 		{
             Class<?> minecraftServerClass = Reflection.getNMSClass("MinecraftServer");
             Class<?> entityPlayerClass = Reflection.getNMSClass("EntityPlayer");
-            
+
             getServerMethod = minecraftServerClass.getMethod("getServer");
             recentTpsField = minecraftServerClass.getField("recentTps");
 			pingField = entityPlayerClass.getField("ping");

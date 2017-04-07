@@ -3,6 +3,7 @@ package net.samagames.core.legacypvp;
 import net.samagames.core.APIPlugin;
 import net.samagames.core.legacypvp.armors.ArmorModule;
 import net.samagames.core.legacypvp.cooldown.CooldownModule;
+import net.samagames.tools.Reflection;
 import org.bukkit.Bukkit;
 
 /**
@@ -19,24 +20,14 @@ import org.bukkit.Bukkit;
  * ＿＿╱▕▔▔▏╲＿＿
  * ＿＿▔▔＿＿▔▔＿＿
  */
-public class LegacyManager {
-
-    private ArmorModule armorModule;
-    private CooldownModule cooldownModule;
-
+public class LegacyManager
+{
     public LegacyManager(APIPlugin plugin)
     {
-        armorModule = new ArmorModule(plugin.getAPI());
-        Bukkit.getPluginManager().registerEvents(armorModule, plugin);
-        cooldownModule = new CooldownModule(plugin.getAPI());
-        Bukkit.getPluginManager().registerEvents(cooldownModule, plugin);
-    }
+        if (Reflection.PackageType.getServerVersion().equals("v1_8_R3"))
+            return;
 
-    public ArmorModule getArmorModule() {
-        return armorModule;
-    }
-
-    public CooldownModule getCooldownModule() {
-        return cooldownModule;
+        Bukkit.getPluginManager().registerEvents(new ArmorModule(plugin.getAPI()), plugin);
+        Bukkit.getPluginManager().registerEvents(new CooldownModule(plugin.getAPI()), plugin);
     }
 }
