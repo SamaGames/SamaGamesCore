@@ -72,7 +72,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
                     {
                         Field hashField = packet.getClass().getDeclaredField("a");
                         hashField.setAccessible(true);
-                        Field stateField = packet.getClass().getDeclaredField("b");
+                        Field stateField = packet.getClass().getDeclaredField(Reflection.PackageType.getServerVersion().equals("v1_8_R3") ? "b" : "status");
                         stateField.setAccessible(true);
 
                         String hash = (String) hashField.get(packet);
