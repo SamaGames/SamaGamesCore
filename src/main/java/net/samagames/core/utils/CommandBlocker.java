@@ -7,7 +7,9 @@ import org.bukkit.command.SimpleCommandMap;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class CommandBlocker
 {
@@ -18,6 +20,7 @@ public class CommandBlocker
     private static final String SONARPET_PREFIX = "sonarpet";
     private static final String LIBSDISGUISES_PREFIX = "libsdisguises";
     private static final String PROTOCOLSUPPORT_PREFIX = "protocolsupport";
+    private static final String VIAVERSION_PREFIX = "viaversion";
     private static final String WORLDEDIT_PREFIX = "worldedit";
 
     public static void removeCommands()
@@ -42,44 +45,21 @@ public class CommandBlocker
             removeCommand(SPIGOT_PREFIX, "restart");
 
             // ProtocolLib
-            removeCommand(PROTOCOLLIB_PREFIX, "protocol");
-            removeCommand(PROTOCOLLIB_PREFIX, "packet");
-            removeCommand(PROTOCOLLIB_PREFIX, "filter");
+            removeCommand(PROTOCOLLIB_PREFIX, "*");
 
             // SonarPet
-            removeCommand(SONARPET_PREFIX, "pet");
-            removeCommand(SONARPET_PREFIX, "petadmin");
-            removeCommand(SONARPET_PREFIX, "ecupdate");
-            removeCommand(SONARPET_PREFIX, "echopet");
+            removeCommand(SONARPET_PREFIX, "*");
 
             // LibsDisguises
-            removeCommand(LIBSDISGUISES_PREFIX, "libsdisguises");
-            removeCommand(LIBSDISGUISES_PREFIX, "disguise", "d", "dis");
-            removeCommand(LIBSDISGUISES_PREFIX, "disguiseentity", "dentity", "disentity");
-            removeCommand(LIBSDISGUISES_PREFIX, "disguisehelp", "dhelp", "dishelp");
-            removeCommand(LIBSDISGUISES_PREFIX, "disguiseplayer", "dplayer", "displayer");
-            removeCommand(LIBSDISGUISES_PREFIX, "disguiseradius", "disradius", "dradius");
-            removeCommand(LIBSDISGUISES_PREFIX, "undisguise", "u", "und", "undis");
-            removeCommand(LIBSDISGUISES_PREFIX, "undisguiseplayer", "undisplayer", "undplayer");
-            removeCommand(LIBSDISGUISES_PREFIX, "undisguiseentity", "undisentity", "undentity");
-            removeCommand(LIBSDISGUISES_PREFIX, "undisguiseradius", "undisradius", "undradius");
-            removeCommand(LIBSDISGUISES_PREFIX, "disguiseclone", "disguisec", "disc", "disclone", "dclone", "clonedisguise", "clonedis", "cdisguise", "cdis");
-            removeCommand(LIBSDISGUISES_PREFIX, "disguiseviewself", "dviewself", "dvs", "disguisevs", "disvs", "vsd", "viewselfdisguise", "viewselfd");
-
+            removeCommand(LIBSDISGUISES_PREFIX, "*");
             // ProtocolSupport
-            removeCommand(PROTOCOLSUPPORT_PREFIX, "protocolsupport", "ps");
+            removeCommand(PROTOCOLSUPPORT_PREFIX, "*");
+
+            // ViaVersion
+            removeCommand(VIAVERSION_PREFIX, "*");
 
             // WorldEdit
-            for (Command command : getCommandMap().getCommands())
-            {
-                if (command.getClass().getPackage().getName().startsWith("com.sk89q.worldedit"))
-                {
-                    removeCommand(WORLDEDIT_PREFIX, command.getName());
-
-                    for (String alias : command.getAliases())
-                        removeCommand(WORLDEDIT_PREFIX, alias);
-                }
-            }
+            removeCommand(WORLDEDIT_PREFIX, "*");
         }
         catch (NoSuchFieldException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e)
         {
@@ -94,11 +74,27 @@ public class CommandBlocker
 
         for (String cmd : str)
         {
-            if (knownCommands.containsKey(cmd))
-                knownCommands.remove(cmd);
+            if (cmd.equals("*"))
+            {
+                for (String knownCommand : new HashSet<String>(knownCommands.keySet()))
+                {
+                    if (knownCommand.startsWith(prefix))
+                    {
+                        knownCommands.remove(knownCommand);
 
-            if (knownCommands.containsKey(prefix + ":" + cmd))
-                knownCommands.remove(prefix + ":" + cmd);
+                        if (knownCommands.containsKey(":") && knownCommands.containsKey(knownCommand.split(":")[1]))
+                            knownCommands.remove(knownCommand.split(":")[1]);
+                    }
+                }
+            }
+            else
+            {
+                if (knownCommands.containsKey(cmd))
+                    knownCommands.remove(cmd);
+
+                if (knownCommands.containsKey(prefix + ":" + cmd))
+                    knownCommands.remove(prefix + ":" + cmd);
+            }
         }
     }
 
