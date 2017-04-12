@@ -38,11 +38,11 @@ class GameProperties implements IGameProperties
             }
 
             JsonObject rootJson = new JsonParser().parse(new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8"))).getAsJsonObject();
-            templateID = rootJson.get("template-id").getAsString();
-            mapName = rootJson.get("map-name").getAsString();
-            minSlots = rootJson.get("min-slots").getAsInt();
-            maxSlots = rootJson.get("max-slots").getAsInt();
-            options = rootJson.get("options").getAsJsonObject();
+            this.templateID = rootJson.get("template-id").getAsString();
+            this.mapName = rootJson.get("map-name").getAsString();
+            this.minSlots = rootJson.get("min-slots").getAsInt();
+            this.maxSlots = rootJson.get("max-slots").getAsInt();
+            this.options = rootJson.get("options").getAsJsonObject();
 
             File worldFolder = new File(APIPlugin.getInstance().getDataFolder().getAbsoluteFile().getParentFile().getParentFile(), "world");
             File arenaFile = new File(worldFolder, "arena.json");
@@ -54,8 +54,9 @@ class GameProperties implements IGameProperties
                 return;
             }
 
-            mapProperties = new JsonParser().parse(new InputStreamReader(new FileInputStream(arenaFile), Charset.forName("UTF-8"))).getAsJsonObject();
-        } catch (FileNotFoundException e)
+            this.mapProperties = new JsonParser().parse(new InputStreamReader(new FileInputStream(arenaFile), Charset.forName("UTF-8"))).getAsJsonObject();
+        }
+        catch (FileNotFoundException e)
         {
             e.printStackTrace();
             APIPlugin.log(Level.SEVERE, "Can't open the game properties file. Abort start!");
@@ -79,7 +80,7 @@ class GameProperties implements IGameProperties
         return maxSlots;
     }
 
-    public JsonElement getOption(String key, JsonElement defaultValue)
+    public JsonElement getGameOption(String key, JsonElement defaultValue)
     {
         if (options.has(key))
             return options.get(key);
@@ -87,20 +88,20 @@ class GameProperties implements IGameProperties
             return defaultValue;
     }
 
-    public JsonObject getOptions()
+    public JsonObject getGameOptions()
     {
         return options;
     }
 
-    public JsonElement getConfig(String key, JsonElement defaultValue)
+    public JsonElement getMapProperty(String key, JsonElement defaultValue)
     {
-        if (mapProperties.has(key))
-            return mapProperties.get(key);
+        if (this.mapProperties.has(key))
+            return this.mapProperties.get(key);
         else
             return defaultValue;
     }
 
-    public JsonObject getConfigs()
+    public JsonObject getMapProperties()
     {
         return mapProperties;
     }
