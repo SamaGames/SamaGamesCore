@@ -48,7 +48,9 @@ public class PubSubAPI implements IPubSubAPI
                 Jedis jedis = api.getBungeeResource();
                 try
                 {
-                    jedis.psubscribe(subscriberPattern, subscriberPattern.getPatternsSuscribed());
+                    String[] patternsSuscribed = subscriberPattern.getPatternsSuscribed();
+                    if(patternsSuscribed.length > 0)
+                        jedis.psubscribe(subscriberPattern, patternsSuscribed);
                 } catch (Exception e)
                 {
                     e.printStackTrace();
@@ -64,7 +66,9 @@ public class PubSubAPI implements IPubSubAPI
                 Jedis jedis = api.getBungeeResource();
                 try
                 {
-                    jedis.subscribe(subscriberChannel, subscriberChannel.getChannelsSuscribed());
+                    String[] channelsSuscribed = subscriberChannel.getChannelsSuscribed();
+                    if (channelsSuscribed.length > 0)
+                        jedis.subscribe(subscriberChannel, channelsSuscribed);
                 } catch (Exception e)
                 {
                     e.printStackTrace();
