@@ -83,14 +83,16 @@ public class PubSubAPI implements IPubSubAPI
     public void subscribe(String channel, IPacketsReceiver receiver)
     {
         subscriberChannel.registerReceiver(channel, receiver);
-        subscriberChannel.unsubscribe();
+        if(subscriberChannel.isSubscribed())
+            subscriberChannel.unsubscribe();
     }
 
     @Override
     public void subscribe(String pattern, IPatternReceiver receiver)
     {
         subscriberPattern.registerPattern(pattern, receiver);
-        subscriberPattern.punsubscribe();
+        if(subscriberPattern.isSubscribed())
+            subscriberPattern.punsubscribe();
     }
 
     @Override
