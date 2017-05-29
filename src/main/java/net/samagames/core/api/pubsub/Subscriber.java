@@ -7,6 +7,7 @@ import redis.clients.jedis.JedisPubSub;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 
 /**
@@ -28,7 +29,6 @@ class Subscriber extends JedisPubSub
         if (receivers == null)
             receivers = new HashSet<>();
         receivers.add(receiver);
-        this.subscribe(channel);
         packetsReceivers.put(channel, receivers);
     }
 
@@ -38,7 +38,6 @@ class Subscriber extends JedisPubSub
         if (receivers == null)
             receivers = new HashSet<>();
         receivers.add(receiver);
-        this.psubscribe(pattern);
         patternsReceivers.put(pattern, receivers);
     }
 
@@ -73,5 +72,17 @@ class Subscriber extends JedisPubSub
         {
             ignored.printStackTrace();
         }
+    }
+
+    public String[] getChannelsSuscribed()
+    {
+        Set<String> strings = packetsReceivers.keySet();
+        return strings.toArray(new String[0]);
+    }
+
+    public String[] getPatternsSuscribed()
+    {
+        Set<String> strings = patternsReceivers.keySet();
+        return strings.toArray(new String[0]);
     }
 }

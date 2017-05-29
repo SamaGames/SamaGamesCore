@@ -38,7 +38,6 @@ class Sender implements Runnable, ISender
         fixDatabase();
         while (true)
         {
-
             PendingMessage message;
             try
             {

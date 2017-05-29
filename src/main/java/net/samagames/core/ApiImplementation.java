@@ -77,8 +77,7 @@ public class ApiImplementation extends SamaGamesAPI
 
         this.plugin = plugin;
 
-        this.pubSub = new PubSubAPI();
-        this.pubSub.init(this);
+        this.pubSub = new PubSubAPI(this);
         //TODO redo
         GlobalUpdateListener listener = new GlobalUpdateListener(plugin);
         this.pubSub.subscribe("groupchange", listener);
@@ -142,6 +141,8 @@ public class ApiImplementation extends SamaGamesAPI
     public void onShutdown()
     {
         this.playerDataManager.onShutdown();
+
+        this.pubSub.disable();
     }
 
     @Override

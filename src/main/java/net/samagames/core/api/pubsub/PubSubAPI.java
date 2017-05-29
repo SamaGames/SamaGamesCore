@@ -1,9 +1,7 @@
 package net.samagames.core.api.pubsub;
 
 import net.samagames.api.pubsub.*;
-import net.samagames.core.APIPlugin;
 import net.samagames.core.ApiImplementation;
-import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
 
 /**
@@ -16,58 +14,79 @@ import redis.clients.jedis.Jedis;
 public class PubSubAPI implements IPubSubAPI
 {
 
-    private Subscriber subscriber;
+    private Subscriber subscriberPattern;
+    private Subscriber subscriberChannel;
+
     private Sender sender;
-    private boolean continueSub = true;
+    private ApiImplementation api;
+
+    boolean working = true;
+
+    private Thread senderThread;
+    private Thread patternThread;
+    private Thread channelThread;
 
     // Avoid to init Threads before the subclass constructor is started (Fix possible atomicity violation)
-    public void init(ApiImplementation api)
+    public PubSubAPI(ApiImplementation api)
     {
-        subscriber = new Subscriber();
-        new Thread(() -> {
-            while (continueSub)
+        this.api = api;
+        subscriberPattern = new Subscriber();
+        subscriberChannel = new Subscriber();
+
+        sender = new Sender(api);
+        senderThread = new Thread(sender, "SenderThread");
+        senderThread.start();
+
+        startThread();
+    }
+
+    private void startThread()
+    {
+        patternThread = new Thread(() -> {
+            while (working)
             {
                 Jedis jedis = api.getBungeeResource();
                 try
                 {
-                    jedis.psubscribe(subscriber, "*");
-                    subscriber.registerPattern("*", APIPlugin.getInstance().getDebugListener());
+                    jedis.psubscribe(subscriberPattern, subscriberPattern.getPatternsSuscribed());
                 } catch (Exception e)
                 {
                     e.printStackTrace();
                 }
-
-                Bukkit.getLogger().info("Disconnected from master.");
                 jedis.close();
             }
-        }).start();
+        });
+        patternThread.start();
 
-        Bukkit.getLogger().info("Waiting for subscribing...");
-        while (!subscriber.isSubscribed())
-            try
+        channelThread = new Thread(() -> {
+            while (working)
             {
-                Thread.sleep(100);
-            } catch (InterruptedException e)
-            {
-                e.printStackTrace();
+                Jedis jedis = api.getBungeeResource();
+                try
+                {
+                    jedis.subscribe(subscriberChannel, subscriberChannel.getChannelsSuscribed());
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+                jedis.close();
             }
-
-        Bukkit.getLogger().info("Correctly subscribed.");
-
-        sender = new Sender(api);
-        new Thread(sender, "SenderThread").start();
+        });
+        channelThread.start();
     }
 
     @Override
     public void subscribe(String channel, IPacketsReceiver receiver)
     {
-        subscriber.registerReceiver(channel, receiver);
+        subscriberChannel.registerReceiver(channel, receiver);
+        subscriberChannel.unsubscribe();
     }
 
     @Override
     public void subscribe(String pattern, IPatternReceiver receiver)
     {
-        subscriber.registerPattern(pattern, receiver);
+        subscriberPattern.registerPattern(pattern, receiver);
+        subscriberPattern.punsubscribe();
     }
 
     @Override
@@ -90,14 +109,18 @@ public class PubSubAPI implements IPubSubAPI
 
     public void disable()
     {
-        continueSub = false;
-        subscriber.unsubscribe();
-        subscriber.punsubscribe();
+        working = false;
+        subscriberChannel.unsubscribe();
+        subscriberPattern.punsubscribe();
         try
         {
             Thread.sleep(500);
         } catch (Exception ignored)
         {
         }
+
+        senderThread.stop();
+        patternThread.stop();
+        channelThread.stop();
     }
 }
