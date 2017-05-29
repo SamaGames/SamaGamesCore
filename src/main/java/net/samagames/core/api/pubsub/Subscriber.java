@@ -51,6 +51,8 @@ class Subscriber extends JedisPubSub
                 receivers.forEach((IPacketsReceiver receiver) -> receiver.receive(channel, message));
             else
                 APIPlugin.log(Level.WARNING, "{PubSub} Received message on a channel, but no packetsReceivers were found. (channel: " + channel + ", message:" + message + ")");
+
+            APIPlugin.getInstance().getDebugListener().receive("onlychannel", channel, message);
         } catch (Exception ignored)
         {
             ignored.printStackTrace();
@@ -68,6 +70,8 @@ class Subscriber extends JedisPubSub
                 receivers.forEach((IPatternReceiver receiver) -> receiver.receive(pattern, channel, message));
             else
                 APIPlugin.log(Level.WARNING, "{PubSub} Received pmessage on a channel, but no packetsReceivers were found.");
+
+            APIPlugin.getInstance().getDebugListener().receive(pattern, channel, message);
         } catch (Exception ignored)
         {
             ignored.printStackTrace();
