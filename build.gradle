@@ -14,8 +14,6 @@ compileJava.options.encoding = 'UTF-8'
 configurations {
     provided
     compile.extendsFrom provided
-    compat18
-    compat19
 }
 
 configurations.all {
@@ -51,11 +49,7 @@ dependencies {
     compile(group: 'redis.clients', name: 'jedis', version: '2.9.0')
     compile(group: 'in.ashwanthkumar', name: 'slack-java-webhook', version: '0.0.7')
 
-    compat18(group: 'org.spigotmc', name: 'spigot', version: '1.8.8-R0.1-SNAPSHOT', changing: true) {
-        transitive = false
-    }
-
-    compat19(group: 'org.spigotmc', name: 'spigot', version: '1.9.4-R0.1-SNAPSHOT', changing: true) {
+    compile(group: 'org.spigotmc', name: 'spigot', version: '1.12-R0.1-SNAPSHOT', changing: true) {
         transitive = false
     }
 }
@@ -64,9 +58,6 @@ sourceSets {
     main {
         java {
             srcDir 'PersistanceGeneratorCore/Generation'
-            //compileClasspath += configurations.runtime
-            compileClasspath += configurations.compat18
-            compileClasspath += configurations.compat19
         }
     }
 }
@@ -74,17 +65,10 @@ sourceSets {
 jar {
     dependsOn configurations.runtime
     from{
-        (configurations.runtime - configurations.provided - configurations.compat18 - configurations.compat19).collect {
+        (configurations.runtime - configurations.provided).collect {
             it.isDirectory() ? it : zipTree(it)
         }
     }
 }
 
-/*task bigJar(type: Jar) {
-    baseName = project.name + '-jar-with-dependencies'
-    from { configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
-}*/
-
 compileJava.dependsOn(':PersistanceGeneratorCore:runSimple')
-//build.dependsOn('bigJar')

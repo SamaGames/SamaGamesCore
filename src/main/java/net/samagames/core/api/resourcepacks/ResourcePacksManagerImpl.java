@@ -1,11 +1,12 @@
 package net.samagames.core.api.resourcepacks;
 
 import io.netty.channel.Channel;
+import net.minecraft.server.v1_12_R1.MinecraftServer;
+import net.minecraft.server.v1_12_R1.PacketPlayInResourcePackStatus;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.api.resourcepacks.IResourceCallback;
 import net.samagames.api.resourcepacks.IResourcePacksManager;
 import net.samagames.core.APIPlugin;
-import net.samagames.tools.Reflection;
 import net.samagames.tools.TinyProtocol;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,8 +19,6 @@ import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import redis.clients.jedis.Jedis;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -33,13 +32,6 @@ import java.util.UUID;
  */
 public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
 {
-    private static Class<?> packetPlayInResourcePackStatus = Reflection.getNMSClass("PacketPlayInResourcePackStatus");
-    private static Class<?> enumResourcePackStatusClass = Reflection.getNMSClass("PacketPlayInResourcePackStatus$EnumResourcePackStatus");
-
-    private static Object declinedEnumStatus;
-    private static Object failedEnumStatus;
-    private static Object successEnumStatus;
-
     private final List<UUID> currentlyDownloading = new ArrayList<>();
     private final SamaGamesAPI api;
     private final String resetUrl;
@@ -66,19 +58,18 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
                 if (sender == null)
                     return super.onPacketInAsync(null, channel, packet);
 
-                if (packetPlayInResourcePackStatus.isAssignableFrom(packet.getClass()))
+                if (PacketPlayInResourcePackStatus.class.isAssignableFrom(packet.getClass()))
                 {
                     try
                     {
-                        Field hashField = packet.getClass().getDeclaredField("a");
-                        hashField.setAccessible(true);
-                        Field stateField = packet.getClass().getDeclaredField(Reflection.PackageType.getServerVersion().equals("v1_8_R3") ? "b" : "status");
+                        //Field hashField = packet.getClass().getDeclaredField("a");
+                        //hashField.setAccessible(true);
+                        Field stateField = packet.getClass().getDeclaredField("status");
                         stateField.setAccessible(true);
 
-                        String hash = (String) hashField.get(packet);
-                        Object state = stateField.get(packet);
+                        PacketPlayInResourcePackStatus.EnumResourcePackStatus state = (PacketPlayInResourcePackStatus.EnumResourcePackStatus) stateField.get(packet);
 
-                        handle(sender, hash, state);
+                        handle(sender, state);
                     }
                     catch (Exception e)
                     {
@@ -91,13 +82,13 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
         };
     }
 
-    private void handle(Player sender, String hash, Object state)
+    private void handle(Player sender, PacketPlayInResourcePackStatus.EnumResourcePackStatus state)
     {
         Player player = sender;
         if (forceUrl == null)
             return;
 
-        if (state.equals(declinedEnumStatus) || state.equals(failedEnumStatus))
+        if (state.equals(PacketPlayInResourcePackStatus.EnumResourcePackStatus.DECLINED) || state.equals(PacketPlayInResourcePackStatus.EnumResourcePackStatus.FAILED_DOWNLOAD))
         {
             if (callback == null || callback.automaticKick(player))
             {
@@ -107,7 +98,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
             currentlyDownloading.remove(player.getUniqueId());
 
         }
-        else if(state.equals(successEnumStatus))
+        else if(state.equals(PacketPlayInResourcePackStatus.EnumResourcePackStatus.SUCCESSFULLY_LOADED))
         {
             currentlyDownloading.remove(player.getUniqueId());
             APIPlugin.getInstance().getLogger().info("Player " + player.getName() + " successfully downloaded resource pack");
@@ -143,17 +134,7 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
         Bukkit.getScheduler().runTaskAsynchronously(APIPlugin.getInstance(), () -> {
             forceUrl = url;
 
-            try
-            {
-                Class<?> craftServerClass = Reflection.getOBCClass("CraftServer");
-                Method setResourcePackMethod = craftServerClass.getMethod("setResourcePack", String.class, String.class);
-                setResourcePackMethod.invoke(craftServerClass.cast(Bukkit.getServer()), url, hash);
-            }
-            catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e)
-            {
-                e.printStackTrace();
-            }
-
+            MinecraftServer.getServer().setResourcePack(url, hash);
 
             APIPlugin.getInstance().getLogger().info("Defined automatic resource pack : " + url);
         });
@@ -249,19 +230,5 @@ public class ResourcePacksManagerImpl implements IResourcePacksManager, Listener
         }
 
         currentlyDownloading.clear();
-    }
-
-    static
-    {
-        try
-        {
-            declinedEnumStatus = enumResourcePackStatusClass.getField("DECLINED").get(null);
-            failedEnumStatus = enumResourcePackStatusClass.getField("FAILED_DOWNLOAD").get(null);
-            successEnumStatus = enumResourcePackStatusClass.getField("SUCCESSFULLY_LOADED").get(null);
-        }
-        catch (IllegalAccessException | NoSuchFieldException e)
-        {
-            e.printStackTrace();
-        }
     }
 }

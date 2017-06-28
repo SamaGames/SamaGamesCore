@@ -1,9 +1,9 @@
 package net.samagames.core.listeners.general;
 
 import io.netty.channel.Channel;
+import net.minecraft.server.v1_12_R1.PacketPlayInTabComplete;
 import net.samagames.api.SamaGamesAPI;
 import net.samagames.core.APIPlugin;
-import net.samagames.tools.Reflection;
 import net.samagames.tools.TinyProtocol;
 import org.bukkit.entity.Player;
 
@@ -12,8 +12,6 @@ import java.lang.reflect.Method;
 
 public class CompletionPacketListener extends TinyProtocol
 {
-    private static Class<?> packetPlayInTabComplete = Reflection.getNMSClass("PacketPlayInTabComplete");
-
     /**
      * Construct a new instance of TinyProtocol, and start intercepting packets for all connected clients and future clients.
      * <p>
@@ -29,7 +27,7 @@ public class CompletionPacketListener extends TinyProtocol
     @Override
     public Object onPacketInAsync(Player receiver, Channel channel, Object packet)
     {
-        if (packetPlayInTabComplete.isAssignableFrom(packet.getClass()))
+        if (PacketPlayInTabComplete.class.isAssignableFrom(packet.getClass()))
         {
             if (SamaGamesAPI.get().getPermissionsManager().hasPermission(receiver, "network.staff"))
                 return super.onPacketInAsync(receiver, channel, packet);
@@ -41,13 +39,11 @@ public class CompletionPacketListener extends TinyProtocol
 
                 if (command.startsWith("/") && command.split(" ").length == 1)
                 {
-                    Object newPacket = packetPlayInTabComplete.getDeclaredConstructor(String[].class).newInstance(new String[0]);
-                    this.sendPacket(receiver, newPacket);
-
+                    this.sendPacket(receiver, new PacketPlayInTabComplete());
                     return null;
                 }
             }
-            catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e)
+            catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e)
             {
                 e.printStackTrace();
             }

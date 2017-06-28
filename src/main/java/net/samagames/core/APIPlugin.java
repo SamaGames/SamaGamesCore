@@ -43,7 +43,6 @@ import java.util.logging.Level;
  */
 public class APIPlugin extends JavaPlugin implements Listener
 {
-
     private static APIPlugin instance;
     private final CopyOnWriteArraySet<String> ipWhiteList = new CopyOnWriteArraySet<>();
     private ApiImplementation api;

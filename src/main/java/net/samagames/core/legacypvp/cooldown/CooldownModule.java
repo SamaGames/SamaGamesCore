@@ -14,9 +14,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 /**
  * ╱╲＿＿＿＿＿＿╱╲
  * ▏╭━━╮╭━━╮▕
@@ -33,9 +30,6 @@ import java.lang.reflect.Method;
  */
 public class CooldownModule implements Listener
 {
-    private static Method getAttributeMethod;
-    private static Method getItemInMainHandMethod;
-
     private ApiImplementation api;
 
     private int[] data = new int[Material.values().length];
@@ -59,48 +53,35 @@ public class CooldownModule implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event)
     {
-        try
-        {
-            Player player = event.getPlayer();
+        Player player = event.getPlayer();
 
-            if (api.getGameManager().isLegacyPvP())
-            {
-                AttributeInstance genericAttackSpeedAttribute = (AttributeInstance) getAttributeMethod.invoke(player, Attribute.GENERIC_ATTACK_SPEED);
-
-                if (genericAttackSpeedAttribute != null)
-                    genericAttackSpeedAttribute.setBaseValue(1024.0D);
-            }
-        }
-        catch (IllegalAccessException | InvocationTargetException e)
+        if (api.getGameManager().isLegacyPvP())
         {
-            e.printStackTrace();
+            AttributeInstance genericAttackSpeedAttribute = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
+
+            if (genericAttackSpeedAttribute != null)
+                genericAttackSpeedAttribute.setBaseValue(1024.0D);
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        try
-        {
-            if (api.getGameManager().isLegacyPvP()) {
-                Entity attacker = event.getDamager();
-                if (attacker instanceof Player) {
-                    Player player = (Player) attacker;
-                    ItemStack inHand = (ItemStack) getItemInMainHandMethod.invoke(player);
-                    if (inHand != null) {
-                        double baseDamage = event.getDamage(EntityDamageEvent.DamageModifier.BASE);
-                        double currentDamage = this.getCurrentDamage(inHand.getType());
-                        if (currentDamage != 0.0D) {
-                            double damageFactor = baseDamage / currentDamage;
-                            double legacyDamage = this.getLegacyDamage(inHand.getType()) * damageFactor;
-                            event.setDamage(EntityDamageEvent.DamageModifier.BASE, legacyDamage);
-                        }
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event)
+    {
+        if (api.getGameManager().isLegacyPvP()) {
+            Entity attacker = event.getDamager();
+            if (attacker instanceof Player) {
+                Player player = (Player) attacker;
+                ItemStack inHand = player.getInventory().getItemInMainHand();
+                if (inHand != null) {
+                    double baseDamage = event.getDamage(EntityDamageEvent.DamageModifier.BASE);
+                    double currentDamage = this.getCurrentDamage(inHand.getType());
+                    if (currentDamage != 0.0D) {
+                        double damageFactor = baseDamage / currentDamage;
+                        double legacyDamage = this.getLegacyDamage(inHand.getType()) * damageFactor;
+                        event.setDamage(EntityDamageEvent.DamageModifier.BASE, legacyDamage);
                     }
                 }
             }
-        }
-        catch (IllegalAccessException | InvocationTargetException e)
-        {
-            e.printStackTrace();
         }
     }
 
@@ -145,19 +126,6 @@ public class CooldownModule implements Listener
                 return 6.0D;
             default:
                 return 0.0D;
-        }
-    }
-
-    static
-    {
-        try
-        {
-            getAttributeMethod = Player.class.getMethod("getAttribute", Attribute.class);
-            getItemInMainHandMethod = Player.class.getMethod("getInventory").getReturnType().getMethod("getItemInMainHand");
-        }
-        catch (NoSuchMethodException e)
-        {
-            e.printStackTrace();
         }
     }
 }
