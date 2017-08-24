@@ -19,21 +19,22 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.UUID;
 
-/**
- * How does that work ?
- * <p>
- * A. The proxy send a request OR the client connect without request
- * -> requestJoin is called
- * -> the system checks if the player is or isn't in a party
- * -> He's in party : call partyJoin
- * -> He's not in party : call soloJoin
- * -> if the player is already connected :
- * -> Connexion refused : he's kicked
- * -> if the player just sent a request
- * -> Connection refused : the system sends him a message
- * -> Connection accepted : the system request the proxy to moove him
+/*
+ * This file is part of SamaGamesCore.
+ *
+ * SamaGamesCore is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SamaGamesCore is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SamaGamesCore.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 public class JoinManagerImplement implements IJoinManager
 {
     private final TreeMap<Integer, IJoinHandler> joiners = new TreeMap<>();
